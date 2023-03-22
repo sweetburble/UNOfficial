@@ -1,0 +1,7 @@
+medium
+original
+up
+down
+right
+left
+select
