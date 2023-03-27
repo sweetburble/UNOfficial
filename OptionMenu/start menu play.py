@@ -52,21 +52,13 @@ class UNOGame():
                             selected = selected+1
                     if event.key == K_RETURN:
                         if selected <= 1:
-                            #self.background = pygame.image.load('./img/default.png')
-                            #self.screen.blit(self.background, (-30, -30))
-                            #game = startgame.game(self.playernum, self.difficulty)
-                            #game.startgame()
-                            #self.background = pygame.image.load('./img/background.png')
-                            #self.screen.blit(self.background, (-30, -30))
+                            #실행할 내용
                             pass
                         if selected == 2:
-                            #self.set_players()
-                            #self.screen.blit(self.background, (-30, -30))//
+                            #실행할 내용
                             pass
-
                         if selected >= 3:
-                            #pygame.quit()
-                            #sys.exit() 
+                            #실행할 내용
                             pass
                 if event.type == MOUSEBUTTONDOWN:
                     mouse_pos = pygame.mouse.get_pos()
@@ -100,8 +92,6 @@ class UNOGame():
             pygame.display.update()
             self.clock.tick(self.FPS)
             pygame.display.set_caption("UNO!")
-
-    
 
             self.screen.blit(text_start, (self.screen_width/2+70 - (start_rect[2]/2), 200))
             self.screen.blit(text_setting, (self.screen_width/2+70 - (set_rect[2]/2), 260))
