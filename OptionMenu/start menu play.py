@@ -1,10 +1,7 @@
 import sys
 import pygame
-from pygame.locals import *
-import startgame
 
 img_basic_address = './img/'
-
 
 class UNOGame():
 
@@ -23,12 +20,12 @@ class UNOGame():
         self.screen.fill(self.background_Color)
         self.screen.blit(self.background, (-30, -30))
         pygame.display.update()
-
+        
     def text_format(self, message, textFont, textSize, textColor):
         newFont = pygame.font.SysFont(textFont, textSize)
         newText = newFont.render(message, True, textColor)
         return newText
-        
+
     def main_menu(self):
         menu = True
         selected = 1
@@ -59,6 +56,8 @@ class UNOGame():
                             #self.screen.blit(self.background, (-30, -30))
                             pass
                         if selected == 2:
+                            #self.set_players()
+                            #self.screen.blit(self.background, (-30, -30))//
                             pass
 
                         if selected >= 3:
@@ -90,8 +89,10 @@ class UNOGame():
             self.screen.blit(text_quit, (self.screen_width/2+70 - (quit_rect[2]/2), 320))
 
             pygame.display.update()
-            self.clock.tick(self.FPS)
-
+            #self.clock.tick(self.FPS)
+            #pygame.display.set_caption("UNO!")
+            
+            
 if __name__ == '__main__':
     uno = UNOGame()
     uno.main_menu()
