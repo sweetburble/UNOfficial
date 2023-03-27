@@ -18,10 +18,12 @@ class UNOGame():
         self.clock = pygame.time.Clock()
         self.FPS = 30
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
+        pygame.display.set_caption("UNO!")
         self.screen.fill(self.background_Color)
         self.screen.blit(self.background, (-30, -30))
         pygame.display.update()
-        
+        self.main_menu()
+
     def text_format(self, message, textFont, textSize, textColor):
         newFont = pygame.font.SysFont(textFont, textSize)
         newText = newFont.render(message, True, textColor)
@@ -30,6 +32,7 @@ class UNOGame():
     def main_menu(self):
         menu = True
         selected = 1
+
         while menu:
             pygame.init()
             for event in pygame.event.get():
@@ -76,19 +79,39 @@ class UNOGame():
 
             if selected == 1:
                 text_start = self.text_format("START", self.font, 50, (0,0,0))
+            else:
+                text_start = self.text_format("START", self.font, 50, (255, 255, 255))
+
             if selected == 2:
                 text_setting = self.text_format("SETTING", self.font, 50, (0,0,0))
+            else:
+                text_setting = self.text_format("SETTING", self.font, 50, (255, 255, 255))
+
             if selected == 3:
                 text_quit = self.text_format("QUIT", self.font, 50, (0,0,0))
-               
+            else:
+                text_quit = self.text_format("QUIT", self.font, 50, (255, 255, 255))
+
+            # 메뉴 아이템 표시
             start_rect = text_start.get_rect()
             set_rect = text_setting.get_rect()
-            quit_rect=text_quit.get_rect()
+            quit_rect = text_quit.get_rect()
+
+            pygame.display.update()
+            self.clock.tick(self.FPS)
+            pygame.display.set_caption("UNO!")
+
+    
 
             self.screen.blit(text_start, (self.screen_width/2+70 - (start_rect[2]/2), 200))
             self.screen.blit(text_setting, (self.screen_width/2+70 - (set_rect[2]/2), 260))
             self.screen.blit(text_quit, (self.screen_width/2+70 - (quit_rect[2]/2), 320))
 
-            pygame.display.update()
-            #self.clock.tick(self.FPS)
-            #pygame
+def main():
+    game = UNOGame()
+
+if __name__ == '__main__':
+    game = UNOGame()
+    game.main_menu()
+    main()  # 이 부분을 들여쓰기 조정하여 수정
+
