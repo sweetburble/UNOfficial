@@ -51,7 +51,7 @@ class UNOGame():
                             #self.screen.blit(self.background, (-30, -30))//
                         if selected >= 3:
                             #pygame.quit()
-                            #sys.exit()//   
+                            #sys.exit() 
                  if event.type == MOUSEBUTTONDOWN:
                      mouse_pos = pygame.mouse.get_pos()
                      if start_rect.collidepoint(mouse_pos):
