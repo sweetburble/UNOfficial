@@ -1,5 +1,6 @@
 import sys
 import pygame
+from pygame.locals import *
 
 img_basic_address = './img/'
 
@@ -90,9 +91,4 @@ class UNOGame():
 
             pygame.display.update()
             #self.clock.tick(self.FPS)
-            #pygame.display.set_caption("UNO!")
-            
-            
-if __name__ == '__main__':
-    uno = UNOGame()
-    uno.main_menu()
+            #pygame
