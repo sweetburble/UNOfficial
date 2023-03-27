@@ -26,7 +26,7 @@ class UNOGame():
 
     def text_format(self, message, textFont, textSize, textColor):
         newFont = pygame.font.SysFont(textFont, textSize)
-        newText = newFont.render(message, K_0, textColor)
+        newText = newFont.render(message, True, textColor)
         return newText
         
     def main_menu(self):
@@ -88,6 +88,10 @@ class UNOGame():
             self.screen.blit(text_start, (self.screen_width/2+70 - (start_rect[2]/2), 200))
             self.screen.blit(text_setting, (self.screen_width/2+70 - (set_rect[2]/2), 260))
             self.screen.blit(text_quit, (self.screen_width/2+70 - (quit_rect[2]/2), 320))
+
+            pygame.display.update()
+            self.clock.tick(self.FPS)
+
 if __name__ == '__main__':
     uno = UNOGame()
     uno.main_menu()
