@@ -40,18 +40,27 @@ class UNOGame():
                             selected = selected+1
                     if event.key == K_RETURN:
                         if selected <= 1:
-                            //self.background = pygame.image.load('./img/default.png')
-                            self.screen.blit(self.background, (-30, -30))
-                            game = startgame.game(self.playernum, self.difficulty)
-                            game.startgame()
-                            self.background = pygame.image.load('./img/background.png')
-                            self.screen.blit(self.background, (-30, -30))//
+                            #self.background = pygame.image.load('./img/default.png')
+                            #self.screen.blit(self.background, (-30, -30))
+                            #game = startgame.game(self.playernum, self.difficulty)
+                            #game.startgame()
+                            #self.background = pygame.image.load('./img/background.png')
+                            #self.screen.blit(self.background, (-30, -30))
                         if selected == 2:
-                            //self.set_players()
-                            self.screen.blit(self.background, (-30, -30))//
+                            #self.set_players()
+                            #self.screen.blit(self.background, (-30, -30))//
                         if selected >= 3:
-                            //pygame.quit()
-                            sys.exit()//   
+                            #pygame.quit()
+                            #sys.exit()//   
+                 if event.type == MOUSEBUTTONDOWN:
+                     mouse_pos = pygame.mouse.get_pos()
+                     if start_rect.collidepoint(mouse_pos):
+                        selected = 1
+                    elif set_rect.collidepoint(mouse_pos):
+                         selected = 2
+                    elif quit_rect.collidepoint(mouse_pos):
+                         selected = 3
+
             if selected == 1:
                 text_start = self.text_format("START", self.font, 50, (0,0,0))
             if selected == 2:
@@ -62,16 +71,14 @@ class UNOGame():
             start_rect = text_start.get_rect()
             set_rect = text_setting.get_rect()
             quit_rect=text_quit.get_rect()
-//변수를 바꿀 필요가 있나?//
 
             self.screen.blit(text_start, (self.screen_width/2+70 - (start_rect[2]/2), 200))
             self.screen.blit(text_setting, (self.screen_width/2+70 - (set_rect[2]/2), 260))
             self.screen.blit(text_quit, (self.screen_width/2+70 - (quit_rect[2]/2), 320))
             pygame.display.update()
-            //self.clock.tick(self.FPS)
-            pygame.display.set_caption("UNO!")//
+            #self.clock.tick(self.FPS)
+            #pygame.display.set_caption("UNO!")
             
 if __name__ == '__main__':
     uno = UNOGame()
-    uno.main_menu()                
-                
+    uno.main_menu()
