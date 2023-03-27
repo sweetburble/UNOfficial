@@ -1,4 +1,10 @@
+import sys
+import pygame
+from pygame.locals import *
+import startgame
+
 img_basic_address = './img/'
+
 
 class UNOGame():
 
@@ -17,6 +23,11 @@ class UNOGame():
         self.screen.fill(self.background_Color)
         self.screen.blit(self.background, (-30, -30))
         pygame.display.update()
+
+    def text_format(self, message, textFont, textSize, textColor):
+        newFont = pygame.font.SysFont(textFont, textSize)
+        newText = newFont.render(message, K_0, textColor)
+        return newText
         
     def main_menu(self):
         menu = True
@@ -46,20 +57,22 @@ class UNOGame():
                             #game.startgame()
                             #self.background = pygame.image.load('./img/background.png')
                             #self.screen.blit(self.background, (-30, -30))
+                            pass
                         if selected == 2:
-                            #self.set_players()
-                            #self.screen.blit(self.background, (-30, -30))//
+                            pass
+
                         if selected >= 3:
                             #pygame.quit()
                             #sys.exit() 
-                 if event.type == MOUSEBUTTONDOWN:
-                     mouse_pos = pygame.mouse.get_pos()
-                     if start_rect.collidepoint(mouse_pos):
+                            pass
+                if event.type == MOUSEBUTTONDOWN:
+                    mouse_pos = pygame.mouse.get_pos()
+                    if start_rect.collidepoint(mouse_pos):
                         selected = 1
                     elif set_rect.collidepoint(mouse_pos):
-                         selected = 2
+                        selected = 2
                     elif quit_rect.collidepoint(mouse_pos):
-                         selected = 3
+                        selected = 3
 
             if selected == 1:
                 text_start = self.text_format("START", self.font, 50, (0,0,0))
@@ -75,10 +88,6 @@ class UNOGame():
             self.screen.blit(text_start, (self.screen_width/2+70 - (start_rect[2]/2), 200))
             self.screen.blit(text_setting, (self.screen_width/2+70 - (set_rect[2]/2), 260))
             self.screen.blit(text_quit, (self.screen_width/2+70 - (quit_rect[2]/2), 320))
-            pygame.display.update()
-            #self.clock.tick(self.FPS)
-            #pygame.display.set_caption("UNO!")
-            
 if __name__ == '__main__':
     uno = UNOGame()
     uno.main_menu()
