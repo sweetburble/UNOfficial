@@ -8,7 +8,7 @@ img_basic_address = './img/'
 class UNOGame():
     def __init__(self):
         pygame.init()
-        self.background = pygame.image.load(img_basic_address+'background.png')
+        self.background = pygame.image.load('img/background.png')
         self.screen_width = 800
         self.screen_height = 600
         self.background_Color = (0,66,0)
@@ -45,16 +45,16 @@ class UNOGame():
                     sys.exit()
                 if event.type == KEYDOWN:
                     if event.key == K_UP:
-                        if selected <=1:
+                        if selected <= 1:
                             selected = 1
                         else:
-                            selected = selected-1
+                            selected = selected - 1
                     elif event.key == K_DOWN:
-                        if selected >=3:
+                        if selected >= 3:
                             selected = 3
                         else:
-                            selected = selected+1
-                    if event.key == K_RETURN:
+                            selected = selected + 1
+                    if event.key == K_RETURN: # K_RETURN은 엔터키
                         if selected <= 1:
                             #실행할 내용
                             pass
@@ -62,22 +62,24 @@ class UNOGame():
                             #실행할 내용
                             pass
                         if selected >= 3:
-                            #실행할 내용
+                            pygame.quit()
+                            sys.exit()
                             pass
                 if event.type == MOUSEBUTTONDOWN:
                     mouse_pos = pygame.mouse.get_pos()
                     if start_rect.collidepoint(mouse_pos):
-                        if selected == 1:
-                            # 실행할 내용
-                            pass
+                        selected = 1
+                        pass
                     elif set_rect.collidepoint(mouse_pos):
-                        if selected == 2:
-                            # 실행할 내용
-                            pass
+                        selected = 2
+                        pass
                     elif quit_rect.collidepoint(mouse_pos):
-                        if selected == 3:
-                            pygame.quit()
-                            sys.exit()
+                        text_quit = self.text_format("QUIT", self.font, 50, (0,0,0))
+                        self.screen.blit(text_quit, quit_rect)
+                        pygame.display.update()
+                        pygame.time.delay(500)
+                        pygame.quit()
+                        sys.exit()
 
             if selected == 1:
                 text_start = self.text_format("START", self.font, 50, (0,0,0))
@@ -107,6 +109,7 @@ class UNOGame():
             self.screen.blit(text_start, start_rect)
             self.screen.blit(text_setting, set_rect)
             self.screen.blit(text_quit, quit_rect)
+
             pygame.display.update()
             self.clock.tick(self.FPS)
             pygame.display.set_caption("UNO!")
