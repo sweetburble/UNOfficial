@@ -33,10 +33,10 @@ class UNOGame():
         menu = True
         selected = 1
 
-        start_rect = pygame.Rect(self.screen_width/2+70, 200, 200, 50)
-        set_rect = pygame.Rect(self.screen_width/2+70, 260, 200, 50)
-        quit_rect = pygame.Rect(self.screen_width/2+70, 320, 200, 50)
-
+        start_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.4), 200, 50)
+        set_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.5), 200, 50)
+        quit_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.6), 200, 50)
+  
         while menu:
             pygame.init()
             for event in pygame.event.get():
@@ -101,10 +101,10 @@ class UNOGame():
             set_rect = text_setting.get_rect()
             quit_rect = text_quit.get_rect()
 
-            start_rect.center = (self.screen_width/2+70, 200)
-            set_rect.center = (self.screen_width/2+70, 260)
-            quit_rect.center = (self.screen_width/2+70, 320)
-
+            start_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.4), 200, 50)
+            set_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.5), 200, 50)
+            quit_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.6), 200, 50)
+  
 
             self.screen.blit(text_start, start_rect)
             self.screen.blit(text_setting, set_rect)
