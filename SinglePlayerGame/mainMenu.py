@@ -9,7 +9,7 @@ FPSCLOCK = pygame.time.Clock()
 width, height = 1280, 720
 Board = pygame.display.set_mode((width, height))
 background = pygame.image.load('./UNOfficial/SinglePlayerGame/img/background.jpg')
-game_font = pygame.font.SysFont(None, 40)
+game_font = pygame.font.SysFont(None, height/18)
 
 deck = []
 colors = ['red', 'green', 'blue', 'yellow']
@@ -28,8 +28,8 @@ deck.append(('black', '+4'))
 random.shuffle(deck)
 
 def Game_Border():
-    pygame.draw.line(Board, (255, 255, 255), (960, 0), (960, 720))
-    pygame.draw.line(Board, (255, 255, 255), (0, 540), (960, 540))
+    pygame.draw.line(Board, (255, 255, 255), (width*(3/4), 0), (width*(3/4), height))
+    pygame.draw.line(Board, (255, 255, 255), (0, height*(3/4)), (width*(3/4), height*(3/4)))
 
 class Button():
     def __init__(self, x, y, width, height, buttonText='Button', onclickFunction=None, onePress=False):
@@ -82,7 +82,7 @@ class Button():
 def UNO_Button():
     print('Button Pressed')
 
-customButton = Button(440, 100, 80, 50, 'UNO!', UNO_Button)
+customButton = Button(width*(11/32), height/7, width/16, height/14, 'UNO!', UNO_Button)
 
 def main():
     while True:
