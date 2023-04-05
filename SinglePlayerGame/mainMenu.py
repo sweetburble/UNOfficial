@@ -8,8 +8,8 @@ pygame.display.set_caption('UNO Game')
 FPSCLOCK = pygame.time.Clock()
 width, height = 1280, 720
 Board = pygame.display.set_mode((width, height))
-background = pygame.image.load('./UNOfficial/SinglePlayerGame/img/background.jpg')
-game_font = pygame.font.SysFont(None, height/18)
+background = pygame.image.load('./img/background.jpg')
+game_font = pygame.font.SysFont(None, int(height/18))
 
 deck = []
 colors = ['red', 'green', 'blue', 'yellow']
