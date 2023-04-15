@@ -1,6 +1,5 @@
 from classes import *
 from functions import *
-import time
 
 pygame.init()
 
@@ -33,9 +32,7 @@ disp = False
 win_dec = False  # 승자가 선언되면 True
 pen_check = False  # UNO 페널티 체크 플래그
 
-# 타이머 변수들 세팅
-start_time = time.time()
-elapsed_time = 0
+# 타이머 변수 세팅
 max_time = 10 # 플레이어에게 10초의 시간을 주고, 그 시간 안에 카드를 내지 않으면 자동으로 턴이 넘어간다
 
 # 카드 덱을 세팅하고, 버려진 카드덱에 카드 한장 놓았고, 플레이어들에게 카드를 배분한다
@@ -228,7 +225,18 @@ while active:
                 ess.message = ""
 
                 if not ess.drawn and not ess.played:  # Checking for previous special card overheads, 이전에 기술 카드를 냈는지 확인
-                    if ess.current[0] == '+2' and ess.special_check == 0:  # Draw 2
+                    if ess.current[0] == '+1' and ess.special_check == 0:  # Draw 1
+                        for _ in range(1):
+                            try:
+                                ess.player_list[0].append(ess.deck1.pop())
+                            except:
+                                ess.deck1, ess.deck2 = ess.deck2, ess.deck1
+                                random.shuffle(ess.deck1)
+                                ess.player_list[0].append(ess.deck1.pop())
+                        ess.special_check = 1
+                        ess.player_playing = False
+                    
+                    elif ess.current[0] == '+2' and ess.special_check == 0:  # Draw 2
                         for _ in range(2):
                             try:
                                 ess.player_list[0].append(ess.deck1.pop())
@@ -256,8 +264,6 @@ while active:
                 # root.blit(img.uno_button, (850, 500)) -> 일단 플레이어의 UNO 버튼은 항상 표시되게 함
                 
                 ess.play_lag += 1 # 게임의 FPS마다 1씩 증가한다
-                
-                # pygame.display.flip()
 
         else: # AI가 플레이 중이면
             if ess.play_lag == 140:  # 플레이어 간의 행동 사이에 지연을 구현한다

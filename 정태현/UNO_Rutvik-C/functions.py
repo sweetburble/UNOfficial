@@ -10,7 +10,7 @@ def peek(s):
 def create(Object):
     """ 카드들을 처리한다 """
     a = ('0', '1', '1', '2', '2', '3', '3', '4', '4', '5', '5', '6', '6', '7', '7', '8', '8', '9', '9',
-        '+2', '+2', 'Skip', 'Skip', 'Reverse', 'Reverse')
+            '+1', '+1', '+2', '+2', '+4', 'Skip', 'Skip', 'Reverse', 'Reverse') # 색깔 +1, +4 기술 카드 추가
     Object.deck1 = list(itertools.product(a, Object.color)) # 덱 생성
     for _ in range(4): # 덱에 와일드 카드 2종류 4장씩 추가
         Object.deck1.append(('Wild', 'Black'))
@@ -20,13 +20,15 @@ def create(Object):
     while peek(Object.deck1) in [('Wild', 'Black'), ('+4', 'Black'), ('Skip', 'Red'), ('Skip', 'Green'),
                             ('Skip', 'Blue'), ('Skip', 'Yellow'), ('Reverse', 'Red'), ('Reverse', 'Green'),
                             ('Reverse', 'Blue'), ('Reverse', 'Yellow'), ('+2', 'Red'), ('+2', 'Green'),
-                            ('+2', 'Blue'), ('+2', 'Yellow')]: # 첫번째 카드는 기술카드가 아니어야 한다
+                            ('+2', 'Blue'), ('+2', 'Yellow'), ('+1', 'Red'), ('+1', 'Green'),
+                            ('+1', 'Blue'), ('+1', 'Yellow'), ('+4', 'Red'), ('+4', 'Green'),
+                            ('+4', 'Blue'), ('+4', 'Yellow')]: # 첫 번째 카드는 기술카드가 아니어야 한다
         random.shuffle(Object.deck1)
 
     Object.deck2.append(Object.deck1.pop()) # 첫 번째 카드를 버려진 카드 덱(deck2)에 추가
     Object.current = peek(Object.deck2) # 버려진 카드 덱의 peek
 
-    for j in range(4):  # 플레이어 4명에게 카드를 나누어 준다
+    for j in range(4):  # 플레이어 4명에게 카드를 7장씩 나누어 준다
         for _ in range(7):
             Object.player_list[j].append(Object.deck1.pop())
 
@@ -86,7 +88,7 @@ def play_this_card(ob, card): # ob = ess, card = ess.player_list[0][int((625 - i
     if not ob.played:
         # ob.current = 버려진 카드 덱의 맨 위에 있는 카드
         # 숫자가 같거나, 색깔이 같거나, 와일드 카드가 아니면
-        if (card[0] == ob.current[0] or card[1] == ob.current[1]) and (card[0] not in ('+4', 'Wild')):
+        if (card[0] == ob.current[0] or card[1] == ob.current[1]) and (card[1] != 'Black'):
             ob.played, ob.drawn = True, True # 플레이 했나?, 드로우 했나?를 True로 바꾼다
             ob.deck2.append(card)
             ob.current = peek(ob.deck2)
@@ -109,7 +111,7 @@ def play_this_card_2(ob, color): # color = "Red" or "Blue" or "Green" or "Yellow
 
 # bot_action()에서 8번째로 호출
 def handle24(ob, n): # (ob, int(ob.current[0][1]))
-    """ +2 / +4 카드를 처리한다 """
+    """ +1, +2, +4 기술 카드를 처리한다 """
     for _ in range(n):
         try:
             ob.player_list[ob.position].append(ob.deck1.pop())
@@ -122,7 +124,7 @@ def handle24(ob, n): # (ob, int(ob.current[0][1]))
 
 # bot_action()에서 10번째로 호출
 def handle_black(ob, item):
-    """ 와일드 카드 처리 """
+    """ 와일드 카드를 처리한다 """
     ob.special_check = 0 # 기술 카드 상태 활성화
     ob.deck2.append(item)
     ob.current = peek(ob.deck2)
@@ -160,14 +162,14 @@ def bot_action(ob, sounds):
     ob.played_check = 0 # ??
     
     # 버려진 카드 덱의 맨 위에 있는 기술 카드가 +2 또는 +4이고, 기술 카드 상태가 활성화 되었다면
-    if (ob.current[0] == '+2' or ob.current[0] == '+4') and ob.special_check == 0:
+    if (ob.current[0] == '+1' or ob.current[0] == '+2' or ob.current[0] == '+4') and ob.special_check == 0:
         handle24(ob, int(ob.current[0][1]))
         ob.played_check = 1
 
     else:
         check = 0
         for item in ob.player_list[ob.position]: # AI가 가지고 있는 카드 중에서
-            if ob.current[1] in item or ob.current[0] in item: # 색깔이나 숫자가 같은 카드가 있다면
+            if ob.current[1] == item[1] or ob.current[0] == item[0]: # 색깔이나 숫자가 같은 카드가 있다면
                 bot_play_card(ob, item)
 
                 if item[1] == 'Black': # 그게 와일드 카드면
@@ -182,7 +184,7 @@ def bot_action(ob, sounds):
         if check == 0: # AI가 낼 수 있는 카드가 없다면
             black_check = 0
             for item in ob.player_list[ob.position]:
-                if 'Black' in item: # 근데 와일드 카드가 있다면
+                if item[1] == 'Black': # 근데 와일드 카드가 있다면
                     ob.message = "%s plays %s" % (ob.bot_map[ob.position], item[0] + " " + item[1])
                     handle_black(ob, item)
                     ob.player_list[ob.position].remove(item)
