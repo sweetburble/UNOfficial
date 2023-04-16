@@ -45,7 +45,7 @@ def set_curr_player(ob, default): # (ob, False)
         ob.special_check = 1
         ob.position = (ob.position + ob.direction_check) % 4 # 플레이 하는 플레이어 인덱스 (Playing player index)
 
-    if default: # 와일드 카드를 내지 않았으면 False, 냈으면 True
+    if default: # AI가 플레이 하는 경우 True, 유저인 경우 False
         ob.position = (ob.position + ob.direction_check) % 4 # direction_check대로 진행한다
 
 # driver.py에서 2번째로 호출
@@ -215,7 +215,7 @@ def bot_action(ob, sounds):
                 ob.uno[ob.position] = True
                 ob.message = "%s shouted UNO!" % ob.bot_map[ob.position]
                 sounds.uno.play()
-            else: # 하드 모드는 무조건 UNO를 외친다
+            elif ob.easy == False: # 하드 모드는 무조건 UNO를 외친다
                 pygame.time.delay(wait_time)
                 ob.uno[ob.position] = True
                 ob.message = "%s shouted UNO!" % ob.bot_map[ob.position]
