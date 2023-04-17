@@ -8,9 +8,9 @@ img_basic_address = './img/'
 class UNOGame():
     def __init__(self):
         pygame.init()
-        self.background = pygame.image.load('img/Game map.jpg')
-        self.screen_width = 300
-        self.screen_height = 300
+        self.background = pygame.image.load('../img/Game map.jpg')
+        self.screen_width = 930
+        self.screen_height = 690
         self.background_Color = (0,66,0)
         self.playernum = 2
         self.difficulty = 1
@@ -20,7 +20,7 @@ class UNOGame():
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
         pygame.display.set_caption("UNO!")
         self.screen.fill(self.background_Color)
-        self.screen.blit(self.background, (-300, -300))
+        self.screen.blit(self.background, (-30, -30))
         pygame.display.update()
         self.main_menu()
 

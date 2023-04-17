@@ -8,7 +8,7 @@ img_basic_address = './img/'
 class UNOGame():
     def __init__(self):
         pygame.init()
-        self.background = pygame.image.load('img/Game map.jpg')
+        self.background = pygame.image.load('../img/Story map.jpg')
         self.screen_width = 930
         self.screen_height = 690
         self.background_Color = (0,66,0)
@@ -111,7 +111,7 @@ class UNOGame():
             MAP2_rect = pygame.Rect(self.screen_width/2-245, int(self.screen_height*0.2+20), 200, 50)          
             MAP3_rect = pygame.Rect(self.screen_width/2-40, int(self.screen_height*0.5-20), 200, 50)
             MAP4_rect = pygame.Rect(self.screen_width/2+140, int(self.screen_height*0.2-20), 200, 50)
-  
+
             self.screen.blit(text_MAP1, MAP1_rect)
             self.screen.blit(text_MAP2, MAP2_rect)
             self.screen.blit(text_MAP3, MAP3_rect)

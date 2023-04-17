@@ -8,9 +8,10 @@ img_basic_address = './img/'
 class UNOGame():
     def __init__(self):
         pygame.init()
-        self.background = pygame.image.load('img/background.png')
-        self.screen_width = 800
+        self.screen_width = 1000
         self.screen_height = 600
+        background = pygame.image.load('./img/Main_background.png')
+        self.background = pygame.transform.scale_by(background, (self.screen_width/800, self.screen_height/600))
         self.background_Color = (0,66,0)
         self.playernum = 2
         self.difficulty = 1
@@ -32,6 +33,7 @@ class UNOGame():
     def set_start(self):
         pygame.init()
         self.background = pygame.image.load('./img/default.png')
+        self.background = pygame.transform.scale_by(self.background, (self.screen_width/800, self.screen_height/600))
         self.screen.blit(self.background, (-100, -70))
         selected = 1
 
@@ -57,21 +59,22 @@ class UNOGame():
                         if selected <= 1:
                             self.playernum = 2
                             self.set_players(self.playernum)
-                            self.background = pygame.image.load('./img/background.png')
+                            self.background = pygame.image.load('./img/Main_background.png')
                         if selected == 2:
                             self.playernum = 3
                             self.set_players(self.playernum)
-                            self.background = pygame.image.load('./img/background.png')
+                            self.background = pygame.image.load('./img/Main_background.png')
                         if selected == 3:
                             self.playernum = 4
                             self.set_players(self.playernum)
-                            self.background = pygame.image.load('./img/background.png')
+                            self.background = pygame.image.load('./img/Main_background.png')
                         if selected == 4:
                             self.playernum = 5
                             self.set_players(self.playernum)
-                            self.background = pygame.image.load('./img/background.png')
+                            self.background = pygame.image.load('./img/Main_background.png')
                         if selected >= 5:
-                            self.background = pygame.image.load('./img/background.png')
+                            self.background = pygame.image.load('./img/Main_background.png')
+                            self.background = pygame.transform.scale_by(self.background, (self.screen_width/800, self.screen_height/600))
                             return
                 if event.type == MOUSEBUTTONDOWN:
                     mouse_pos = pygame.mouse.get_pos()
@@ -93,7 +96,7 @@ class UNOGame():
                         self.set_players(self.playernum)
                     elif quit_rect.collidepoint(mouse_pos):
                         selected = 5
-                        self.background = pygame.image.load('./img/background.png')
+                        self.background = pygame.image.load('./img/Main_background.png')
                         return
             # 선택한 글자의 색을 빨간색으로 표시      
             if selected == 1:
@@ -139,6 +142,7 @@ class UNOGame():
     def set_players(self, playernum):
         pygame.init()
         self.background = pygame.image.load('./img/default.png')
+        self.background = pygame.transform.scale_by(self.background, (self.screen_width/800, self.screen_height/600))
         self.playernum = playernum
         self.screen.blit(self.background, (-100, -70))
         selected = 1
@@ -162,19 +166,19 @@ class UNOGame():
                             selected = selected + 1
                     if event.key == K_RETURN:
                         if selected <= 1:
-                            self.background = pygame.image.load('./img/background.png')
+                            self.background = pygame.image.load('./img/Main_background.png')
                             pass
                         if selected == 2:
-                            self.background = pygame.image.load('./img/background.png')
+                            self.background = pygame.image.load('./img/Main_background.png')
                             pass
                         if selected == 3:
-                            self.background = pygame.image.load('./img/background.png')
+                            self.background = pygame.image.load('./img/Main_background.png')
                             pass
                         if selected == 4:
-                            self.background = pygame.image.load('./img/background.png')
+                            self.background = pygame.image.load('./img/Main_background.png')
                             pass
                         if selected >= 5:
-                            self.background = pygame.image.load('./img/background.png')
+                            self.background = pygame.image.load('./img/Main_background.png')
                             pass
                 if event.type == MOUSEBUTTONDOWN:
                     mouse_pos = pygame.mouse.get_pos()
@@ -251,7 +255,7 @@ class UNOGame():
         story_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.5), 200, 50)
         set_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.6), 200, 50)
         quit_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.7), 200, 50)
-  
+
         while menu:
             pygame.init()
             for event in pygame.event.get():
@@ -282,7 +286,6 @@ class UNOGame():
                         if selected >= 4:
                             pygame.quit()
                             sys.exit()
-                            pass
                 if event.type == MOUSEBUTTONDOWN:
                     mouse_pos = pygame.mouse.get_pos()
                     if start_rect.collidepoint(mouse_pos):
@@ -333,7 +336,7 @@ class UNOGame():
             story_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.5), 200, 50)          
             set_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.6), 200, 50)
             quit_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.7), 200, 50)
-  
+
             self.screen.blit(text_start, start_rect)
             self.screen.blit(text_story, story_rect)
             self.screen.blit(text_setting, set_rect)
