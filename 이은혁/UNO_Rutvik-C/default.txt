@@ -1,0 +1,9 @@
+size:medium
+color_change:original
+mouse:false
+up:1073741906
+left:1073741904
+right:1073741903
+down:1073741905
+select:13
+
