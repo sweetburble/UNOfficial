@@ -56,7 +56,7 @@ create(ess)
 while True:
     # 모든 발생하는 이벤트를 체크한다
     for event in pygame.event.get():
-        # Quit button Check
+        # Quit 버튼
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
