@@ -19,6 +19,7 @@ with open('save.txt', 'r') as f:
     lines = f.readlines()
     settings = lines[:3]
     settings2 = lines[3:8]
+    settings3 = lines[8:]
 for line in settings:
     key, value = line.strip().split(':')
     saves[key] = value
@@ -26,17 +27,26 @@ for line in settings2:
     action, key_name = line.strip().split(':')
     key = int(key_name)
     saves[action] = key
+for line in settings3:
+    action, key_name = line.strip().split(':')
+    key = float(key_name)
+    saves[action] = key
 
 with open('default.txt', 'r') as f: # 모두 기본 설정으로 바꾸기 위해 만든 defaults 딕셔너리 미리 채우기
     lines = f.readlines()
     settings = lines[:3]
     settings2 = lines[3:8]
+    settings3 = lines[8:]
 for line in settings:
     key, value = line.strip().split(':')
     defaults[key] = value
 for line in settings2:
     action, key_name = line.strip().split(':')
     key = int(key_name)
+    defaults[action] = key
+for line in settings3:
+    action, key_name = line.strip().split(':')
+    key = float(key_name)
     defaults[action] = key
 
 configured = saves
@@ -50,6 +60,14 @@ def update_key(something): # keyconfigure 에서 쓰는 update 함수인데 지�
                 configured[something] = key_name
                 updating = False
 
+def volumesetting(value):
+    sound.click.set_volume(value)
+    sound.card_drawn.set_volume(value)
+    sound.card_played.set_volume(value)
+    sound.shuffled.set_volume(value)
+    sound.uno.set_volume(value)
+    sound.victory.set_volume(value)
+    
 # 주어진 설정에 따라 width, height 변수 크기 결정
 if saves["size"] == 'large':
     uno.screen_width = 1500
@@ -64,10 +82,12 @@ elif saves["size"] == 'small':
 # Creating screen window
 pygame.display.set_icon(img.icon)
 
-# 배경음악 세팅
+# 배경음악 & 환경음 세팅
 pygame.mixer.music.load(sound.back_g)
 pygame.mixer.music.play(-1)  # 지속적인 배경음악 재생
-pygame.mixer.music.set_volume(0.3)  # 배경음악 볼륨 세팅
+pygame.mixer.music.set_volume(saves["background"])  # 배경음악 볼륨 세팅
+volumesetting(saves["effects"])
+
 music_on = True  # 모든 효과음/배경음악 상태를 저장하는 변수
 
 # 초기 게임 변수 세팅
@@ -354,7 +374,7 @@ while True:
                     uno.screen.blit(img.line, (width*(870/1000), height*(145/600)))
 
     # SETTING 화면
-    elif ess.play_mode == PM.setting or ess.play_mode == PM.key:
+    elif ess.play_mode == PM.setting or ess.play_mode == PM.key or ess.play_mode == PM.volume:
         uno.screen.blit(img.bg,(0,0))
         font = pygame.font.Font(FONT.joe_fin, 36)
         
@@ -370,7 +390,7 @@ while True:
             medium_rect = medium_text.get_rect(center=(3*width//5, 2*height//7))
             large_text = font.render("Large", True, (255,255,255))
             large_rect = large_text.get_rect(center=(4*width//5, 2*height//7))
-            keycon_text = font.render("Key Configuration",True,(255,255,255))
+            keycon_text = font.render("Key Config & Sounds",True,(255,255,255))
             keycon_rect = keycon_text.get_rect(center=(width//2,3*height//7))
             altcol_text = font.render("Alternative Colors",True,(255,255,255))
             altcol_rect=altcol_text.get_rect(center=(width//2,4*height//7))
@@ -518,7 +538,7 @@ while True:
         
         # Key Configuration 설정일 경우
         elif ess.play_mode == PM.key:
-            title_text = font.render("Key Configure", True, (255,255,255))
+            title_text = font.render("Key Config & Sounds", True, (255,255,255))
             title_rect = title_text.get_rect(center=(width//2, height//7))
             up_text = font.render("UP", True, (255,255,255))
             up_rect = up_text.get_rect(center=(width//2, 2*height//7))
@@ -530,8 +550,8 @@ while True:
             down_rect = down_text.get_rect(center=(width//2, 4*height//7))
             select_text = font.render("ENTER",True,(255,255,255))
             select_rect = select_text.get_rect(center=(width//3,5*height//7))
-            mouse_text = font.render("Enable Mouse",True,(255,255,255))
-            mouse_rect = mouse_text.get_rect(center=(2*width//3,5*height//7))
+            sound_text = font.render("Sound",True,(255,255,255))
+            sound_rect = sound_text.get_rect(center=(2*width//3,5*height//7))
             back_text = font.render("Back", True, (255,255,255))
             back_rect = back_text.get_rect(center=(width//3, 6*height//7))
             main_text = font.render("Main Menu",True,(255,255,255))
@@ -544,7 +564,7 @@ while True:
             uno.screen.blit(right_text, right_rect)
             uno.screen.blit(down_text, down_rect)
             uno.screen.blit(select_text, select_rect)
-            uno.screen.blit(mouse_text,mouse_rect)
+            uno.screen.blit(sound_text,sound_rect)
             uno.screen.blit(back_text,back_rect)
             uno.screen.blit(main_text,main_rect)
 
@@ -560,7 +580,7 @@ while True:
             elif selected_item == 6:
                 pygame.draw.rect(uno.screen, (255,255,255), select_rect, 3)
             elif selected_item == 7:
-                pygame.draw.rect(uno.screen, (255,255,255), mouse_rect, 3)
+                pygame.draw.rect(uno.screen, (255,255,255), sound_rect, 3)
             elif selected_item == 8:
                 pygame.draw.rect(uno.screen, (255,255,255), back_rect, 3)
             elif selected_item == 9:
@@ -582,13 +602,20 @@ while True:
                             update_key("down")
                         elif selected_item == 6:
                             update_key("select")
+                        elif selected_item == 7:
+                            with open('save.txt', 'w') as file:
+                                for key,value in configured.items():
+                                    file.write(f"{key}:{value}\n")
+                            selected_item = 0
+                            ess.play_mode = PM.volume
+                            break
                         elif selected_item == 8:
                             with open('save.txt', 'w') as file:
                                 for key,value in configured.items():
                                     file.write(f"{key}:{value}\n")
-                                selected_item = 0
-                                ess.play_mode = PM.setting
-                                break  
+                            selected_item = 0
+                            ess.play_mode = PM.setting
+                            break  
                         elif selected_item == 9:  
                             with open('save.txt', 'w') as file:
                                 for key,value in configured.items():
@@ -621,6 +648,179 @@ while True:
                                 else:
                                     selected_item -= 2
 
+        elif ess.play_mode == PM.volume:
+            title_text = font.render("Volume Configure", True, (255,255,255))
+            title_rect = title_text.get_rect(center=(width//2, height//6))
+            master_text = font.render("Master:", True, (255,255,255))
+            master_rect = master_text.get_rect(center=(width//5, 2*height//6))
+            msmall_text = font.render("Small", True, (255,255,255))
+            msmall_rect = msmall_text.get_rect(center=(2*width//5, 2*height//6))
+            mmedium_text = font.render("Medium", True, (255,255,255))
+            mmedium_rect = mmedium_text.get_rect(center=(3*width//5, 2*height//6))
+            mlarge_text = font.render("Large", True, (255,255,255))
+            mlarge_rect = mlarge_text.get_rect(center=(4*width//5, 2*height//6))
+            backmusic_text = font.render("BGM:", True, (255,255,255))
+            backmusic_rect = backmusic_text.get_rect(center=(width//5, 3*height//6))
+            bsmall_text = font.render("Small", True, (255,255,255))
+            bsmall_rect = bsmall_text.get_rect(center=(2*width//5, 3*height//6))
+            bmedium_text = font.render("Medium", True, (255,255,255))
+            bmedium_rect = bmedium_text.get_rect(center=(3*width//5, 3*height//6))
+            blarge_text = font.render("Large", True, (255,255,255))
+            blarge_rect = blarge_text.get_rect(center=(4*width//5, 3*height//6))
+            effect_text = font.render("Effects:", True, (255,255,255))
+            effect_rect = effect_text.get_rect(center=(width//5, 4*height//6))
+            esmall_text = font.render("Small", True, (255,255,255))
+            esmall_rect = esmall_text.get_rect(center=(2*width//5, 4*height//6))
+            emedium_text = font.render("Medium", True, (255,255,255))
+            emedium_rect = emedium_text.get_rect(center=(3*width//5, 4*height//6))
+            elarge_text = font.render("Large", True, (255,255,255))
+            elarge_rect = elarge_text.get_rect(center=(4*width//5, 4*height//6))
+            back_text = font.render("Back", True, (255,255,255))
+            back_rect = back_text.get_rect(center=(width//3, 5*height//6))
+            main_text = font.render("Main Menu",True,(255,255,255))
+            main_rect = main_text.get_rect(center=(2*width//3,5*height//6))
+
+            # Draw text objects
+            uno.screen.blit(title_text, title_rect)
+            uno.screen.blit(master_text, master_rect)
+            uno.screen.blit(msmall_text, msmall_rect)
+            uno.screen.blit(mmedium_text, mmedium_rect)
+            uno.screen.blit(mlarge_text, mlarge_rect)
+            uno.screen.blit(backmusic_text, backmusic_rect)
+            uno.screen.blit(bsmall_text,bsmall_rect)
+            uno.screen.blit(bmedium_text, bmedium_rect)
+            uno.screen.blit(blarge_text, blarge_rect)
+            uno.screen.blit(effect_text, effect_rect)
+            uno.screen.blit(esmall_text,esmall_rect)
+            uno.screen.blit(emedium_text, emedium_rect)
+            uno.screen.blit(elarge_text, elarge_rect)
+            uno.screen.blit(back_text, back_rect)
+            uno.screen.blit(main_text, main_rect)
+
+
+            # 선택된 글자를 하이라이트 한다
+            if selected_item == 0:
+                pygame.draw.rect(uno.screen, (255,255,255), msmall_rect, 3)
+            elif selected_item == 1:
+                pygame.draw.rect(uno.screen, (255,255,255), mmedium_rect, 3)
+            elif selected_item == 2:
+                pygame.draw.rect(uno.screen, (255,255,255), mlarge_rect, 3)
+            elif selected_item == 3:
+                pygame.draw.rect(uno.screen, (255,255,255), bsmall_rect, 3)    
+            elif selected_item == 4:
+                pygame.draw.rect(uno.screen, (255,255,255), bmedium_rect, 3)
+            elif selected_item == 5:
+                pygame.draw.rect(uno.screen, (255,255,255), blarge_rect, 3)
+            elif selected_item == 6:
+                pygame.draw.rect(uno.screen, (255,255,255), esmall_rect, 3)
+            elif selected_item == 7:
+                pygame.draw.rect(uno.screen, (255,255,255), emedium_rect, 3)
+            elif selected_item == 8:
+                pygame.draw.rect(uno.screen, (255,255,255), elarge_rect, 3)
+            elif selected_item == 9:
+                pygame.draw.rect(uno.screen, (255,255,255), back_rect, 3)
+            elif selected_item == 10:
+                pygame.draw.rect(uno.screen, (255,255,255), main_rect, 3)    
+            
+
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if event.type == pygame.KEYDOWN:    
+                    if event.key == saves["select"]: 
+                        if selected_item == 0:
+                            saves["background"]=0.1
+                            saves["effects"]=0.1
+                            pygame.mixer.music.set_volume(saves["background"])
+                            volumesetting(saves["effects"])
+                        elif selected_item == 1:
+                            saves["background"]=0.3
+                            saves["effects"]=0.5
+                            pygame.mixer.music.set_volume(saves["background"])
+                            volumesetting(saves["effects"])
+                        elif selected_item == 2:
+                            saves["background"]=0.5
+                            saves["effects"]=0.7
+                            pygame.mixer.music.set_volume(saves["background"])
+                            volumesetting(saves["effects"])
+                        elif selected_item == 3:
+                            saves["background"]=0.1
+                            pygame.mixer.music.set_volume(saves["background"])
+                        elif selected_item == 4:
+                            saves["background"]=0.3
+                            pygame.mixer.music.set_volume(saves["background"])
+                        elif selected_item == 5:
+                            saves["background"]=0.5
+                            pygame.mixer.music.set_volume(saves["background"])
+                        elif selected_item == 6:
+                            saves["effects"]=0.1
+                            volumesetting(saves["effects"])
+                        elif selected_item == 7:
+                            saves["effects"]=0.5
+                            volumesetting(saves["effects"])
+                        elif selected_item == 8:
+                            saves["effects"]=0.7
+                            volumesetting(saves["effects"])
+                        elif selected_item == 9:
+                            with open('save.txt', 'w') as file:
+                                for key,value in configured.items():
+                                    file.write(f"{key}:{value}\n")
+                            selected_item = 0
+                            ess.play_mode = PM.key
+                            break
+                        elif selected_item == 10:
+                            with open('save.txt', 'w') as file:
+                                for key,value in configured.items():
+                                    file.write(f"{key}:{value}\n")
+                                selected_item = 0
+                                uno.background = pygame.image.load('./images/Main_background.png')
+                                uno.background = pygame.transform.scale_by(uno.background, (uno.screen_width/800, uno.screen_height/600))
+                                uno.screen.blit(uno.background, (-30, -30))
+                                ess.play_mode = PM.load
+                                break
+                    else: # 키보드로 옮기기의 경우
+                        if event.key == saves["right"]:
+                            if selected_item == 9:
+                                selected_item+=1
+                            elif selected_item == 10:
+                                selected_item-=1
+                            elif (selected_item+1)%3!=0:
+                                selected_item += 1
+                            else:
+                                selected_item -= 2
+                        elif event.key == saves["left"]:
+                            if selected_item == 10:
+                                selected_item-=1
+                            elif selected_item == 9:
+                                selected_item+=1
+                            elif selected_item%3!=0:
+                                selected_item -= 1
+                            else:
+                                selected_item += 2
+                        else:
+                            if event.key == saves["down"]:
+                                if (selected_item+3)<9:
+                                    selected_item+=3
+                                elif selected_item==9:
+                                    selected_item=0
+                                elif selected_item==10:
+                                    selected_item=2
+                                elif selected_item==6:
+                                    selected_item=9
+                                else:
+                                    selected_item=10    
+                            elif event.key == saves["up"]:
+                                if (selected_item-3)>=0:
+                                    selected_item-=3
+                                elif selected_item==9:
+                                    selected_item=6
+                                elif selected_item==10:
+                                    selected_item=8
+                                elif selected_item==0:
+                                    selected_item=9
+                                else:
+                                    selected_item=10
     # 게임 승리 화면
     elif ess.play_mode == PM.win and ess.winner != -1:
         # sounds

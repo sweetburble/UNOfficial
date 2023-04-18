@@ -38,6 +38,7 @@ class PlayMode(object):
         self.win = "WINNER"
         self.key = "KEY CONFIGURATION"
         self.stroy = "STORY MODE"
+        self.volume = "VOLUME"
 
 
 class Image(object):
