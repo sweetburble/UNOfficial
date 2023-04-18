@@ -47,7 +47,7 @@ for line in settings2:
 for line in settings3:
     action, key_name = line.strip().split(':')
     key = float(key_name)
-    defaults[action] = key    
+    defaults[action] = key
 
 configured = saves
 selected_item = 0 # 설정 창에서 쓰는 선택 바
@@ -67,7 +67,7 @@ def volumesetting(value):
     sound.shuffled.set_volume(value)
     sound.uno.set_volume(value)
     sound.victory.set_volume(value)
-
+    
 # 주어진 설정에 따라 width, height 변수 크기 결정
 if saves["size"] == 'large':
     uno.screen_width = 1500
@@ -820,7 +820,7 @@ while True:
                                 elif selected_item==0:
                                     selected_item=9
                                 else:
-                                    selected_item=10 
+                                    selected_item=10
     # 게임 승리 화면
     elif ess.play_mode == PM.win and ess.winner != -1:
         # sounds

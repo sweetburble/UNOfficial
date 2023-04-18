@@ -11,33 +11,43 @@ font = pygame.font.Font(None, 36)
 longerfonts=pygame.font.Font(None,26)
 
 # Define menu items
-setting_items = {"size":0,
-                 "color_change":0,
-                 "up":0,
-                 "down":0,
-                 "right":0,
-                 "left":0,
-                 "select":0}
+saves = {}
+configured={}
 
-with open('save.txt', 'r') as file:
-    for line in file:
-        key, value = line.strip().split(':')
-        if key in setting_items:
-            setting_items[key] = value
-        else:
-            pass
+with open('save.txt', 'r') as f:
+    lines = f.readlines()
+    settings = lines[:3]
+    settings2 = lines[3:8]
+for line in settings:
+    key, value = line.strip().split(':')
+    saves[key]=value
+for line in settings2:
+    action, key_name = line.strip().split(':')
+    key = int(key_name)
+    saves[action] = key
 
+configured = saves#지금 이 configured 가 개 쓸모가 없는 그건거 같은데 나중에 refactoring 할때 이거 위주로 보자. 돌아가긴 함.
+
+#키 설정을 위한 함수
+def update_key(something):
+    updating = True
+    while updating:
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                key_name = event.key
+                configured[something] = key_name
+                updating = False
 
 # Set up the screen
-if setting_items["size"] == 'large':
+if saves["size"] == 'large':
     screen_width = 1400
     screen_height = 900
     screen = pygame.display.set_mode([screen_width, screen_height])
-elif setting_items["size"] == 'medium':
+elif saves["size"] == 'medium':
     screen_width = 800
     screen_height = 600
     screen = pygame.display.set_mode([screen_width, screen_height])
-elif setting_items["size"] == 'small':
+elif saves["size"] == 'small':
     screen_width = 700
     screen_height = 500
     screen = pygame.display.set_mode([screen_width, screen_height])
@@ -79,33 +89,48 @@ main_rect = main_text.get_rect(center=(2*screen_width//3,6*screen_height//7))
 
 # Game loop
 done = False
-with open('save.txt','r') as f:
-    saves=f.readlines()
-with open('default.txt','r')as fdef:
-    defaults=fdef.readlines()
 while not done:
     # Handle events
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             done = True
         elif event.type==pygame.KEYDOWN:    
-            if event.key==pygame.K_RETURN: #결정의 경우
-                pass                    
+            if event.key==saves["select"]: 
+                if selected_item==0:
+                    update_key("up")
+                elif selected_item==2:
+                    update_key("left")
+                elif selected_item==3:
+                    update_key("right")
+                elif selected_item==4:
+                    update_key("down")
+                elif selected_item==6:
+                    update_key("select")
+                elif selected_item==8:
+                    with open('save.txt', 'w') as file:
+                        for key,value in configured.items():
+                            file.write(f"{key}:{value}\n")
+                        done=True    
+                elif selected_item==9:  
+                    with open('save.txt', 'w') as file:
+                        for key,value in configured.items():
+                            file.write(f"{key}:{value}\n")
+                        done=True                     
             else: #옮기기의 경우
-                if event.key==pygame.K_RIGHT or event.key==pygame.K_LEFT:
+                if event.key==saves["right"] or event.key==saves["left"]:
                     if selected_item==2 or selected_item==6 or selected_item==8:
                         selected_item+=1
                     elif selected_item==3 or selected_item==7 or selected_item==9:
                         selected_item-=1
                 else:
-                    if event.key==pygame.K_DOWN:
+                    if event.key==saves["down"]:
                         if selected_item>=8:
                             selected_item=0
                         elif selected_item==3:
                             selected_item+=1
                         else:
                             selected_item+=2
-                    elif event.key==pygame.K_UP:
+                    elif event.key==saves["up"]:
                         if selected_item==0:
                             selected_item=8
                         elif selected_item==3 or selected_item==7:

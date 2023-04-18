@@ -12,34 +12,35 @@ ess = Essentials()
 
 # saves dictionary에 저장된 설정 내용 불러오기
 saves = {}
-configured={}
-defaults={}
+configured = {}
+defaults = {}
 with open('save.txt', 'r') as f:
     lines = f.readlines()
     settings = lines[:3]
     settings2 = lines[3:8]
 for line in settings:
     key, value = line.strip().split(':')
-    saves[key]=value
+    saves[key] = value
 for line in settings2:
     action, key_name = line.strip().split(':')
     key = int(key_name)
     saves[action] = key
-with open('default.txt', 'r') as f:#모두 기본 설정으로 바꾸기 위해 만든 defaults 딕셔너리 채우기
+
+with open('default.txt', 'r') as f: # 모두 기본 설정으로 바꾸기 위해 만든 defaults 딕셔너리 미리 채우기
     lines = f.readlines()
     settings = lines[:3]
     settings2 = lines[3:8]
 for line in settings:
     key, value = line.strip().split(':')
-    defaults[key]=value
+    defaults[key] = value
 for line in settings2:
     action, key_name = line.strip().split(':')
     key = int(key_name)
     defaults[action] = key
 
-configured=saves
+configured = saves
 
-def update_key(something):#keyconfigure 에서 쓰는 update 함수
+def update_key(something): # keyconfigure 에서 쓰는 update 함수
     updating = True
     while updating:
         for event in pygame.event.get():
@@ -49,18 +50,18 @@ def update_key(something):#keyconfigure 에서 쓰는 update 함수
                 updating = False
 #인데 지금 안됨. 왜인지 이따 확인 요망
 
-selected_item=0#설정 창에서 쓰는 선택 바
+selected_item = 0 # 설정 창에서 쓰는 선택 바
 
 # 주어진 설정에 따라 width, height 변수 크기 결정
 if saves["size"] == 'large':
-    width = 1250
-    height = 750
+    width = 1500
+    height = 900
 elif saves["size"] == 'medium':
     width = 1000
     height = 600
 elif saves["size"] == 'small':
-    width = 800
-    height = 500
+    width = 750
+    height = 450
 
 # Creating root window
 root = pygame.display.set_mode((width, height))
@@ -372,7 +373,7 @@ while active:
         root.blit(img.bg,(0,0))
         root.blit(img.back, (width*(10/1000), width*(10/1000)))
         font = pygame.font.Font(FONT.joe_fin, 36)
-        if ess.play_mode==PM.info:
+        if ess.play_mode == PM.info:
             # Set up text objects
             title_text = font.render("Game Settings", True, (255,255,255))
             title_rect = title_text.get_rect(center=(width//2, height//7))
@@ -393,55 +394,55 @@ while active:
             back_text = font.render("Back", True, (255,255,255))
             back_rect = back_text.get_rect(center=(width//2, 6*height//7))
             for event in pygame.event.get():
-                if event.type==pygame.KEYDOWN:    
-                    if event.key==saves["select"]: #결정의 경우
-                        if selected_item==0:
-                            saves["size"]='small'
-                            #만약 즉시 적용으로 수정할 거라면 if event.type == pygame.VIDEORESIZE: 를 좀 사용해보면 좋겠다.
-                        elif selected_item==0.1:
-                            saves["size"]='medium'
-                        elif selected_item==0.2:
-                            saves["size"]='large'
-                        elif selected_item==1:
+                if event.type == pygame.KEYDOWN:    
+                    if event.key == saves["select"]: #결정의 경우
+                        if selected_item == 0:
+                            saves["size"] ='small'
+                            # 만약 즉시 적용으로 수정할 거라면 if event.type == pygame.VIDEORESIZE: 를 좀 사용해보면 좋겠다.
+                        elif selected_item == 0.1:
+                            saves["size"] ='medium'
+                        elif selected_item == 0.2:
+                            saves["size"] ='large'
+                        elif selected_item == 1:
                             with open('save.txt', 'w') as file:
                                 for key,value in saves.items():
                                     file.write(f"{key}:{value}\n")
-                            selected_item=0        
-                            ess.play_mode=PM.key
+                            selected_item = 0        
+                            ess.play_mode = PM.key
                             break
-                            #keyconfiguration으로 들어감
-                        elif selected_item==2:
+                            # keyconfiguration으로 들어감
+                        elif selected_item == 2:
                             if saves["color_change"].startswith('original'):
-                                saves["color_change"]='alternative'
+                                saves["color_change"] = 'alternative'
                             else:
-                                saves["color_change"]='original'
-                        elif selected_item==3:
+                                saves["color_change"] = 'original'
+                        elif selected_item == 3:
                             with open('save.txt','w')as f:
                                 f.writelines(defaults)
-                            saves=defaults
-                        elif selected_item==4:
+                            saves = defaults
+                        elif selected_item == 4:
                             with open('save.txt', 'w') as file:
                                 for key,value in saves.items():
                                     file.write(f"{key}:{value}\n")
-                                selected_item=0
-                                ess.play_mode=PM.load
+                                selected_item = 0
+                                ess.play_mode = PM.load
                                 break                   
-                    else: #옮기기의 경우
-                        if selected_item<1:
+                    else: # 옮기기의 경우
+                        if selected_item < 1:
                             if event.key==saves["right"]:
-                                if selected_item==0.2:
-                                    selected_item=0
+                                if selected_item == 0.2:
+                                    selected_item = 0
                                 else:
-                                    selected_item+=0.1
-                            elif event.key==saves["left"]: 
-                                if selected_item==0:
-                                    selected_item=0.2
+                                    selected_item += 0.1
+                            elif event.key == saves["left"]: 
+                                if selected_item == 0:
+                                    selected_item = 0.2
                                 else:
-                                    selected_item-=0.1
-                            elif event.key==saves["down"]:
-                                    selected_item=1
-                            elif event.key==saves["up"]:
-                                    selected_item=4
+                                    selected_item -= 0.1
+                            elif event.key == saves["down"]:
+                                    selected_item = 1
+                            elif event.key == saves["up"]:
+                                    selected_item = 4
                         else:
                             if event.key==saves['down']:
                                 if selected_item==4:
@@ -480,7 +481,9 @@ while active:
                 pygame.draw.rect(root, (255,255,255), reset_rect, 3)
             elif selected_item==4:
                 pygame.draw.rect(root, (255,255,255), back_rect, 3)
-        elif ess.play_mode==PM.key:
+        
+        # Key Configuration 설정일 경우
+        elif ess.play_mode == PM.key:
             title_text = font.render("Key Configure", True, (255,255,255))
             title_rect = title_text.get_rect(center=(width//2, height//7))
             up_text = font.render("UP", True, (255,255,255))
@@ -526,7 +529,7 @@ while active:
                                 selected_item=0
                                 ess.play_mode=PM.load
                                 break
-                    else: #옮기기의 경우
+                    else: # 옮기기의 경우
                         if event.key==saves["right"] or event.key==saves["left"]:
                             if selected_item==2 or selected_item==6 or selected_item==8:
                                 selected_item+=1
@@ -559,7 +562,7 @@ while active:
             root.blit(back_text,back_rect)
             root.blit(main_text,main_rect)
 
-            # Highlight selected difficulty
+            # 선택된 글자를 하이라이트 한다
             if selected_item==0:
                 pygame.draw.rect(root, (255,255,255), up_rect, 3)
             elif selected_item==2:
