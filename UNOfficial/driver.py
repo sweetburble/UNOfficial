@@ -157,8 +157,8 @@ while True:
 
     # 시작 화면
     if ess.play_mode == PM.load:
-        # 필수적인 이미지와 텍스트를 표시한다
-        main_menu(ess, uno)
+        load_key_config() # 키 설정을 불러온다
+        main_menu(ess, uno) # 필수적인 이미지와 텍스트를 표시한다
 
     # 게임 화면 
     elif ess.play_mode == PM.in_game:
@@ -347,7 +347,7 @@ while True:
             back_text = font.render("Back", True, (255,255,255))
             back_rect = back_text.get_rect(center=(width//2, 6*height//7))
 
-            # Draw text objects
+            # 텍스트 객체를 그린다
             uno.screen.blit(title_text, title_rect)
             uno.screen.blit(screensize_text, screensize_rect)
             uno.screen.blit(small_text, small_rect)
@@ -389,7 +389,7 @@ while True:
                     elif large_rect.collidepoint(mouse_pos):
                         selected_item = 0.2
                         saves["size"] ='large'
-                    elif keycon_rect.collidepoint(mouse_pos):
+                    elif keycon_rect.collidepoint(mouse_pos): # key configuration으로 들어감
                         selected_item = 1
                         with open('save.txt', 'w') as file:
                                 for key,value in saves.items():
@@ -397,7 +397,6 @@ while True:
                         selected_item = 0        
                         ess.play_mode = PM.key
                         break
-                        # key configuration으로 들어감
                     elif altcol_rect.collidepoint(mouse_pos): # 색약 모드
                         selected_item = 2
                         if saves["color_change"].startswith('original'):
@@ -406,20 +405,18 @@ while True:
                             saves["color_change"] = 'original'
                     elif reset_rect.collidepoint(mouse_pos):
                         selected_item = 3
-                        with open('save.txt','w')as f: # 리셋 버튼
-                            f.writelines(defaults)
-                        saves = defaults
+                        saves = return_default_setting()
+                        configured = return_default_setting()
                     elif back_rect.collidepoint(mouse_pos): # 시작화면으로 돌아가기
-                        selected_item = 4
                         with open('save.txt', 'w') as file:
-                            for key,value in saves.items():
+                            for key, value in saves.items():
                                 file.write(f"{key}:{value}\n")
-                            selected_item = 0
-                            uno.background = pygame.image.load('./images/Main_background.png')
-                            uno.background = pygame.transform.scale_by(uno.background, (uno.screen_width/800, uno.screen_height/600))
-                            uno.screen.blit(uno.background, (-30, -30))
-                            ess.play_mode = PM.load
-                            break   
+                        selected_item = 0
+                        uno.background = pygame.image.load('./images/Main_background.png')
+                        uno.background = pygame.transform.scale_by(uno.background, (uno.screen_width/800, uno.screen_height/600))
+                        uno.screen.blit(uno.background, (-30, -30))
+                        ess.play_mode = PM.load
+                        break 
                 if event.type == pygame.KEYDOWN:    
                     if event.key == saves["select"]: # 결정의 경우
                         if selected_item == 0:
@@ -430,36 +427,33 @@ while True:
                         elif selected_item == 0.2:
                             saves["size"] ='large'
                         elif selected_item == 1:
-                            with open('save.txt', 'w') as file:
+                            with open('save.txt', 'w') as file: # key configuration으로 들어감
                                 for key,value in saves.items():
                                     file.write(f"{key}:{value}\n")
                             selected_item = 0        
                             ess.play_mode = PM.key
                             break
-                            # key configuration으로 들어감
                         elif selected_item == 2: # 색약 모드
                             if saves["color_change"].startswith('original'):
                                 saves["color_change"] = 'alternative'
                             else:
                                 saves["color_change"] = 'original'
                         elif selected_item == 3: # 리셋 버튼
-                            with open('save.txt','w')as f:
-                                f.writelines(defaults)
-                            saves = defaults
-                            configured = defaults
-                        elif selected_item == 4:
+                            saves = return_default_setting()
+                            configured = return_default_setting()
+                        elif selected_item == 4: # 시작화면으로 돌아가기
                             with open('save.txt', 'w') as file:
-                                for key,value in saves.items():
+                                for key, value in saves.items():
                                     file.write(f"{key}:{value}\n")
-                                selected_item = 0
-                                uno.background = pygame.image.load('./images/Main_background.png')
-                                uno.background = pygame.transform.scale_by(uno.background, (uno.screen_width/800, uno.screen_height/600))
-                                uno.screen.blit(uno.background, (-30, -30))
-                                ess.play_mode = PM.load
-                                break                   
-                    else: # 옮기기의 경우
+                            selected_item = 0
+                            uno.background = pygame.image.load('./images/Main_background.png')
+                            uno.background = pygame.transform.scale_by(uno.background, (uno.screen_width/800, uno.screen_height/600))
+                            uno.screen.blit(uno.background, (-30, -30))
+                            ess.play_mode = PM.load
+                            break                   
+                    else: # 키보드로 메뉴를 이동하는 경우
                         if selected_item < 1:
-                            if event.key==saves["right"]:
+                            if event.key == saves["right"]:
                                 if selected_item == 0.2:
                                     selected_item = 0
                                 else:
@@ -485,7 +479,7 @@ while True:
                                 else:
                                     selected_item -= 1
         
-        # Key Configuration 설정일 경우
+        # Key Configuration 설정 모드일 경우
         elif ess.play_mode == PM.key:
             title_text = font.render("Key Config & Sounds", True, (255,255,255))
             title_rect = title_text.get_rect(center=(width//2, height//7))
@@ -553,18 +547,18 @@ while True:
                     elif down_rect.collidepoint(mouse_pos):
                         selected_item = 4
                         update_key("down")
-                    elif select_rect.collidepoint(mouse_pos): # 색약 모드
+                    elif select_rect.collidepoint(mouse_pos):
                         selected_item = 6
                         update_key("select")
-                    elif sound_rect.collidepoint(mouse_pos):
+                    elif sound_rect.collidepoint(mouse_pos): # 사운드 설정으로 이동
                         selected_item = 7
                         with open('save.txt', 'w') as file:
-                                for key,value in configured.items():
+                                for key, value in configured.items():
                                     file.write(f"{key}:{value}\n")
                         selected_item = 0
                         ess.play_mode = PM.volume
                         break
-                    elif back_rect.collidepoint(mouse_pos): # 시작화면으로 돌아가기
+                    elif back_rect.collidepoint(mouse_pos): # 설정 화면으로 돌아가기
                         selected_item = 8
                         with open('save.txt', 'w') as file:
                                 for key,value in configured.items():
@@ -572,8 +566,8 @@ while True:
                         selected_item = 0
                         ess.play_mode = PM.setting
                         break 
-                    elif main_rect.collidepoint(mouse_pos): # 시작화면으로 돌아가기
-                        selected_item=9
+                    elif main_rect.collidepoint(mouse_pos): # 시작 화면으로 돌아가기
+                        selected_item = 9
                         with open('save.txt', 'w') as file:
                             for key,value in configured.items():
                                 file.write(f"{key}:{value}\n")
@@ -583,6 +577,7 @@ while True:
                         uno.screen.blit(uno.background, (-30, -30))
                         ess.play_mode = PM.load
                         break
+                
                 if event.type == pygame.KEYDOWN:    
                     if event.key == saves["select"]: 
                         if selected_item == 0:
@@ -595,7 +590,7 @@ while True:
                             update_key("down")
                         elif selected_item == 6:
                             update_key("select")
-                        elif selected_item == 7:
+                        elif selected_item == 7:  # 사운드 설정으로 이동
                             with open('save.txt', 'w') as file:
                                 for key,value in configured.items():
                                     file.write(f"{key}:{value}\n")
@@ -603,14 +598,14 @@ while True:
                             ess.play_mode = PM.volume
                             break
                         elif selected_item == 8:
-                            with open('save.txt', 'w') as file:
+                            with open('save.txt', 'w') as file: # 설정 화면으로 돌아가기
                                 for key,value in configured.items():
                                     file.write(f"{key}:{value}\n")
                             selected_item = 0
                             ess.play_mode = PM.setting
                             break  
                         elif selected_item == 9:  
-                            with open('save.txt', 'w') as file:
+                            with open('save.txt', 'w') as file: # 시작 화면으로 돌아가기
                                 for key,value in configured.items():
                                     file.write(f"{key}:{value}\n")
                                 selected_item = 0
@@ -619,7 +614,7 @@ while True:
                                 uno.screen.blit(uno.background, (-30, -30))
                                 ess.play_mode = PM.load
                                 break
-                    else: # 키보드로 옮기기의 경우
+                    else: # 키보드로 메뉴를 이동하는 경우
                         if event.key == saves["right"] or event.key == saves["left"]:
                             if selected_item == 2 or selected_item == 6 or selected_item == 8:
                                 selected_item += 1
@@ -641,6 +636,7 @@ while True:
                                 else:
                                     selected_item -= 2
 
+        # 볼륨 설정 모드일 때
         elif ess.play_mode == PM.volume:
             title_text = font.render("Volume Configure", True, (255,255,255))
             title_rect = title_text.get_rect(center=(width//2, height//6))
@@ -720,9 +716,9 @@ while True:
                 if event.type == QUIT:
                     pygame.quit()
                     sys.exit()
-                if event.type == MOUSEBUTTONDOWN:#마우스로 누르기
+                if event.type == MOUSEBUTTONDOWN: # 마우스 클릭
                     mouse_pos = pygame.mouse.get_pos()
-                    if msmall_rect.collidepoint(mouse_pos):
+                    if msmall_rect.collidepoint(mouse_pos): # 전체 소리 조절
                         selected_item = 0
                         saves["background"] = 0.1
                         saves["effects"] = 0.1
@@ -740,11 +736,11 @@ while True:
                         saves["effects"] = 0.7
                         pygame.mixer.music.set_volume(saves["background"])
                         volumesetting(saves["effects"])
-                    elif bsmall_rect.collidepoint(mouse_pos):
+                    elif bsmall_rect.collidepoint(mouse_pos): # 배경음악 크기 조절
                         selected_item = 3
                         saves["background"] = 0.1
                         pygame.mixer.music.set_volume(saves["background"])
-                    elif bmedium_rect.collidepoint(mouse_pos): # 색약 모드
+                    elif bmedium_rect.collidepoint(mouse_pos): 
                         selected_item = 4
                         saves["background"] = 0.3
                         pygame.mixer.music.set_volume(saves["background"])
@@ -752,7 +748,7 @@ while True:
                         selected_item = 5
                         saves["background"] = 0.5
                         pygame.mixer.music.set_volume(saves["background"])
-                    elif esmall_rect.collidepoint(mouse_pos):
+                    elif esmall_rect.collidepoint(mouse_pos): # 효과음 크기 조절
                         selected_item = 6
                         saves["effects"] = 0.1
                         volumesetting(saves["effects"])
@@ -764,7 +760,7 @@ while True:
                         selected_item = 8
                         saves["effects"] = 0.7
                         volumesetting(saves["effects"])
-                    elif back_rect.collidepoint(mouse_pos): # 시작화면으로 돌아가기
+                    elif back_rect.collidepoint(mouse_pos): # Key configuration으로 돌아가기
                         selected_item = 9
                         with open('save.txt', 'w') as file:
                                 for key,value in configured.items():
@@ -772,7 +768,7 @@ while True:
                         selected_item = 0
                         ess.play_mode = PM.key
                         break
-                    elif main_rect.collidepoint(mouse_pos): # 시작화면으로 돌아가기
+                    elif main_rect.collidepoint(mouse_pos): # 시작 화면으로 돌아가기
                         selected_item = 10
                         with open('save.txt', 'w') as file:
                             for key,value in configured.items():
@@ -786,7 +782,7 @@ while True:
 
                 if event.type == pygame.KEYDOWN:    
                     if event.key == saves["select"]: 
-                        if selected_item == 0:
+                        if selected_item == 0:          # 전체 소리 조절
                             saves["background"] = 0.1
                             saves["effects"] = 0.1
                             pygame.mixer.music.set_volume(saves["background"])
@@ -801,7 +797,7 @@ while True:
                             saves["effects"] = 0.7
                             pygame.mixer.music.set_volume(saves["background"])
                             volumesetting(saves["effects"])
-                        elif selected_item == 3:
+                        elif selected_item == 3:             # 배경음악 크기 조절
                             saves["background"] = 0.1
                             pygame.mixer.music.set_volume(saves["background"])
                         elif selected_item == 4:
@@ -810,7 +806,7 @@ while True:
                         elif selected_item == 5:
                             saves["background"] = 0.5
                             pygame.mixer.music.set_volume(saves["background"])
-                        elif selected_item == 6:
+                        elif selected_item == 6:           # 효과음 크기 조절
                             saves["effects"] = 0.1
                             volumesetting(saves["effects"])
                         elif selected_item == 7:
@@ -819,14 +815,14 @@ while True:
                         elif selected_item == 8:
                             saves["effects"] = 0.7
                             volumesetting(saves["effects"])
-                        elif selected_item == 9:
+                        elif selected_item == 9:                      # Key configuration으로 돌아가기
                             with open('save.txt', 'w') as file:
                                 for key,value in configured.items():
                                     file.write(f"{key}:{value}\n")
                             selected_item = 0
                             ess.play_mode = PM.key
                             break
-                        elif selected_item == 10:
+                        elif selected_item == 10:                     # 시작 화면으로 돌아가기
                             with open('save.txt', 'w') as file:
                                 for key,value in configured.items():
                                     file.write(f"{key}:{value}\n")
@@ -836,7 +832,7 @@ while True:
                                 uno.screen.blit(uno.background, (-30, -30))
                                 ess.play_mode = PM.load
                                 break
-                    else: # 키보드로 옮기기의 경우
+                    else: # 키보드로 메뉴를 이동하는 경우
                         if event.key == saves["right"]:
                             if selected_item == 9:
                                 selected_item += 1

@@ -3,7 +3,46 @@ import random
 import pygame
 import sys
 from pygame.locals import *
-from classes import saves
+
+KEYS = {} # 키 설정이 저장된 딕셔너리
+def load_key_config():
+    """ 키 설정을 불러온다 """
+    with open('save.txt', 'r') as f:
+        lines = f.readlines()
+        settings = lines[:3]
+        settings2 = lines[3:8]
+        settings3 = lines[8:]
+    for line in settings:
+        key, value = line.strip().split(':')
+        KEYS[key] = value
+    for line in settings2:
+        action, key_name = line.strip().split(':')
+        key = int(key_name)
+        KEYS[action] = key
+    for line in settings3:
+        action, key_name = line.strip().split(':')
+        key = float(key_name)
+        KEYS[action] = key
+
+def return_default_setting(): # 호출한 딕셔너리를 default.txt로 초기화한다.
+    default_setting = {}
+    with open('default.txt', 'r') as f: 
+        lines = f.readlines()
+        settings = lines[:3]
+        settings2 = lines[3:8]
+        settings3 = lines[8:]
+    for line in settings:
+        key, value = line.strip().split(':')
+        default_setting[key] = value
+    for line in settings2:
+        action, key_name = line.strip().split(':')
+        key = int(key_name)
+        default_setting[action] = key
+    for line in settings3:
+        action, key_name = line.strip().split(':')
+        key = float(key_name)
+        default_setting[action] = key
+    return default_setting
 
 def peek(s):
     """ Peek - 리스트에서 가장 마지막 원소를 리턴한다 """
@@ -246,17 +285,17 @@ def main_menu(ob, uno):
                 pygame.quit()
                 sys.exit()
             if event.type == KEYDOWN:
-                if event.key == saves["up"]:
+                if event.key == KEYS["up"]:
                     if selected <= 1:
                         selected = 1
                     else:
                         selected = selected - 1
-                elif event.key == saves["down"]:
+                elif event.key == KEYS["down"]:
                     if selected >= 4:
                         selected = 4
                     else:
                         selected = selected + 1
-                if event.key == saves["select"]: # K_RETURN은 엔터키
+                if event.key == KEYS["select"]: # K_RETURN은 엔터키
                     if selected <= 1: # 게임 시작 버튼
                         ob.play_mode = set_start(ob, uno)
                         if (ob.play_mode == "IN GAME"):
