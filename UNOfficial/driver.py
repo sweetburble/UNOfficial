@@ -12,6 +12,7 @@ ess = Essentials()
 uno = UNOGame()
 
 def update_key(something): # keyconfigure 에서 쓰는 update 함수
+    updating = True
     while updating:
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
@@ -445,6 +446,7 @@ while True:
                             with open('save.txt','w')as f:
                                 f.writelines(defaults)
                             saves = defaults
+                            configured = defaults
                         elif selected_item == 4:
                             with open('save.txt', 'w') as file:
                                 for key,value in saves.items():
@@ -537,6 +539,50 @@ while True:
                 if event.type == QUIT:
                     pygame.quit()
                     sys.exit()
+                if event.type == MOUSEBUTTONDOWN:
+                    mouse_pos = pygame.mouse.get_pos()
+                    if up_rect.collidepoint(mouse_pos):
+                        selected_item = 0
+                        update_key("up")
+                    elif left_rect.collidepoint(mouse_pos):
+                        selected_item = 2
+                        update_key("left")
+                    elif right_rect.collidepoint(mouse_pos):
+                        selected_item = 3
+                        update_key("right")
+                    elif down_rect.collidepoint(mouse_pos):
+                        selected_item = 4
+                        update_key("down")
+                    elif select_rect.collidepoint(mouse_pos): # 색약 모드
+                        selected_item = 6
+                        update_key("select")
+                    elif sound_rect.collidepoint(mouse_pos):
+                        selected_item = 7
+                        with open('save.txt', 'w') as file:
+                                for key,value in configured.items():
+                                    file.write(f"{key}:{value}\n")
+                        selected_item = 0
+                        ess.play_mode = PM.volume
+                        break
+                    elif back_rect.collidepoint(mouse_pos): # 시작화면으로 돌아가기
+                        selected_item = 8
+                        with open('save.txt', 'w') as file:
+                                for key,value in configured.items():
+                                    file.write(f"{key}:{value}\n")
+                        selected_item = 0
+                        ess.play_mode = PM.setting
+                        break 
+                    elif main_rect.collidepoint(mouse_pos): # 시작화면으로 돌아가기
+                        selected_item=9
+                        with open('save.txt', 'w') as file:
+                            for key,value in configured.items():
+                                file.write(f"{key}:{value}\n")
+                        selected_item = 0
+                        uno.background = pygame.image.load('./images/Main_background.png')
+                        uno.background = pygame.transform.scale_by(uno.background, (uno.screen_width/800, uno.screen_height/600))
+                        uno.screen.blit(uno.background, (-30, -30))
+                        ess.play_mode = PM.load
+                        break
                 if event.type == pygame.KEYDOWN:    
                     if event.key == saves["select"]: 
                         if selected_item == 0:
@@ -674,6 +720,70 @@ while True:
                 if event.type == QUIT:
                     pygame.quit()
                     sys.exit()
+                if event.type == MOUSEBUTTONDOWN:#마우스로 누르기
+                    mouse_pos = pygame.mouse.get_pos()
+                    if msmall_rect.collidepoint(mouse_pos):
+                        selected_item = 0
+                        saves["background"] = 0.1
+                        saves["effects"] = 0.1
+                        pygame.mixer.music.set_volume(saves["background"])
+                        volumesetting(saves["effects"])
+                    elif mmedium_rect.collidepoint(mouse_pos):
+                        selected_item = 1
+                        saves["background"] = 0.3
+                        saves["effects"] = 0.5
+                        pygame.mixer.music.set_volume(saves["background"])
+                        volumesetting(saves["effects"])
+                    elif mlarge_rect.collidepoint(mouse_pos):
+                        selected_item = 2
+                        saves["background"] = 0.5
+                        saves["effects"] = 0.7
+                        pygame.mixer.music.set_volume(saves["background"])
+                        volumesetting(saves["effects"])
+                    elif bsmall_rect.collidepoint(mouse_pos):
+                        selected_item = 3
+                        saves["background"] = 0.1
+                        pygame.mixer.music.set_volume(saves["background"])
+                    elif bmedium_rect.collidepoint(mouse_pos): # 색약 모드
+                        selected_item = 4
+                        saves["background"] = 0.3
+                        pygame.mixer.music.set_volume(saves["background"])
+                    elif blarge_rect.collidepoint(mouse_pos):
+                        selected_item = 5
+                        saves["background"] = 0.5
+                        pygame.mixer.music.set_volume(saves["background"])
+                    elif esmall_rect.collidepoint(mouse_pos):
+                        selected_item = 6
+                        saves["effects"] = 0.1
+                        volumesetting(saves["effects"])
+                    elif emedium_rect.collidepoint(mouse_pos):
+                        selected_item = 7
+                        saves["effects"] = 0.5
+                        volumesetting(saves["effects"])
+                    elif elarge_rect.collidepoint(mouse_pos):
+                        selected_item = 8
+                        saves["effects"] = 0.7
+                        volumesetting(saves["effects"])
+                    elif back_rect.collidepoint(mouse_pos): # 시작화면으로 돌아가기
+                        selected_item = 9
+                        with open('save.txt', 'w') as file:
+                                for key,value in configured.items():
+                                    file.write(f"{key}:{value}\n")
+                        selected_item = 0
+                        ess.play_mode = PM.key
+                        break
+                    elif main_rect.collidepoint(mouse_pos): # 시작화면으로 돌아가기
+                        selected_item = 10
+                        with open('save.txt', 'w') as file:
+                            for key,value in configured.items():
+                                file.write(f"{key}:{value}\n")
+                        selected_item = 0
+                        uno.background = pygame.image.load('./images/Main_background.png')
+                        uno.background = pygame.transform.scale_by(uno.background, (uno.screen_width/800, uno.screen_height/600))
+                        uno.screen.blit(uno.background, (-30, -30))
+                        ess.play_mode = PM.load
+                        break
+
                 if event.type == pygame.KEYDOWN:    
                     if event.key == saves["select"]: 
                         if selected_item == 0:

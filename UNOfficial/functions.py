@@ -3,6 +3,7 @@ import random
 import pygame
 import sys
 from pygame.locals import *
+from classes import saves
 
 def peek(s):
     """ Peek - 리스트에서 가장 마지막 원소를 리턴한다 """
@@ -245,17 +246,17 @@ def main_menu(ob, uno):
                 pygame.quit()
                 sys.exit()
             if event.type == KEYDOWN:
-                if event.key == K_UP:
+                if event.key == saves["up"]:
                     if selected <= 1:
                         selected = 1
                     else:
                         selected = selected - 1
-                elif event.key == K_DOWN:
+                elif event.key == saves["down"]:
                     if selected >= 4:
                         selected = 4
                     else:
                         selected = selected + 1
-                if event.key == K_RETURN: # K_RETURN은 엔터키
+                if event.key == saves["select"]: # K_RETURN은 엔터키
                     if selected <= 1: # 게임 시작 버튼
                         ob.play_mode = set_start(ob, uno)
                         if (ob.play_mode == "IN GAME"):
