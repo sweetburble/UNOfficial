@@ -1,4 +1,4 @@
-size:medium
+size:small
 color_change:original
 mouse:false
 up:1073741906
