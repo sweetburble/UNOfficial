@@ -17,7 +17,7 @@ def update_key(something): # keyconfigure 에서 쓰는 update 함수
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 key_name = event.key
-                configured[something] = key_name
+                saves[something] = key_name
                 updating = False
 
 def volumesetting(value):
@@ -325,12 +325,16 @@ while True:
     elif ess.play_mode == PM.setting or ess.play_mode == PM.key or ess.play_mode == PM.volume:
         uno.screen.blit(img.bg,(0,0))
         font = pygame.font.Font(FONT.joe_fin, 36)
+        smallfont=pygame.font.Font(FONT.joe_fin,28)
         
         if ess.play_mode == PM.setting:
             # 텍스트 객체와 박스 생성
             title_text = font.render("Game Settings", True, (255,255,255))
             title_rect = title_text.get_rect(center=(width//2, height//7))
-            screensize_text = font.render("Size of Screen:", True, (255,255,255))
+            if saves["size"]=='small':
+                screensize_text = smallfont.render("Size of Screen:", True, (255,255,255))
+            else:
+                screensize_text = font.render("Size of Screen:", True, (255,255,255))
             screensize_rect = screensize_text.get_rect(center=(width//5, 2*height//7))
             small_text = font.render("Small", True, (255,255,255))
             small_rect = small_text.get_rect(center=(2*width//5, 2*height//7))
@@ -421,6 +425,8 @@ while True:
                     if event.key == saves["select"]: # 결정의 경우
                         if selected_item == 0:
                             saves["size"] ='small'
+                            uno.screen_width= 750
+                            uno.screen_height= 450
                             # 만약 즉시 적용으로 수정할 거라면 if event.type == pygame.VIDEORESIZE: 를 좀 사용해보면 좋겠다.
                         elif selected_item == 0.1:
                             saves["size"] ='medium'
@@ -592,14 +598,14 @@ while True:
                             update_key("select")
                         elif selected_item == 7:  # 사운드 설정으로 이동
                             with open('save.txt', 'w') as file:
-                                for key,value in configured.items():
+                                for key,value in saves.items():
                                     file.write(f"{key}:{value}\n")
                             selected_item = 0
                             ess.play_mode = PM.volume
                             break
                         elif selected_item == 8:
                             with open('save.txt', 'w') as file: # 설정 화면으로 돌아가기
-                                for key,value in configured.items():
+                                for key,value in saves.items():
                                     file.write(f"{key}:{value}\n")
                             selected_item = 0
                             ess.play_mode = PM.setting
