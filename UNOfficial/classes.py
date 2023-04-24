@@ -2,7 +2,6 @@ import pygame
 
 # saves dictionary에 저장된 설정 내용 불러오기
 saves = {}
-configured = {}
 defaults = {}
 with open('save.txt', 'r') as f:
     lines = f.readlines()
@@ -38,10 +37,7 @@ for line in settings3:
     key = float(key_name)
     defaults[action] = key
 
-configured = saves
-selected_item = 0 # 설정 창에서 쓰는 선택 바
 
-    
 # 주어진 설정에 따라 width, height 변수 크기 결정
 if saves["size"] == 'large':
     width = 1500

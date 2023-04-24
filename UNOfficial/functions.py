@@ -5,8 +5,8 @@ import sys
 from pygame.locals import *
 
 KEYS = {} # 키 설정이 저장된 딕셔너리
-def load_key_config():
-    """ 키 설정을 불러온다 """
+def function_key_config():
+    """ functions.py에서 사용할 키 설정을 불러온다 """
     with open('save.txt', 'r') as f:
         lines = f.readlines()
         settings = lines[:3]
@@ -24,25 +24,25 @@ def load_key_config():
         key = float(key_name)
         KEYS[action] = key
 
-def return_default_setting(): # 호출한 딕셔너리를 default.txt로 초기화한다.
-    default_setting = {}
-    with open('default.txt', 'r') as f: 
-        lines = f.readlines()
-        settings = lines[:3]
-        settings2 = lines[3:8]
-        settings3 = lines[8:]
-    for line in settings:
-        key, value = line.strip().split(':')
-        default_setting[key] = value
-    for line in settings2:
-        action, key_name = line.strip().split(':')
-        key = int(key_name)
-        default_setting[action] = key
-    for line in settings3:
-        action, key_name = line.strip().split(':')
-        key = float(key_name)
-        default_setting[action] = key
-    return default_setting
+# def return_default_setting(): # 호출한 딕셔너리를 default.txt로 초기화한다.
+#     default_setting = {}
+#     with open('default.txt', 'r') as f: 
+#         lines = f.readlines()
+#         settings = lines[:3]
+#         settings2 = lines[3:8]
+#         settings3 = lines[8:]
+#     for line in settings:
+#         key, value = line.strip().split(':')
+#         default_setting[key] = value
+#     for line in settings2:
+#         action, key_name = line.strip().split(':')
+#         key = int(key_name)
+#         default_setting[action] = key
+#     for line in settings3:
+#         action, key_name = line.strip().split(':')
+#         key = float(key_name)
+#         default_setting[action] = key
+#     return default_setting
 
 def peek(s):
     """ Peek - 리스트에서 가장 마지막 원소를 리턴한다 """
@@ -356,23 +356,24 @@ def main_menu(ob, uno):
         else:
             text_quit = text_format("QUIT", uno.font, 50, (255, 255, 255))
 
-        # 메뉴 아이템 표시
-        text_up= text_format("UP:",uno.font,30,(255,255,255))
-        text_left= text_format("LEFT:",uno.font,30,(255,255,255))
-        text_right= text_format("RIGHT:",uno.font,30,(255,255,255))
-        text_down= text_format("DOWN:",uno.font,30,(255,255,255))
-        text_enter= text_format("ENTER:",uno.font,30,(255,255,255))
-        text_ups= text_format(pygame.key.name(KEYS["up"]),uno.font,30,(255,255,255))
-        text_lefts= text_format(pygame.key.name(KEYS["left"]),uno.font,30,(255,255,255))
-        text_rights= text_format(pygame.key.name(KEYS["right"]),uno.font,30,(255,255,255))
-        text_downs= text_format(pygame.key.name(KEYS["down"]),uno.font,30,(255,255,255))
-        text_enters= text_format(pygame.key.name(KEYS["select"]),uno.font,30,(255,255,255))
+        # 시작 화면에 사용할 수 있는 키 표시
+        text_up = text_format("UP:",uno.font,30,(255,255,255))
+        text_left = text_format("LEFT:",uno.font,30,(255,255,255))
+        text_right = text_format("RIGHT:",uno.font,30,(255,255,255))
+        text_down = text_format("DOWN:",uno.font,30,(255,255,255))
+        text_enter = text_format("ENTER:",uno.font,30,(255,255,255))
+        text_ups = text_format(pygame.key.name(KEYS["up"]),uno.font,30,(255,255,255))
+        text_lefts = text_format(pygame.key.name(KEYS["left"]),uno.font,30,(255,255,255))
+        text_rights = text_format(pygame.key.name(KEYS["right"]),uno.font,30,(255,255,255))
+        text_downs = text_format(pygame.key.name(KEYS["down"]),uno.font,30,(255,255,255))
+        text_enters = text_format(pygame.key.name(KEYS["select"]),uno.font,30,(255,255,255))
 
         start_rect = text_start.get_rect()
         story_rect = text_story.get_rect()
         setting_rect = text_setting.get_rect()
         quit_rect = text_quit.get_rect()
 
+        # 시작 화면에 사용할 수 있는 키 표시
         up_rect= text_up.get_rect()
         left_rect= text_left.get_rect()
         right_rect= text_right.get_rect()
@@ -390,6 +391,7 @@ def main_menu(ob, uno):
         setting_rect = pygame.Rect(uno.screen_width/2-50, int(uno.screen_height*0.6), 200, 50)
         quit_rect = pygame.Rect(uno.screen_width/2-50, int(uno.screen_height*0.7), 200, 50)
 
+        # 시작 화면에 사용할 수 있는 키 표시
         up_rect = pygame.Rect(int(uno.screen_width*0.01), int(uno.screen_height*0.01),100,25)
         ups_rect = pygame.Rect(int(uno.screen_width*0.01)+50, int(uno.screen_height*0.01),200,50)
         left_rect = pygame.Rect(int(uno.screen_width*0.01), int(uno.screen_height*0.01)+30,100,25)
