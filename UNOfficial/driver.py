@@ -106,7 +106,7 @@ while True:
 
                 for i in range(int((width/1000)*625), int((width/1000)*625 - 50 * len(ess.player_list[0])), -50):  # 유저가 카드를 클릭했는지 감지
                     if i < mouse[0] < (i + 50) and height*(470/600) < mouse[1] < height*(585/600):
-                        play_this_card(ess, ess.player_list[0][int(((width/1000)*625 - i) / 50)])
+                        play_this_card(ess, uno, ess.player_list[0][int(((width/1000)*625 - i) / 50)])
                         if music_on:
                             sound.card_played.play()
 
@@ -261,7 +261,7 @@ while True:
                 pen_check = False
 
                 # 다음 플레이어를 결정한다
-                set_curr_player(ess, True)
+                set_curr_player(ess, uno, True)
 
                 # 그게 유저의 턴이면
                 if ess.position == 0:
@@ -274,7 +274,7 @@ while True:
                     ess.drawn = False
 
                     # 그 다음 AI의 행동을 결정한다
-                    bot_action(ess, sound)
+                    bot_action(ess, uno, sound)
 
                 ess.play_lag = 0  # 랙 리셋
 

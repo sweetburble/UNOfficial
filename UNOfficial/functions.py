@@ -24,26 +24,6 @@ def function_key_config():
         key = float(key_name)
         KEYS[action] = key
 
-# def return_default_setting(): # 호출한 딕셔너리를 default.txt로 초기화한다.
-#     default_setting = {}
-#     with open('default.txt', 'r') as f: 
-#         lines = f.readlines()
-#         settings = lines[:3]
-#         settings2 = lines[3:8]
-#         settings3 = lines[8:]
-#     for line in settings:
-#         key, value = line.strip().split(':')
-#         default_setting[key] = value
-#     for line in settings2:
-#         action, key_name = line.strip().split(':')
-#         key = int(key_name)
-#         default_setting[action] = key
-#     for line in settings3:
-#         action, key_name = line.strip().split(':')
-#         key = float(key_name)
-#         default_setting[action] = key
-#     return default_setting
-
 def peek(s):
     """ Peek - 리스트에서 가장 마지막 원소를 리턴한다 """
     return s[-1]
@@ -77,18 +57,20 @@ def create(Object):
     # Object.player_list[0] = [('Wild', 'Black'), ('+4', 'Black'), ('Skip', 'Red'), ('Reverse', 'Green'), ("+2", "Blue")]
 
 # play_this_card에서 4번째로 호출
-def set_curr_player(ob, default): # (ob, False)
+def set_curr_player(ob, uno, default): # (ob, uno, False)
     """ 다음 플레이어 결정 """
     if ob.current[0] == 'Reverse' and ob.special_check == 0:
         ob.direction_check *= -1  # 진행 방향 리버스
         ob.special_check = 1  # 기술 카드 상태 비활성화
+        if uno.playernum == 2:
+            ob.position = (ob.position + ob.direction_check) % 2
     
     if ob.current[0] == 'Skip' and ob.special_check == 0:
         ob.special_check = 1
-        ob.position = (ob.position + ob.direction_check) % 4 # 플레이 하는 플레이어 인덱스 (Playing player index)
+        ob.position = (ob.position + ob.direction_check) % uno.playernum # 플레이 하는 플레이어 인덱스 (Playing player index)
 
     if default: # AI가 플레이 하는 경우 True, 유저인 경우 False
-        ob.position = (ob.position + ob.direction_check) % 4 # direction_check대로 진행한다
+        ob.position = (ob.position + ob.direction_check) % uno.playernum # direction_check대로 진행한다
 
 # driver.py에서 2번째로 호출
 def re_initialize(ob):
@@ -125,7 +107,7 @@ def take_from_stack(ob):
             ob.drawn = True # 드로우 했나?를 True로 바꾼다
 
 # driver.py에서 3번째로 호출
-def play_this_card(ob, card): # ob = ess, card = ess.player_list[0][int((625 - i) / 50)
+def play_this_card(ob, uno, card): # ob = ess, card = ess.player_list[0][int((625 - i) / 50)
     """ 유저에 의해 카드가 플레이 될 때 """
     if not ob.played:
         # ob.current = 버려진 카드 덱의 맨 위에 있는 카드
@@ -136,7 +118,7 @@ def play_this_card(ob, card): # ob = ess, card = ess.player_list[0][int((625 - i
             ob.current = peek(ob.deck2)
             ob.player_list[0].remove(ob.current)
             ob.special_check = 0 # 기술 카드 상태 활성화 (만약 기술 카드를 냈으면 적용된다)
-            set_curr_player(ob, False)
+            set_curr_player(ob, uno, False)
 
         if card[1] == 'Black':
             ob.played, ob.drawn = True, True
@@ -197,7 +179,7 @@ def bot_play_card(ob, item):
     ob.message = "%s plays card %s" % (ob.bot_map[ob.position], ob.current[1] + " " + ob.current[0])
 
 # driver.py에서 7번째로 호출
-def bot_action(ob, sounds):
+def bot_action(ob, uno, sounds):
     """ AI 로직 구현 """
     ob.message = ""
     ob.uno[ob.position] = False # 플레이하는 AI의 UNO 외침 플래그를 초기화한다
@@ -219,7 +201,7 @@ def bot_action(ob, sounds):
 
                 ob.player_list[ob.position].remove(item)
 
-                set_curr_player(ob, False)
+                set_curr_player(ob, uno, False)
                 check = 1
                 break
 
@@ -263,7 +245,7 @@ def bot_action(ob, sounds):
                 ob.message = "%s shouted UNO!" % ob.bot_map[ob.position]
                 sounds.uno.play()
 
-# =====================================================================
+# =================================================================
 def text_format(message, textFont, textSize, textColor):
     newFont = pygame.font.SysFont(textFont, textSize)
     newText = newFont.render(message, True, textColor)
@@ -374,16 +356,16 @@ def main_menu(ob, uno):
         quit_rect = text_quit.get_rect()
 
         # 시작 화면에 사용할 수 있는 키 표시
-        up_rect= text_up.get_rect()
-        left_rect= text_left.get_rect()
-        right_rect= text_right.get_rect()
-        down_rect= text_down.get_rect()
-        enter_rect= text_enter.get_rect()
-        ups_rect= text_ups.get_rect()
-        lefts_rect= text_lefts.get_rect()
-        rights_rect= text_rights.get_rect()
-        downs_rect= text_downs.get_rect()
-        enters_rect= text_enters.get_rect()
+        up_rect = text_up.get_rect()
+        left_rect = text_left.get_rect()
+        right_rect = text_right.get_rect()
+        down_rect = text_down.get_rect()
+        enter_rect = text_enter.get_rect()
+        ups_rect = text_ups.get_rect()
+        lefts_rect = text_lefts.get_rect()
+        rights_rect = text_rights.get_rect()
+        downs_rect = text_downs.get_rect()
+        enters_rect = text_enters.get_rect()
 
 
         start_rect = pygame.Rect(uno.screen_width/2-50, int(uno.screen_height*0.4), 200, 50)
@@ -437,17 +419,17 @@ def set_start(ob, uno):
                 pygame.quit()
                 sys.exit()
             if event.type == KEYDOWN:
-                if event.key == K_UP:
+                if event.key == KEYS["up"]:
                     if selected <= 1:
                         selected = 1
                     else:
                         selected = selected - 1
-                elif event.key == K_DOWN:
-                    if selected >= 5:
-                        selected = 5
+                elif event.key == KEYS["down"]:
+                    if selected >= 6:
+                        selected = 6
                     else:
                         selected = selected + 1
-                if event.key == K_RETURN:
+                if event.key == KEYS["select"]:
                     if selected <= 1:
                         uno.playernum = 2
                         uno.background = pygame.image.load('./images/Main_background.png')
@@ -464,7 +446,11 @@ def set_start(ob, uno):
                         uno.playernum = 5
                         uno.background = pygame.image.load('./images/Main_background.png')
                         return set_players(ob, uno, uno.playernum)
-                    if selected >= 5:
+                    if selected == 5:
+                        uno.playernum = 6
+                        uno.background = pygame.image.load('./images/Main_background.png')
+                        return set_players(ob, uno, uno.playernum)
+                    if selected >= 6:
                         uno.background = pygame.image.load('./images/Main_background.png')
                         return "LOAD PAGE"
             if event.type == MOUSEBUTTONDOWN:
@@ -485,10 +471,15 @@ def set_start(ob, uno):
                     uno.playernum = 5
                     selected = 4
                     return set_players(ob, uno, uno.playernum)
+                elif six_rect.collidepoint(mouse_pos):
+                    uno.playernum = 6
+                    selected = 5
+                    return set_players(ob, uno, uno.playernum)
                 elif quit_rect.collidepoint(mouse_pos):
                     selected = 5
                     uno.background = pygame.image.load('./images/Main_background.png')
                     return "LOAD PAGE"
+        
         # 선택한 글자의 색을 빨간색으로 표시      
         if selected == 1:
             text_two = text_format("2 PLAYERS", uno.font, 50, (255,24,0))
@@ -507,6 +498,10 @@ def set_start(ob, uno):
         else:
             text_five = text_format("5 PLAYERS", uno.font, 50, (0,0,0))
         if selected == 5:
+            text_six = text_format("6 PLAYERS", uno.font, 50, (255,24,0))
+        else:
+            text_six = text_format("6 PLAYERS", uno.font, 50, (0,0,0))
+        if selected == 6:
             text_quit = text_format("BACK", uno.font, 50, (255,24,0))
         else:
             text_quit = text_format("BACK", uno.font, 50, (0,0,0))
@@ -515,23 +510,26 @@ def set_start(ob, uno):
         three_rect = text_three.get_rect()
         four_rect = text_four.get_rect()
         five_rect = text_five.get_rect()
+        six_rect = text_six.get_rect()
         quit_rect = text_quit.get_rect()
 
-        two_rect = pygame.Rect(int(uno.screen_width*(275/800)), int(uno.screen_height*(180/600)), 200, 50)
-        three_rect = pygame.Rect(int(uno.screen_width*(275/800)), int(uno.screen_height*(240/600)), 200, 50)
-        four_rect = pygame.Rect(int(uno.screen_width*(275/800)), int(uno.screen_height*(300/600)), 200, 50)
-        five_rect = pygame.Rect(int(uno.screen_width*(275/800)), int(uno.screen_height*(360/600)), 200, 50)
-        quit_rect = pygame.Rect(int(uno.screen_width*(325/800)), int(uno.screen_height*(420/600)), 200, 50)
+        two_rect = pygame.Rect(int(uno.screen_width*(275/800)), int(uno.screen_height*(150/600)), 200, 50)
+        three_rect = pygame.Rect(int(uno.screen_width*(275/800)), int(uno.screen_height*(210/600)), 200, 50)
+        four_rect = pygame.Rect(int(uno.screen_width*(275/800)), int(uno.screen_height*(270/600)), 200, 50)
+        five_rect = pygame.Rect(int(uno.screen_width*(275/800)), int(uno.screen_height*(330/600)), 200, 50)
+        six_rect = pygame.Rect(int(uno.screen_width*(275/800)), int(uno.screen_height*(390/600)), 200, 50)
+        quit_rect = pygame.Rect(int(uno.screen_width*(325/800)), int(uno.screen_height*(450/600)), 200, 50)
 
         uno.screen.blit(text_two, two_rect)
         uno.screen.blit(text_three, three_rect)
         uno.screen.blit(text_four, four_rect)
         uno.screen.blit(text_five, five_rect)
+        uno.screen.blit(text_six, six_rect)
         uno.screen.blit(text_quit, quit_rect)
         pygame.display.update()
 
 
-""" 컴퓨터 플레이어 수 설정 """
+""" 싱글 플레이어 모드 컴퓨터 이름 변경 화면 """
 def set_players(ob, uno, playernum):
     pygame.init()
     uno.background = pygame.image.load('./images/default.png')
@@ -548,17 +546,17 @@ def set_players(ob, uno, playernum):
                 pygame.quit()
                 sys.exit()
             if event.type == KEYDOWN:
-                if event.key == K_UP:
+                if event.key == KEYS["up"]:
                     if selected <= 1:
                         selected = 1
                     else:
                         selected = selected - 1
-                elif event.key == K_DOWN:
+                elif event.key == KEYS["down"]:
                     if selected >= uno.playernum:
                         selected = uno.playernum
                     else:
                         selected = selected + 1
-                if event.key == K_RETURN:
+                if event.key == KEYS["select"]:
                     if selected == uno.playernum:
                         # ob.play_mode = "IN GAME"
                         return "IN GAME"
@@ -574,65 +572,84 @@ def set_players(ob, uno, playernum):
                     elif selected == 4:
                         uno.background = pygame.image.load('./images/Main_background.png')
                         pass
+                    elif selected == 5:
+                        uno.background = pygame.image.load('./images/Main_background.png')
+                        pass
             if event.type == MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
-                if two_rect.collidepoint(mouse_pos):
+                if one_rect.collidepoint(mouse_pos):
                     selected = 1
                     pass
-                elif three_rect.collidepoint(mouse_pos):
+                elif two_rect.collidepoint(mouse_pos):
                     selected = 2
                     pass
-                elif four_rect.collidepoint(mouse_pos):
+                elif three_rect.collidepoint(mouse_pos):
                     selected = 3
                     pass
-                elif five_rect.collidepoint(mouse_pos):
+                elif four_rect.collidepoint(mouse_pos):
                     selected = 4
+                    pass
+                elif five_rect.collidepoint(mouse_pos):
+                    selected = 5
                     pass
                 elif start_rect.collidepoint(mouse_pos):
                     selected = uno.playernum
                     # ob.play_mode = "IN GAME"
                     return "IN GAME"
+        
         # 선택한 글자의 색을 빨간색으로 표시      
         if selected == 1:
-            text_two = text_format("COM 1", uno.font, 50, (255,24,0))
+            text_one = text_format("COM 1", uno.font, 50, (255,24,0))
         else:
-            text_two = text_format("COM 1", uno.font, 50, (0,0,0))
+            text_one = text_format("COM 1", uno.font, 50, (0,0,0))
         if selected == 2:
-            text_three = text_format("COM 2", uno.font, 50, (255,24,0))
+            text_two = text_format("COM 2", uno.font, 50, (255,24,0))
         else:
-            text_three = text_format("COM 2", uno.font, 50, (0,0,0))
+            text_two = text_format("COM 2", uno.font, 50, (0,0,0))
         if selected == 3:
-            text_four = text_format("COM 3", uno.font, 50, (255,24,0))
+            text_three = text_format("COM 3", uno.font, 50, (255,24,0))
         else:
-            text_four = text_format("COM 3", uno.font, 50, (0,0,0))                
+            text_three = text_format("COM 3", uno.font, 50, (0,0,0))                
         if selected == 4:
-            text_five = text_format("COM 4", uno.font, 50, (255,24,0))
+            text_four = text_format("COM 4", uno.font, 50, (255,24,0))
         else:
-            text_five = text_format("COM 4", uno.font, 50, (0,0,0))
+            text_four = text_format("COM 4", uno.font, 50, (0,0,0))
+        if selected == 5:
+            text_five = text_format("COM 5", uno.font, 50, (255,24,0))
+        else:
+            text_five = text_format("COM 5", uno.font, 50, (0,0,0))
         if selected == uno.playernum:
             text_start = text_format("START", uno.font, 50, (255,24,0))
         else:
             text_start = text_format("START", uno.font, 50, (0,0,0))
 
-        two_rect = pygame.Rect(int(uno.screen_width*(320/800)), int(uno.screen_height*(150/600)), 200, 50)
-        three_rect = pygame.Rect(int(uno.screen_width*(320/800)), int(uno.screen_height*(210/600)), 200, 50)
-        four_rect = pygame.Rect(int(uno.screen_width*(320/800)), int(uno.screen_height*(270/600)), 200, 50)
-        five_rect = pygame.Rect(int(uno.screen_width*(320/800)), int(uno.screen_height*(330/600)), 200, 50)
-        start_rect = pygame.Rect(int(uno.screen_width*(320/800)), int(uno.screen_height*(390/600)), 200, 50)
+        one_rect = pygame.Rect(int(uno.screen_width*(320/800)), int(uno.screen_height*(120/600)), 200, 50)
+        two_rect = pygame.Rect(int(uno.screen_width*(320/800)), int(uno.screen_height*(180/600)), 200, 50)
+        three_rect = pygame.Rect(int(uno.screen_width*(320/800)), int(uno.screen_height*(240/600)), 200, 50)
+        four_rect = pygame.Rect(int(uno.screen_width*(320/800)), int(uno.screen_height*(300/600)), 200, 50)
+        five_rect = pygame.Rect(int(uno.screen_width*(320/800)), int(uno.screen_height*(360/600)), 200, 50)
+        start_rect = pygame.Rect(int(uno.screen_width*(320/800)), int(uno.screen_height*(420/600)), 200, 50)
 
         if uno.playernum == 2:
-            uno.screen.blit(text_two, two_rect)
+            uno.screen.blit(text_one, one_rect)
             uno.screen.blit(text_start, start_rect)
         elif uno.playernum == 3:
+            uno.screen.blit(text_one, one_rect)
+            uno.screen.blit(text_two, two_rect)
+            uno.screen.blit(text_start, start_rect)
+        elif uno.playernum == 4:
+            uno.screen.blit(text_one, one_rect)
             uno.screen.blit(text_two, two_rect)
             uno.screen.blit(text_three, three_rect)
             uno.screen.blit(text_start, start_rect)
-        elif uno.playernum == 4:
+        elif uno.playernum == 5:
+            uno.screen.blit(text_one, one_rect)
             uno.screen.blit(text_two, two_rect)
             uno.screen.blit(text_three, three_rect)
             uno.screen.blit(text_four, four_rect)
             uno.screen.blit(text_start, start_rect)
-        elif uno.playernum == 5:
+        elif uno.playernum == 6:
+            uno.screen.blit(text_one, one_rect)
             uno.screen.blit(text_two, two_rect)
             uno.screen.blit(text_three, three_rect)
             uno.screen.blit(text_four, four_rect)

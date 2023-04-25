@@ -179,7 +179,7 @@ class UNOGame(object):
         self.difficulty = 1
         self.font = 'Berlin Sans FB'
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
-        pygame.display.set_caption("UNO!")
+        pygame.display.set_caption("UNOfficial")
         self.screen.fill(self.background_Color)
         self.screen.blit(self.background, (-30, -30))
         pygame.display.update()
