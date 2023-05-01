@@ -34,9 +34,6 @@ pen_check = False  # UNO 페널티 체크 플래그
 # 타이머 변수 세팅
 max_time = 10 # 플레이어에게 10초의 시간을 주고, 그 시간 안에 카드를 내지 않으면 자동으로 턴이 넘어간다
 
-# 카드 덱을 세팅하고, 버려진 카드덱에 카드 한장 놓았고, 플레이어들에게 카드를 배분한다
-create(ess)
-
 # 게임 루프
 while True:
     # 모든 발생하는 이벤트를 체크한다
@@ -50,21 +47,11 @@ while True:
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse = pygame.mouse.get_pos()  # 마우스 클릭 위치를 가져온다
 
-            if 0 < mouse[0] < width*(265/1000) and height*(205/600) < mouse[1] < height*(270/600) and ess.play_mode == PM.load: # 플레이 버튼
-                if music_on:
-                    sound.click.play()
-                ess.play_mode = PM.in_game # "IN GAME" 모드로 변경
-
-            if 0 < mouse[0] < width*(265/1000) and height*(340/600) < mouse[1] < height*(405/600) and ess.play_mode == PM.load: # 게임의 설명등이 담겨있는 info 버튼
-                if music_on:
-                    sound.click.play()
-                ess.play_mode = PM.setting
-
             if width*(10/1000) < mouse[0] < width*(42/1000) and height*(10/600) < mouse[1] < height*(42/1000) and (
                     ess.play_mode == PM.in_game or ess.play_mode == PM.setting): # 게임화면이나, Help 화면에서 뒤로가기 버튼
                 if music_on:
                     sound.click.play()
-                re_initialize(ess) # 게임을 모두 초기화하고, 다시 시작 화면으로 돌아가 초기화된 상태로 시작한다
+                re_initialize(ess, uno) # 게임을 모두 초기화하고, 다시 시작 화면으로 돌아가 초기화된 상태로 시작한다
                 uno.background = pygame.image.load('./images/Main_background.png')
                 uno.background = pygame.transform.scale_by(uno.background, (uno.screen_width/800, uno.screen_height/600))
                 uno.screen.blit(uno.background, (-30, -30))
@@ -81,7 +68,7 @@ while True:
                 win_dec = False # 다시 승자를 초기화
                 ess.play_mode = PM.load
 
-            if width*(960/1000) < mouse[0] < width and 0 < mouse[1] < height*(40/600):  # Music ON OFF 버튼
+            if width*(60/1000) < mouse[0] < width*(100/1000) and 0 < mouse[1] < height*(40/600):  # Music ON OFF 버튼
                 if music_on:
                     sound.click.play()
                 if music_on:
@@ -91,26 +78,26 @@ while True:
                     pygame.mixer.music.unpause() # 배경음악 다시 재생
                     music_on = True
 
-            if ess.player_playing:  # 유저가 카드 클릭 시, 동작 로직
-                if width*(850/1000) < mouse[0] < width*(916/1000) and height*(500/600) < mouse[1] < height*(565/600):  # UNO 버튼 클릭
+            if ess.player_playing:  # 유저가 플레이 중일 때, 동작 로직
+                if width*(640/1000) < mouse[0] < width*(706/1000) and height*(500/600) < mouse[1] < height*(565/600):  # UNO 버튼 클릭
                     if music_on:
                         sound.uno.play()
 
                     ess.uno[0] = True
 
-                if width*(775/1000) < mouse[0] < width*(840/1000) and height*(505/600) < mouse[1] < height*(570/600):  # 턴 종료 버튼
+                if width*(565/1000) < mouse[0] < width*(630/1000) and height*(505/600) < mouse[1] < height*(570/600):  # 턴 종료 버튼
                     if music_on:
                         sound.click.play()
                     ess.player_playing = False # 유저의 턴이 끝났다는 것을 알린다
                     ess.play_lag = 0
 
-                for i in range(int((width/1000)*625), int((width/1000)*625 - 50 * len(ess.player_list[0])), -50):  # 유저가 카드를 클릭했는지 감지
+                for i in range(int((width/1000)*425), int((width/1000)*425 - 50 * len(ess.player_list[0])), -50):  # 유저가 카드를 클릭했는지 감지
                     if i < mouse[0] < (i + 50) and height*(470/600) < mouse[1] < height*(585/600):
-                        play_this_card(ess, uno, ess.player_list[0][int(((width/1000)*625 - i) / 50)])
+                        play_this_card(ess, uno, ess.player_list[0][int(((width/1000)*425 - i) / 50)])
                         if music_on:
                             sound.card_played.play()
 
-                if width*(340/1000) < mouse[0] < width*(425/1000) and height*(240/600) < mouse[1] < height*(355/600): # 낼 카드가 없어 덱에서 카드를 뽑을 때
+                if width*(140/1000) < mouse[0] < width*(225/1000) and height*(140/600) < mouse[1] < height*(255/600): # 낼 카드가 없어 덱에서 카드를 뽑을 때
                     take_from_stack(ess)
                     if music_on:
                         sound.card_drawn.play()
@@ -150,10 +137,10 @@ while True:
     # 게임 화면 
     elif ess.play_mode == PM.in_game:
         # 승자가 생겼는지 체크
-        for i in ess.player_list:
-            if len(i) == 0: # 플레이어의 카드가 0장이면 승자가 생긴 것
+        for idx, item in enumerate(ess.player_list):
+            if (len(item) == 0 and ess.uno[idx] == True): # 플레이어의 카드가 0장이고, 전 턴에 UNO!를 외쳤을 경우 승자가 생긴 것이다
                 win_dec = True
-                ess.winner = ess.player_list.index(i) # 승자의 인덱스 저장
+                ess.winner = idx # 승자의 인덱스 저장
                 break
 
         # 처음 덱 섞는 소리
@@ -162,39 +149,59 @@ while True:
 
         # 필수적인 이미지 표현
         uno.screen.blit(img.bg, (0, 0))
-        uno.screen.blit(img.back, (width*(10/1000), height*(10/1000)))
-        uno.screen.blit(img.card_back, (width*(340/1000), height*(240/600)))
+        uno.screen.blit(img.back, (width*(10/1000), height*(10/1000))) # 뒤로가기 버튼
+        uno.screen.blit(img.card_back, (width*(140/1000), height*(140/600))) # 카드 덱 이미지
+        
         try: # 게임을 시작하면, 버려진 카드 덱에 놓이는 처음 카드 이미지를 표시한다
-            uno.screen.blit(pygame.image.load("./images/" + ess.current[1] + str(ess.current[0]) + ".png"), (width*(580/1000), height*(240/600)))
+            uno.screen.blit(pygame.image.load("./images/" + ess.current[1] + str(ess.current[0]) + ".png"), (width*(380/1000), height*(140/600)))
         except:
-            uno.screen.blit(pygame.image.load("./images/" + ess.current[1] + ".png"), (width*(580/1000), height*(240/600)))
-        uno.screen.blit(img.p1, (width*(290/1000), height*(30/600)))
-        uno.screen.blit(img.p2, (width*(865/1000), height*(90/600)))
-        uno.screen.blit(img.p3, (width*(55/1000), height*(440/600)))
-        uno.screen.blit(img.p4, (width*(675/1000), height*(490/600)))
+            uno.screen.blit(pygame.image.load("./images/" + ess.current[1] + ".png"), (width*(380/1000), height*(140/600)))
+        
+        # 유저와 컴퓨터 플레이어의 이미지를 표현한다
+        uno.screen.blit(img.p_user, (width*(475/1000), height*(490/600))) # 유저 플레이어 이미지
+        
+        text_user = pygame.font.Font(FONT.joe_fin, int(height*(20/600))).render("YOU", True, (255, 238, 46))
+        uno.screen.blit(text_user, [width*(490/1000), height*(460/600)])
+        
+        for i in range(len(ess.player_list[0])): # 유저 플레이어의 카드 이미지
+            uno.screen.blit(
+                pygame.image.load("./images/" + ess.player_list[0][i][1] + str(ess.player_list[0][i][0]) + ".png"), (width*((390 - 50 * i)/1000), height*(470/600)))
 
-        text = pygame.font.Font(FONT.joe_fin, int(height*(20/600))).render("YOU", True, (255, 238, 46))
-        uno.screen.blit(text, [width*(690/1000), height*(460/600)])
-        text = pygame.font.Font(FONT.joe_fin, int(height*(20/600))).render(ess.bot_map[2], True, (255, 238, 46))
-        uno.screen.blit(text, [width*(295/1000), height*(4/600)])
-        text = pygame.font.Font(FONT.joe_fin, int(height*(20/600))).render(ess.bot_map[3], True, (255, 238, 46))
-        uno.screen.blit(text, [width*(870/1000), height*(60/600)])
-        text = pygame.font.Font(FONT.joe_fin, int(height*(20/600))).render(ess.bot_map[1], True, (255, 238, 46))
-        uno.screen.blit(text, [width*(60/1000), height*(410/600)])
+        text_p1 = pygame.font.Font(FONT.joe_fin, int(height*(20/600))).render(ess.bot_map[1], True, (255, 238, 46))
+        text_p2 = pygame.font.Font(FONT.joe_fin, int(height*(20/600))).render(ess.bot_map[2], True, (255, 238, 46))
+        text_p3 = pygame.font.Font(FONT.joe_fin, int(height*(20/600))).render(ess.bot_map[3], True, (255, 238, 46))
+        text_p4 = pygame.font.Font(FONT.joe_fin, int(height*(20/600))).render(ess.bot_map[4], True, (255, 238, 46))
+        text_p5 = pygame.font.Font(FONT.joe_fin, int(height*(20/600))).render(ess.bot_map[5], True, (255, 238, 46))
+
+        # 컴퓨터 플레이어들의 초기 카드 이미지 표시 -> Back_computer.png
+        if uno.player_num >= 2:
+            uno.screen.blit(img.p1, (width*(940/1000), height*(10/600))) # JARVIS 이미지
+            uno.screen.blit(text_p1, [width*(860/1000), height*(10/600)]) # JARVIS 텍스트 표시
+            for i in range(len(ess.player_list[1])): # JARVIS의 카드 이미지
+                uno.screen.blit(img.card_back_computer, (width*((940 - 20 * i)/1000), height*(60/600)))
+            if uno.player_num >= 3:
+                uno.screen.blit(img.p2, (width*(940/1000), height*(130/600))) # EDITH 이미지
+                uno.screen.blit(text_p2, [width*(860/1000), height*(130/600)]) # EDITH 텍스트 표시
+                for i in range(len(ess.player_list[2])): # EDITH의 카드 이미지
+                    uno.screen.blit(img.card_back_computer, (width*((940 - 20 * i)/1000), height*(180/600)))
+                if uno.player_num >= 4:
+                    uno.screen.blit(img.p3, (width*(940/1000), height*(250/600))) # FRIDAY 이미지
+                    uno.screen.blit(text_p3, [width*(860/1000), height*(250/600)]) # FRIDAY 텍스트 표시
+                    for i in range(len(ess.player_list[3])): # FRIDAY의 카드 이미지
+                        uno.screen.blit(img.card_back_computer, (width*((940 - 20 * i)/1000), height*(300/600)))
+                    if uno.player_num >= 5:
+                        uno.screen.blit(img.p4, (width*(940/1000), height*(370/600))) # BRIAN 이미지
+                        uno.screen.blit(text_p4, [width*(860/1000), height*(370/600)]) # BRIAN 텍스트 표시
+                        for i in range(len(ess.player_list[4])): # BRIAN의 카드 이미지
+                            uno.screen.blit(img.card_back_computer, (width*((940 - 20 * i)/1000), height*(420/600)))
+                        if uno.player_num >= 6:
+                            uno.screen.blit(img.p5, (width*(940/1000), height*(490/600))) # SWIFT 이미지
+                            uno.screen.blit(text_p5, [width*(860/1000), height*(490/600)]) # SWIFT 텍스트 표시
+                            for i in range(len(ess.player_list[5])): # SWIFT의 카드 이미지
+                                uno.screen.blit(img.card_back_computer, (width*((940 - 20 * i)/1000), height*(540/600)))
 
         text = pygame.font.Font(FONT.joe_fin, int(height*(20/600))).render(ess.message, True, (255, 238, 46))
-        uno.screen.blit(text, [width*(340/1000), height*(210/600)])
-
-        # 각 플레이어들의 초기 카드 배치
-        for i in range(len(ess.player_list[1])):
-            uno.screen.blit(img.card_back_l, (width*(40/1000), height*((315 - 30 * i)/600))) # Back_left.png
-        for i in range(len(ess.player_list[2])):
-            uno.screen.blit(img.card_back_i, (width*((380 + 30 * i)/1000), height*(20/600))) # Back_inverted.png
-        for i in range(len(ess.player_list[3])):
-            uno.screen.blit(img.card_back_r, (width*(845/1000), height*((190 + 30 * i)/600))) # Back_right.png
-        for i in range(len(ess.player_list[0])):
-            uno.screen.blit(
-                pygame.image.load("./images/" + ess.player_list[0][i][1] + str(ess.player_list[0][i][0]) + ".png"), (width*((590 - 50 * i)/1000), height*(470/600)))
+        uno.screen.blit(text, [width*(140/1000), height*(110/600)]) # 게임 진행 메시지
 
         if ess.choose_color: # 유저가 와일드 카드를 냈으면, 색깔을 선택할 수 있게 이미지를 표시한다
             uno.screen.blit(img.red, (width*(395/1000), height*(390/600)))
@@ -202,7 +209,7 @@ while True:
             uno.screen.blit(img.blue, (width*(505/1000), height*(390/600)))
             uno.screen.blit(img.yellow, (width*(560/1000), height*(390/600)))
 
-        uno.screen.blit(img.uno_button, (width*(850/1000), height*(500/600))) # -> 일단 플레이어의 UNO 버튼은 항상 표시되게 함
+        uno.screen.blit(img.uno_button, (width*(640/1000), height*(500/600))) # -> 일단 플레이어의 UNO 버튼은 항상 표시되게 함
 
         # Play Flow, 플레이 흐름
         if ess.player_playing: # 유저가 플레이하고 있으면 True, 아니면 False
@@ -211,7 +218,7 @@ while True:
                 ess.play_lag = 0
             else:
                 text = pygame.font.Font(FONT.joe_fin, int(height*(20/600))).render(str(max_time - ess.play_lag//40), True, (255, 238, 46))
-                uno.screen.blit(text, [width*(690/1000), height*(400/600)])
+                uno.screen.blit(text, [width*(550/1000), height*(460/600)])
                 
                 ess.message = ""
 
@@ -250,10 +257,11 @@ while True:
                         ess.player_playing = False
 
                 # img.line은 현재 플레이 해야할 플레이어를 표시하고, 유저는 체크 버튼과 UNO 버튼이 추가로 표시된다
-                uno.screen.blit(img.line, (width*(682/1000), height*(550/600)))
-                uno.screen.blit(img.done, (width*(775/1000), height*(505/600)))
+                uno.screen.blit(img.line, (width*(482/1000), height*(550/600)))
+                uno.screen.blit(img.done, (width*(565/1000), height*(505/600)))
                 
-                ess.play_lag += 1 # 게임의 FPS마다 1씩 증가한다
+                if ess.play_mode != "GAME PAUSE":
+                    ess.play_lag += 1 # 게임의 FPS마다 1씩 증가한다
 
         else: # AI가 플레이 중이면
             if ess.play_lag == 140:  # 플레이어 간의 행동 사이에 지연을 구현한다
@@ -294,19 +302,17 @@ while True:
                         ess.message = "Penalty!"
                         ess.uno[ess.position] = True
                     pen_check = True
-
-                ess.play_lag += 1 # 게임의 FPS마다 1씩 증가한다
+                if ess.play_mode != "GAME PAUSE":
+                    ess.play_lag += 1 # 게임의 FPS마다 1씩 증가한다
 
                 if not disp: # disp을 True로 한다?
                     disp = True
 
                 # 현재 턴의 플레이어를 표시한다
-                if (ess.position + ess.direction_check) % 4 == 1:
-                    uno.screen.blit(img.line, (width*(67/1000), height*(512/600)))
-                elif (ess.position + ess.direction_check) % 4 == 2:
-                    uno.screen.blit(img.line, (width*(293/1000), height*(85/600)))
-                elif (ess.position + ess.direction_check) % 4 == 3:
-                    uno.screen.blit(img.line, (width*(870/1000), height*(145/600)))
+                Flag_line = (ess.position + ess.direction_check) % uno.player_num
+                for i in range(1, uno.player_num):
+                    if Flag_line == i:
+                        uno.screen.blit(img.line, (width*(860/1000), height*((-110 + i * 120)/600)))
 
     # SETTING 화면
     elif ess.play_mode == PM.setting or ess.play_mode == PM.key or ess.play_mode == PM.volume:
@@ -347,9 +353,9 @@ while True:
 
     # 배경음악 / 효과음 토글 버튼
     if music_on:
-        uno.screen.blit(img.mute, (width*(960/1000), height*(8/600)))
+        uno.screen.blit(img.mute, (width*(60/1000), height*(10/600)))
     else:
-        uno.screen.blit(img.unmute, (width*(960/1000), height*(8/600)))
+        uno.screen.blit(img.unmute, (width*(60/1000), height*(10/600)))
 
     # 화면 지속적으로 갱신
     pygame.display.update()

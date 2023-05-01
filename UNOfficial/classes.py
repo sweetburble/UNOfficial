@@ -52,7 +52,7 @@ elif saves["size"] == 'small':
 
 class Essentials(object):
     def __init__(self):
-        self.player_list = [[], [], [], []]  # 2차원 리스트 생성 -> 플레이어들의 카드를 저장하기 위해서
+        self.player_list = []  # 2차원 리스트 생성 -> 플레이어들의 카드를 저장하기 위해서
         self.deck1 = list() # deck1 =  카드 덱
         self.deck2 = list() # deck2 =  버려진 카드 덱
         
@@ -72,8 +72,7 @@ class Essentials(object):
         self.special_check = 0  # 기술 카드 상태 활성화, 1은 비활성화
         self.uno = [True] * 4  # 각 플레이어가 UNO를 외쳤는지 저장하는 플래그
         self.message = "DEALING THE CARDS"  # 인게임 메세지, 한글은 폰트 문제로 인해 사용 불가
-        self.easy = False  # 게임 난이도
-        self.bot_map = {1: "FRIDAY", 2: "EDITH", 3: "JARVIS"}  # AI 인덱스를 이름으로 인덱싱
+        self.bot_map = {1: "JARVIS", 2: "EDITH", 3: "FRIDAY", 4: "BRIAN", 5: "SWIFT"}  # AI 인덱스를 이름으로 인덱싱
         self.color = ['Blue', 'Red', 'Green', 'Yellow']  # 카드 색깔들
 
 
@@ -87,6 +86,7 @@ class PlayMode(object):
         self.key = "KEY CONFIGURATION"
         self.stroy = "STORY MODE"
         self.volume = "VOLUME"
+        self.pause = "GAME PAUSE"
 
 
 class Image(object):
@@ -106,17 +106,24 @@ class Image(object):
         unmute = pygame.image.load("./images/unmute.png")
         self.unmute = pygame.transform.scale_by(unmute, (width/1000, height/600))
         
-        p1 = pygame.image.load("./images/woman.png")
+        p_user = pygame.image.load("./images/man_1.png") # 유저 플레이어 이미지
+        self.p_user = pygame.transform.scale_by(p_user, (width/1000, height/600))
+
+        p1 = pygame.image.load("./images/man.png") # JARVIS
         self.p1 = pygame.transform.scale_by(p1, (width/1000, height/600))
-        p2 = pygame.image.load("./images/man.png")
+        p2 = pygame.image.load("./images/woman.png") # EDITH
         self.p2 = pygame.transform.scale_by(p2, (width/1000, height/600))
-        p3 = pygame.image.load("./images/woman (1).png")
+        p3 = pygame.image.load("./images/woman_1.png") # FRIDAY
         self.p3 = pygame.transform.scale_by(p3, (width/1000, height/600))
-        p4 = pygame.image.load("./images/man (1).png")
+        p4 = pygame.image.load("./images/man_2.png") # BRIAN
         self.p4 = pygame.transform.scale_by(p4, (width/1000, height/600))
+        p5 = pygame.image.load("./images/woman_2.png") # SWIFT
+        self.p5 = pygame.transform.scale_by(p5, (width/1000, height/600))
         
         card_back = pygame.image.load("./images/Back.png")
         self.card_back = pygame.transform.scale_by(card_back, (width/1000, height/600))
+        card_back_computer = pygame.image.load("./images/Back_computer.png") # 컴퓨터 플레이어의 카드를 표시할 이미지
+        self.card_back_computer = pygame.transform.scale_by(card_back_computer, (width/1000, height/600))
         card_back_l = pygame.image.load("./images/Back_left.png")
         self.card_back_l = pygame.transform.scale_by(card_back_l, (width/1000, height/600))
         card_back_r = pygame.image.load("./images/Back_right.png")
@@ -175,8 +182,7 @@ class UNOGame(object):
         self.background = pygame.transform.scale_by(background, (self.screen_width/800, self.screen_height/600))
         self.background_Color = (0,66,0)
 
-        self.playernum = 2
-        self.difficulty = 1
+        self.player_num = 2
         self.font = 'Berlin Sans FB'
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
         pygame.display.set_caption("UNOfficial")

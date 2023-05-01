@@ -188,7 +188,7 @@ def test_handle_black(ess):
             assert ess.current == ('+4', 'Green')
 
 """ bot_action() 함수 테스트 """
-def test_bot_action(ess, sound):
+def t_estbot_action(ess, sound):
     # 1. 전 플레이어가 +1, +2, +4 카드를 냈다면, 카드를 받고 그냥 턴을 넘긴다
     ess.position = 1
     ess.current = ('+1', 'Red')
