@@ -31,7 +31,7 @@ class UNOGame():
 
     def main_menu(self):
         menu = True
-        selected = 3
+        selected = 1
 
         
         while menu:
@@ -42,26 +42,33 @@ class UNOGame():
                     sys.exit()
                 if event.type == KEYDOWN:
                     if event.key == K_DOWN:
-                        if selected <= 3:
-                            selected = 3
+                        if selected <= 1:
+                            selected = 1
                         else:
                             selected = selected - 1
                     elif event.key == K_UP:
-                        if selected >= 4:
-                            selected = 4
+                        if selected >= 3:
+                            selected = 3
                         else:
                             selected = selected + 1
                     if event.key == K_RETURN: # K_RETURN은 엔터키
+                        if selected == 1:
+                            #실행할 내용
+                            pass
+                        if selected == 2:
+                            #실행할 내용
+                            pass
                         if selected == 3:
                             #실행할 내용
                             pass
                         if selected >= 4:
-                   
-                  
                             pass
                 if event.type == MOUSEBUTTONDOWN:
                     mouse_pos = pygame.mouse.get_pos()
-                    if  MAP2_rect.collidepoint(mouse_pos):
+                    if  MAP1_rect.collidepoint(mouse_pos):
+                        selected = 1
+                        pass
+                    elif  MAP2_rect.collidepoint(mouse_pos):
                         selected = 2
                         pass
                     elif  MAP3_rect.collidepoint(mouse_pos):
@@ -73,17 +80,17 @@ class UNOGame():
                        
 
             if selected == 1:
-                text_MAP1 = self.text_format("CHALLENGE", self.font, 50, (0,0,0))
+                text_MAP1 = self.text_format("CLEAR!", self.font, 50, (0,0,0))
             else:
-                text_MAP1 = self.text_format("CLEAR!", self.font, 50, (0, 0, 255))
+                text_MAP1 = self.text_format("CLEAR!", self.font, 50, (255, 255, 255))
 
             if selected == 2:
-                text_MAP2 = self.text_format("CHALLENGE", self.font, 50, (0,0,0))
+                text_MAP2 = self.text_format("CLEAR!", self.font, 50, (0,0,0))
             else:
-                text_MAP2 = self.text_format("CLEAR!", self.font, 50, (0, 0, 255))
+                text_MAP2 = self.text_format("CLEAR!", self.font, 50, (255, 255, 255))
 
             if selected == 3:
-                text_MAP3 = self.text_format("CHALLENGE", self.font, 50, (0,0,0))
+                text_MAP3 = self.text_format("CHALLENGE", self.font, 50, (0,0,255))
             else:
                 text_MAP3 = self.text_format("CHALLENGE", self.font, 50, (255, 255, 255))
 
@@ -106,7 +113,6 @@ class UNOGame():
             self.screen.blit(text_MAP1, MAP1_rect)
             self.screen.blit(text_MAP2, MAP2_rect)
             self.screen.blit(text_MAP3, MAP3_rect)
-            self.screen.blit(text_MAP4, MAP4_rect)
 
             pygame.display.update()
             self.clock.tick(self.FPS)
