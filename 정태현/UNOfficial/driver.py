@@ -61,7 +61,7 @@ while True:
             if width*(420/1000) < mouse[0] < width*(555/1000) and height*(425/600) < mouse[1] < height*(543/600) and ess.play_mode == PM.win: # 게임이 누군가의 승리로 끝나면 보이는 홈 버튼
                 if music_on:
                     sound.click.play()
-                re_initialize(ess)
+                re_initialize(ess, uno)
                 uno.background = pygame.image.load('./images/Main_background.png')
                 uno.background = pygame.transform.scale_by(uno.background, (uno.screen_width/800, uno.screen_height/600))
                 uno.screen.blit(uno.background, (-30, -30))
@@ -79,19 +79,21 @@ while True:
                     music_on = True
 
             if ess.player_playing:  # 유저가 플레이 중일 때, 동작 로직
-                if width*(640/1000) < mouse[0] < width*(706/1000) and height*(500/600) < mouse[1] < height*(565/600):  # UNO 버튼 클릭
+                if width*(640/1000) < mouse[0] < width*(706/1000) and height*(500/600) < mouse[1] < height*(565/600):  
+                    # UNO 버튼 클릭
                     if music_on:
                         sound.uno.play()
 
-                    ess.uno[0] = True
+                    ess.shouted_uno[0] = True
 
-                if width*(565/1000) < mouse[0] < width*(630/1000) and height*(505/600) < mouse[1] < height*(570/600):  # 턴 종료 버튼
+                # 턴 종료 버튼
+                if width*(565/1000) < mouse[0] < width*(630/1000) and height*(505/600) < mouse[1] < height*(570/600): 
                     if music_on:
                         sound.click.play()
                     ess.player_playing = False # 유저의 턴이 끝났다는 것을 알린다
                     ess.play_lag = 0
 
-                for i in range(int((width/1000)*425), int((width/1000)*425 - 50 * len(ess.player_list[0])), -50):  # 유저가 카드를 클릭했는지 감지
+                for i in range(int((width/1000)*425), int((width/1000)*425 - 50 * len(ess.player_list[0])), -50): # 유저가 카드를 클릭했는지 감지
                     if i < mouse[0] < (i + 50) and height*(470/600) < mouse[1] < height*(585/600):
                         play_this_card(ess, uno, ess.player_list[0][int(((width/1000)*425 - i) / 50)])
                         if music_on:
@@ -124,7 +126,6 @@ while True:
                     play_this_card_2(ess, "Yellow")
                     if music_on:
                         sound.click.play()
-    
 
     # 시작 화면
     if ess.play_mode == PM.load:
@@ -136,9 +137,10 @@ while True:
 
     # 게임 화면 
     elif ess.play_mode == PM.in_game:
+        
         # 승자가 생겼는지 체크
         for idx, item in enumerate(ess.player_list):
-            if (len(item) == 0 and ess.uno[idx] == True): # 플레이어의 카드가 0장이고, 전 턴에 UNO!를 외쳤을 경우 승자가 생긴 것이다
+            if len(item) == 0: # 플레이어의 카드가 0장이면 게임에서 승리한다.
                 win_dec = True
                 ess.winner = idx # 승자의 인덱스 저장
                 break
@@ -160,8 +162,8 @@ while True:
         # 유저와 컴퓨터 플레이어의 이미지를 표현한다
         uno.screen.blit(img.p_user, (width*(475/1000), height*(490/600))) # 유저 플레이어 이미지
         
-        text_user = pygame.font.Font(FONT.joe_fin, int(height*(20/600))).render("YOU", True, (255, 238, 46))
-        uno.screen.blit(text_user, [width*(490/1000), height*(460/600)])
+        text_user = pygame.font.Font(FONT.joe_fin, int(height*(20/600))).render(ess.bot_map[6], True, (255, 238, 46))
+        uno.screen.blit(text_user, [width*(490/1000), height*(460/600)]) # 유저 이름 텍스트
         
         for i in range(len(ess.player_list[0])): # 유저 플레이어의 카드 이미지
             uno.screen.blit(
@@ -194,7 +196,7 @@ while True:
                         uno.screen.blit(text_p4, [width*(860/1000), height*(370/600)]) # BRIAN 텍스트 표시
                         for i in range(len(ess.player_list[4])): # BRIAN의 카드 이미지
                             uno.screen.blit(img.card_back_computer, (width*((940 - 20 * i)/1000), height*(420/600)))
-                        if uno.player_num >= 6:
+                        if uno.player_num == 6:
                             uno.screen.blit(img.p5, (width*(940/1000), height*(490/600))) # SWIFT 이미지
                             uno.screen.blit(text_p5, [width*(860/1000), height*(490/600)]) # SWIFT 텍스트 표시
                             for i in range(len(ess.player_list[5])): # SWIFT의 카드 이미지
@@ -211,6 +213,12 @@ while True:
 
         uno.screen.blit(img.uno_button, (width*(640/1000), height*(500/600))) # -> 일단 플레이어의 UNO 버튼은 항상 표시되게 함
 
+        for i in range(1, uno.player_num):
+            if ess.shouted_uno[0] == True:
+                uno.screen.blit(img.shouted, (width*(490/1000), height*(400/600)))
+            if (ess.shouted_uno[i] == True):
+                uno.screen.blit(img.shouted, (width*(800/1000), height*(120 * (i - 1)/600)))
+
         # Play Flow, 플레이 흐름
         if ess.player_playing: # 유저가 플레이하고 있으면 True, 아니면 False
             if ess.play_lag == 400: # 약 10초 타이머
@@ -223,6 +231,7 @@ while True:
                 ess.message = ""
 
                 if not ess.drawn and not ess.played:  # Checking for previous special card overheads, 이전에 기술 카드를 냈는지 확인
+
                     if ess.current[0] == '+1' and ess.special_check == 0:  # Draw 1
                         for _ in range(1):
                             try:
@@ -232,6 +241,7 @@ while True:
                                 random.shuffle(ess.deck1)
                                 ess.player_list[0].append(ess.deck1.pop())
                         ess.special_check = 1
+                        ess.shouted_uno[0] = False
                         ess.player_playing = False
                     
                     elif ess.current[0] == '+2' and ess.special_check == 0:  # Draw 2
@@ -243,6 +253,7 @@ while True:
                                 random.shuffle(ess.deck1)
                                 ess.player_list[0].append(ess.deck1.pop())
                         ess.special_check = 1
+                        ess.shouted_uno[0] = False
                         ess.player_playing = False
 
                     elif ess.current[0] == '+4' and ess.special_check == 0:  # Draw 4
@@ -254,13 +265,26 @@ while True:
                                 random.shuffle(ess.deck1)
                                 ess.player_list[0].append(ess.deck1.pop())
                         ess.special_check = 1
+                        ess.shouted_uno[0] = False
                         ess.player_playing = False
+                    
+                    if len(ess.player_list[0]) == 1 and ess.shouted_uno[0] == False:
+                        # 전에 UNO를 외치지 않았는데, 1장 남았다면,
+                        try: 
+                            ess.player_list[0].append(ess.deck1.pop()) # 페널티로 덱에서 카드 한장을 뽑는다.
+                        except:
+                            ess.deck1, ess.deck2 = ess.deck2, ess.deck1
+                            random.shuffle(ess.deck1)
+                            ess.player_list[0].append(ess.deck1.pop())
+                            ess.message = "You didn't shout UNO! Penalty card drawn."
+                            text = pygame.font.Font(FONT.joe_fin, int(height*(20/600))).render(ess.message, True, (255, 238, 46))
+                            uno.screen.blit(text, [width*(140/1000), height*(110/600)]) # 게임 진행 메시지
 
                 # img.line은 현재 플레이 해야할 플레이어를 표시하고, 유저는 체크 버튼과 UNO 버튼이 추가로 표시된다
                 uno.screen.blit(img.line, (width*(482/1000), height*(550/600)))
                 uno.screen.blit(img.done, (width*(565/1000), height*(505/600)))
                 
-                if ess.play_mode != "GAME PAUSE":
+                if ess.play_mode != "GAME PAUSE": # 게임이 일시정지 상태가 아니면
                     ess.play_lag += 1 # 게임의 FPS마다 1씩 증가한다
 
         else: # AI가 플레이 중이면
@@ -273,7 +297,7 @@ while True:
 
                 # 그게 유저의 턴이면
                 if ess.position == 0:
-                    ess.uno[0] = False # 유저 플레이어가 UNO를 외쳤는지 저장하는 플래그를 초기화한다
+                    # ess.shouted_uno[0] = False # 유저 플레이어가 UNO를 외쳤는지 저장하는 플래그를 초기화한다
                     ess.player_playing = True # 유저가 플레이 중임을 표시한다
 
                 else: # 다음 플레이어가 AI라면
@@ -291,24 +315,24 @@ while True:
                     ess.play_mode = PM.win
 
                 if not pen_check: # 페널티 체크 플래그, 게임이 처음 시작할 때는 False였다
-                    if ess.position != -1 and len(ess.player_list[ess.position]) == 1 and not ess.uno[ess.position]: # 1장 남았는데, UNO를 외치지 않으면
-                        try: 
-                            ess.player_list[ess.position].append(ess.deck1.pop()) # 페널티로 덱에서 카드 한장을 뽑는다.
-                        except:
-                            ess.deck1, ess.deck2 = ess.deck2, ess.deck1
-                            random.shuffle(ess.deck1)
-                            ess.player_list[ess.position].append(ess.deck1.pop())
+                    for i in range(1, uno.player_num):
+                        if ess.position == i and len(ess.player_list[i]) == 1 and not ess.shouted_uno[i]: # 1장 남았는데, UNO를 외치지 않으면
+                            try: 
+                                ess.player_list[i].append(ess.deck1.pop()) # 페널티로 덱에서 카드 한장을 뽑는다.
+                            except:
+                                ess.deck1, ess.deck2 = ess.deck2, ess.deck1
+                                random.shuffle(ess.deck1)
+                                ess.player_list[i].append(ess.deck1.pop())
 
-                        ess.message = "Penalty!"
-                        ess.uno[ess.position] = True
-                    pen_check = True
-                if ess.play_mode != "GAME PAUSE":
+                            ess.message = "Penalty!"
+                            pen_check = True
+                if ess.play_mode != "GAME PAUSE": # 게임이 일시정지 상태가 아니면
                     ess.play_lag += 1 # 게임의 FPS마다 1씩 증가한다
 
                 if not disp: # disp을 True로 한다?
                     disp = True
 
-                # 현재 턴의 플레이어를 표시한다
+                # 현재 턴의 플레이어를 검정 선 이미지로 표시한다
                 Flag_line = (ess.position + ess.direction_check) % uno.player_num
                 for i in range(1, uno.player_num):
                     if Flag_line == i:

@@ -2,6 +2,7 @@ import itertools
 import random
 import pygame
 import sys
+import pygame_gui
 from pygame.locals import *
 
 KEYS = {} # 키 설정이 저장된 딕셔너리
@@ -34,7 +35,7 @@ def create(Object, uno):
     for _ in range(uno.player_num):
         Object.player_list.append([]) # 플레이어 수만큼 2차원 리스트 생성 -> 플레이어들의 카드를 저장하기 위해서
     
-    Object.uno = [True] * uno.player_num # 각 플레이어가 UNO를 외쳤는지 저장하는 플래그
+    Object.shouted_uno = [False] * uno.player_num # 각 플레이어가 UNO를 외쳤는지 저장하는 플래그
 
     a = ('0', '1', '1', '2', '2', '3', '3', '4', '4', '5', '5', '6', '6', '7', '7', '8', '8', '9', '9',
             '+1', '+1', '+2', '+2', '+4', 'Skip', 'Skip', 'Reverse', 'Reverse') # 색깔 +1, +4 기술 카드 추가
@@ -56,7 +57,7 @@ def create(Object, uno):
     Object.current = peek(Object.deck2) # 버려진 카드 덱의 peek
 
     for j in range(uno.player_num):  # 모든 플레이어에게 카드를 7장씩 나누어 준다
-        for _ in range(7):
+        for _ in range(2):
             Object.player_list[j].append(Object.deck1.pop())
 
     # Object.player_list[0] = [('Wild', 'Black'), ('+4', 'Black'), ('Skip', 'Red'), ('Reverse', 'Green'), ("+2", "Blue")]
@@ -92,7 +93,7 @@ def re_initialize(ob, uno):
     ob.special_check = 0  # Flag to check status of special card
     ob.current = tuple()
     ob.drawn, ob.played, ob.choose_color = False, False, False
-    ob.uno = [True] * 4
+    ob.shouted_uno = [False] * 4
 
 # driver.py에서 5번째로 호출
 def take_from_stack(ob):
@@ -182,15 +183,24 @@ def bot_play_card(ob, item):
 def bot_action(ob, uno, sounds):
     """ AI 로직 구현 """
     ob.message = ""
-    ob.uno[ob.position] = False # 플레이하는 AI의 UNO 외침 플래그를 초기화한다
+    ob.shouted_uno[ob.position] = False # 플레이하는 AI의 UNO 외침 플래그를 초기화한다
     ob.played_check = 0 # ??
-    
+
     # 버려진 카드 덱의 맨 위에 있는 기술 카드가 +2 또는 +4이고, 기술 카드 상태가 활성화 되었다면
     if (ob.current[0] == '+1' or ob.current[0] == '+2' or ob.current[0] == '+4') and ob.special_check == 0:
         handle24(ob, int(ob.current[0][1]))
         ob.played_check = 1
 
     else:
+        if (ob.played_check != 1 and len(ob.player_list[ob.position]) == 2):
+            pygame.mixer.pre_init(44100, -16, 1, 512)
+            wait_time = random.randint(1000, 2000)
+            pygame.time.delay(wait_time) # 1~2초 동안 기다린 다음, 우노를 외친다!
+            sounds.uno.play()
+
+            ob.shouted_uno[ob.position] = True
+            ob.message = "%s shouted UNO!" % ob.bot_map[ob.position]
+
         check = 0
         for item in ob.player_list[ob.position]: # AI가 가지고 있는 카드 중에서
             if ob.current[1] == item[1] or ob.current[0] == item[0]: # 색깔이나 숫자가 같은 카드가 있다면
@@ -231,14 +241,6 @@ def bot_action(ob, uno, sounds):
                     bot_play_card(ob, new_card)
                 else:
                     ob.player_list[ob.position].append(new_card)
-        
-        if len(ob.player_list[ob.position]) == 1:
-            wait_time = random.randint(1000, 2000)
-
-            pygame.time.delay(wait_time) # 1~2초 동안 기다린 다음, 우노를 외친다!
-            ob.uno[ob.position] = True
-            ob.message = "%s shouted UNO!" % ob.bot_map[ob.position]
-            sounds.uno.play()
 
 # =================================================================
 def text_format(message, textFont, textSize, textColor):
@@ -543,11 +545,26 @@ def set_players(ob, uno, player_num):
     uno.player_num = player_num
     uno.screen.blit(uno.background, (-100, -70))
     selected = 1
-    
+
+    MANAGER = pygame_gui.UIManager((uno.screen_width, uno.screen_height))
+
+    if uno.player_num >= 2:
+        TEXT_INPUT_MY = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((int(uno.screen_width*(450/800)), int(uno.screen_height*(420/600))), (200, 50)), manager=MANAGER, object_id="#my_text_entry")
+        TEXT_INPUT1 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((int(uno.screen_width*(450/800)), int(uno.screen_height*(120/600))), (200, 50)), manager=MANAGER, object_id="#com1_text_entry")
+        if uno.player_num >= 3:
+            TEXT_INPUT2 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((int(uno.screen_width*(450/800)), int(uno.screen_height*(180/600))), (200, 50)), manager=MANAGER, object_id="#com2_text_entry")
+            if uno.player_num >= 4:
+                TEXT_INPUT3 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((int(uno.screen_width*(450/800)), int(uno.screen_height*(240/600))), (200, 50)), manager=MANAGER, object_id="#com3_text_entry")
+                if uno.player_num >= 5:
+                    TEXT_INPUT4 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((int(uno.screen_width*(450/800)), int(uno.screen_height*(300/600))), (200, 50)), manager=MANAGER, object_id="#com4_text_entry")
+                    if uno.player_num == 6:
+                        TEXT_INPUT5 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((int(uno.screen_width*(450/800)), int(uno.screen_height*(360/600))), (200, 50)), manager=MANAGER, object_id="#com5_text_entry")
+
     while True:
         pygame.mixer.pre_init(44100, -16, 1, 512)
-        pygame.init()
+        
         for event in pygame.event.get():
+            MANAGER.process_events(event)
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
@@ -565,42 +582,34 @@ def set_players(ob, uno, player_num):
                 if event.key == KEYS["select"]:
                     if selected == uno.player_num:
                         return "IN GAME"
-                    elif selected == 1:
-                        uno.background = pygame.image.load('./images/Main_background.png')
-                        pass
-                    elif selected == 2:
-                        uno.background = pygame.image.load('./images/Main_background.png')
-                        pass
-                    elif selected == 3:
-                        uno.background = pygame.image.load('./images/Main_background.png')
-                        pass
-                    elif selected == 4:
-                        uno.background = pygame.image.load('./images/Main_background.png')
-                        pass
-                    elif selected == 5:
-                        uno.background = pygame.image.load('./images/Main_background.png')
-                        pass
             if event.type == MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
                 if one_rect.collidepoint(mouse_pos):
                     selected = 1
-                    pass
                 elif two_rect.collidepoint(mouse_pos):
                     selected = 2
-                    pass
                 elif three_rect.collidepoint(mouse_pos):
                     selected = 3
-                    pass
                 elif four_rect.collidepoint(mouse_pos):
                     selected = 4
-                    pass
                 elif five_rect.collidepoint(mouse_pos):
                     selected = 5
-                    pass
                 elif start_rect.collidepoint(mouse_pos):
                     selected = uno.player_num
-                    return "IN GAME"
-        
+                    return "IN GAME"                
+            if event.type == pygame_gui.UI_TEXT_ENTRY_FINISHED and event.ui_object_id == "#com1_text_entry":
+                ob.bot_map[1] = event.text                
+            if event.type == pygame_gui.UI_TEXT_ENTRY_FINISHED and event.ui_object_id == "#com2_text_entry":                
+                ob.bot_map[2] = event.text
+            if event.type == pygame_gui.UI_TEXT_ENTRY_FINISHED and event.ui_object_id == "#com3_text_entry":
+                ob.bot_map[3] = event.text
+            if event.type == pygame_gui.UI_TEXT_ENTRY_FINISHED and event.ui_object_id == "#com4_text_entry":
+                ob.bot_map[4] = event.text
+            if event.type == pygame_gui.UI_TEXT_ENTRY_FINISHED and event.ui_object_id == "#com5_text_entry":
+                ob.bot_map[5] = event.text
+            if event.type == pygame_gui.UI_TEXT_ENTRY_FINISHED and event.ui_object_id == "#my_text_entry":
+                ob.bot_map[6] = event.text
+
         # 선택한 글자의 색을 빨간색으로 표시      
         if selected == 1:
             text_one = text_format("COM 1", uno.font, 50, (255,24,0))
@@ -659,6 +668,10 @@ def set_players(ob, uno, player_num):
             uno.screen.blit(text_four, four_rect)
             uno.screen.blit(text_five, five_rect)
             uno.screen.blit(text_start, start_rect)
+
+        MANAGER.update(60)
+
+        MANAGER.draw_ui(uno.screen)
 
         pygame.display.update()
 

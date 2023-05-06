@@ -70,9 +70,9 @@ class Essentials(object):
 
         self.played_check = 0  # Play checker
         self.special_check = 0  # 기술 카드 상태 활성화, 1은 비활성화
-        self.uno = [True] * 4  # 각 플레이어가 UNO를 외쳤는지 저장하는 플래그
+        self.shouted_uno = [False] * 4  # 각 플레이어가 UNO를 외쳤는지 저장하는 플래그
         self.message = "DEALING THE CARDS"  # 인게임 메세지, 한글은 폰트 문제로 인해 사용 불가
-        self.bot_map = {1: "JARVIS", 2: "EDITH", 3: "FRIDAY", 4: "BRIAN", 5: "SWIFT"}  # AI 인덱스를 이름으로 인덱싱
+        self.bot_map = {1: "JARVIS", 2: "EDITH", 3: "FRIDAY", 4: "BRIAN", 5: "SWIFT", 6: "YOU"}  # 플레이어 인덱스를 이름으로 인덱싱
         self.color = ['Blue', 'Red', 'Green', 'Yellow']  # 카드 색깔들
 
 
@@ -94,12 +94,13 @@ class Image(object):
         # 필요한 이미지 파일 로딩
         icon = pygame.image.load("./images/icon.png")
         self.icon = pygame.transform.scale_by(icon, (width/1000, height/600))
-        load = pygame.image.load("./images/uno_load.png")
-        self.load = pygame.transform.scale_by(load, (width/1000, height/600))
         bg = pygame.image.load("./images/background.png")
         self.bg = pygame.transform.scale_by(bg, (width/1000, height/600))
         back = pygame.image.load("./images/return-button.png")
         self.back = pygame.transform.scale_by(back, (width/1000, height/600))
+        
+        shouted = pygame.image.load("./images/shouted.png")
+        self.shouted = pygame.transform.scale_by(shouted, (width/1000, height/600))
         
         mute = pygame.image.load("./images/mute.png")
         self.mute = pygame.transform.scale_by(mute, (width/1000, height/600))
@@ -134,8 +135,7 @@ class Image(object):
         self.done = pygame.transform.scale_by(done, (width/1000, height/600))
         line = pygame.image.load("./images/minus-line.png")
         self.line = pygame.transform.scale_by(line, (width/1000, height/600))
-        help = pygame.image.load("./images/help.png")
-        self.help = pygame.transform.scale_by(help, (width/1000, height/600))
+
         win = pygame.image.load("./images/winner.png")
         self.win = pygame.transform.scale_by(win, (width/1000, height/600))
         pick_color = pygame.image.load("./images/microsoft.png")
