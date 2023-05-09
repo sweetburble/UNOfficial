@@ -35,8 +35,10 @@ class UNOGame():
 
         start_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.4), 200, 50)
         story_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.5), 200, 50)
-        set_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.6), 200, 50)
-        quit_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.7), 200, 50)
+        multiplay_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.6), 200, 50)
+        set_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.7), 200, 50)
+        quit_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.8), 200, 50)
+        achievement_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.9), 200, 50)
   
         while menu:
             pygame.init()
@@ -51,8 +53,8 @@ class UNOGame():
                         else:
                             selected = selected - 1
                     elif event.key == K_DOWN:
-                        if selected >= 4:
-                            selected = 4
+                        if selected >= 6:
+                            selected = 6
                         else:
                             selected = selected + 1
                     if event.key == K_RETURN: # K_RETURN은 엔터키
@@ -65,7 +67,13 @@ class UNOGame():
                         if selected == 3:
                             #실행할 내용
                             pass
-                        if selected >= 4:
+                        if selected == 4:
+                            #실행할 내용
+                            pass
+                        if selected == 5:
+                            #실행할 내용
+                            pass
+                        if selected >= 6:
                             pygame.quit()
                             sys.exit()
                             pass
@@ -77,8 +85,14 @@ class UNOGame():
                     elif story_rect.collidepoint(mouse_pos):
                         selected = 2
                         pass
-                    elif set_rect.collidepoint(mouse_pos):
+                    elif multiplay_rect.collidepoint(mouse_pos):
                         selected = 3
+                        pass
+                    elif set_rect.collidepoint(mouse_pos):
+                        selected = 4
+                        pass
+                    elif achievement_rect.collidepoint(mouse_pos):
+                        selected = 5
                         pass
                     elif quit_rect.collidepoint(mouse_pos):
                         text_quit = self.text_format("QUIT", self.font, 50, (0,0,0))
@@ -99,11 +113,21 @@ class UNOGame():
                 text_story= self.text_format("STORY MOD", self.font, 50, (255, 255, 255))
 
             if selected == 3:
+                text_multiplay = self.text_format("MULTIPLAY", self.font, 50, (0,0,0))
+            else:
+                text_multiplay = self.text_format("MULTIPLAY", self.font, 50, (255, 255, 255))
+
+            if selected == 4:
                 text_setting = self.text_format("SETTING", self.font, 50, (0,0,0))
             else:
                 text_setting = self.text_format("SETTING", self.font, 50, (255, 255, 255))
 
-            if selected == 4:
+            if selected == 5:
+                text_achievement = self.text_format("ACHIEVEMENT", self.font, 50, (0,0,0))
+            else:
+                text_achievement = self.text_format("ACHIEVEMENT", self.font, 50, (255, 255, 255))
+
+            if selected == 6:
                 text_quit = self.text_format("QUIT", self.font, 50, (0,0,0))
             else:
                 text_quit = self.text_format("QUIT", self.font, 50, (255, 255, 255))
@@ -111,17 +135,23 @@ class UNOGame():
             # 메뉴 아이템 표시
             start_rect = text_start.get_rect()
             story_rect = text_story.get_rect()
+            multiplay_rect = text_multiplay.get_rect()
             set_rect = text_setting.get_rect()
+            achievement_rect = text_achievement.get_rect()
             quit_rect = text_quit.get_rect()
 
             start_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.4), 200, 50)
-            story_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.5), 200, 50)          
-            set_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.6), 200, 50)
-            quit_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.7), 200, 50)
+            story_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.5), 200, 50)  
+            multiplay_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.6), 200, 50)         
+            set_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.7), 200, 50)
+            achievement_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.8), 200, 50)
+            quit_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.9), 200, 50)
   
             self.screen.blit(text_start, start_rect)
             self.screen.blit(text_story, story_rect)
+            self.screen.blit(text_multiplay, multiplay_rect)
             self.screen.blit(text_setting, set_rect)
+            self.screen.blit(text_achievement, achievement_rect)
             self.screen.blit(text_quit, quit_rect)
 
             pygame.display.update()
