@@ -87,6 +87,9 @@ class UNOGame():
                     elif set_rect.collidepoint(mouse_pos):
                         selected = 4
                         pass
+                    elif set_rect.collidepoint(mouse_pos):
+                        selected = 5
+                        pass
                     elif quit_rect.collidepoint(mouse_pos):
                         text_quit = self.text_format("QUIT", self.font, 50, (0,0,0))
                         self.screen.blit(text_quit, quit_rect)

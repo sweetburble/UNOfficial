@@ -79,8 +79,8 @@ class UNOGame():
 
             #질문 내용 표시
             text_MAP3= self.text_format("ARE YOU SURE?", self.font, 50, (255, 255, 255))
-            text_MAP4= self.text_format(" - computer will get skill card 50% more at first", self.font, 30, (255, 255, 255))
-            text_MAP5= self.text_format(" - computer use combo that use 2-3 or more cards at once", self.font, 30, (255, 255, 255))
+            text_MAP4= self.text_format(" - play with 2 computers", self.font, 30, (255, 255, 255))
+            text_MAP5= self.text_format(" - every 5 turns, the color of the cards changes randomly.", self.font, 30, (255, 255, 255))
 
             # 메뉴 아이템 표시
             MAP1_rect = text_MAP1.get_rect()
