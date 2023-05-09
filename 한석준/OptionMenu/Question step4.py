@@ -8,9 +8,9 @@ img_basic_address = './img/'
 class UNOGame():
     def __init__(self):
         pygame.init()
-        self.background = pygame.image.load('../img/Story map.jpg')
-        self.screen_width = 930
-        self.screen_height = 690
+        self.background = pygame.image.load('img/Game map.jpg')
+        self.screen_width = 600
+        self.screen_height = 400
         self.background_Color = (0,66,0)
         self.playernum = 2
         self.difficulty = 1
@@ -20,7 +20,7 @@ class UNOGame():
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
         pygame.display.set_caption("UNO!")
         self.screen.fill(self.background_Color)
-        self.screen.blit(self.background, (-30, -30))
+        self.screen.blit(self.background, (-300, -300))
         pygame.display.update()
         self.main_menu()
 
@@ -33,7 +33,6 @@ class UNOGame():
         menu = True
         selected = 1
 
-        
         while menu:
             pygame.init()
             for event in pygame.event.get():
@@ -47,8 +46,8 @@ class UNOGame():
                         else:
                             selected = selected - 1
                     elif event.key == K_UP:
-                        if selected >= 1:
-                            selected = 1
+                        if selected >= 2:
+                            selected = 2
                         else:
                             selected = selected + 1
                     if event.key == K_RETURN: # K_RETURN은 엔터키
@@ -58,13 +57,7 @@ class UNOGame():
                         if selected == 2:
                             #실행할 내용
                             pass
-                        if selected == 3:
-                            #실행할 내용
-                            pass
-                        if selected >= 4:
                    
-                  
-                            pass
                 if event.type == MOUSEBUTTONDOWN:
                     mouse_pos = pygame.mouse.get_pos()
                     if  MAP1_rect.collidepoint(mouse_pos):
@@ -73,46 +66,40 @@ class UNOGame():
                     elif  MAP2_rect.collidepoint(mouse_pos):
                         selected = 2
                         pass
-                    elif  MAP3_rect.collidepoint(mouse_pos):
-                        selected = 3
-                        pass
-                    elif  MAP4_rect.collidepoint(mouse_pos):
-                        selected = 4
-                        pass
                        
-
             if selected == 1:
-                text_MAP1 = self.text_format("CHALLENGE", self.font, 50, (0,0,255))
+                text_MAP1 = self.text_format("YES", self.font, 50, (0,0,0))
             else:
-                text_MAP1 = self.text_format("CHALLENGE", self.font, 50, (255, 255, 255))
+                text_MAP1 = self.text_format("YES", self.font, 50, (255, 255, 255))
 
             if selected == 2:
-                text_MAP2 = self.text_format("CHALLENGE", self.font, 50, (0,0,0))
+                text_MAP2 = self.text_format("NO", self.font, 50, (0,0,0))
             else:
-                text_MAP2= self.text_format("CHALLENGE", self.font, 50, (255, 255, 255))
+                text_MAP2= self.text_format("NO", self.font, 50, (255, 255, 255))
 
-            if selected == 3:
-                text_MAP3 = self.text_format("CHALLENGE", self.font, 50, (0,0,0))
-            else:
-                text_MAP3 = self.text_format("CHALLENGE", self.font, 50, (255, 255, 255))
-
-            if selected == 4:
-                text_MAP4 = self.text_format("CHALLENGE", self.font, 50, (0,0,0))
-            else:
-                text_MAP4 = self.text_format("CHALLENGE", self.font, 50, (255, 255, 255))
+            #질문 내용 표시
+            text_MAP3= self.text_format("ARE YOU SURE?", self.font, 50, (255, 255, 255))
+            text_MAP4= self.text_format(" - destroy a card of the computer each turn.", self.font, 30, (255, 255, 255))
+            text_MAP5= self.text_format("", self.font, 30, (255, 255, 255))
 
             # 메뉴 아이템 표시
             MAP1_rect = text_MAP1.get_rect()
             MAP2_rect = text_MAP2.get_rect()
             MAP3_rect = text_MAP3.get_rect()
             MAP4_rect = text_MAP4.get_rect()
+            MAP5_rect = text_MAP5.get_rect()
 
-            MAP1_rect = pygame.Rect(self.screen_width/2-275, int(self.screen_height*0.8+20), 200, 50)
-            MAP2_rect = pygame.Rect(self.screen_width/2-245, int(self.screen_height*0.2+20), 200, 50)          
-            MAP3_rect = pygame.Rect(self.screen_width/2-40, int(self.screen_height*0.5-20), 200, 50)
-            MAP4_rect = pygame.Rect(self.screen_width/2+140, int(self.screen_height*0.2-20), 200, 50)
-
+            MAP1_rect = pygame.Rect(self.screen_width/2-100, int(self.screen_height*0.8), 100, 40)
+            MAP2_rect = pygame.Rect(self.screen_width/2+50, int(self.screen_height*0.8), 100, 40)     
+            MAP3_rect = pygame.Rect(self.screen_width/2-140, int(self.screen_height*0.1), 100, 100)  
+            MAP4_rect = pygame.Rect(0, int(self.screen_height*0.3), 100, 100)
+            MAP5_rect = pygame.Rect(0, int(self.screen_height*0.4), 100, 100)
+  
             self.screen.blit(text_MAP1, MAP1_rect)
+            self.screen.blit(text_MAP2, MAP2_rect)
+            self.screen.blit(text_MAP3, MAP3_rect)
+            self.screen.blit(text_MAP4, MAP4_rect)
+            self.screen.blit(text_MAP5, MAP5_rect)
 
             pygame.display.update()
             self.clock.tick(self.FPS)
