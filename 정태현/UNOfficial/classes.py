@@ -67,6 +67,7 @@ class Essentials(object):
         self.winner = -1
         self.play_lag = -1
         self.play_mode = ""
+        self.is_game_paused = False
 
         self.played_check = 0  # Play checker
         self.special_check = 0  # 기술 카드 상태 활성화, 1은 비활성화
@@ -79,10 +80,8 @@ class Essentials(object):
 class PlayMode(object):
     def __init__(self):
         # 다양한 플레이 모드를 선언했다 (Declaring various playing modes)
-        self.load = "LOAD PAGE" # 시작 화면
+        self.load = "START SCREEN" # 시작 화면
         self.setting = "SETTING" # 설정 화면
-        self.key = "KEY CONFIGURATION" # 키 설정 화면
-        self.volume = "VOLUME" # 볼륨 설정 화면
         self.in_game = "IN GAME" # 게임 화면
         self.pause = "GAME PAUSE" # 게임 일시정지 화면
         self.win = "WINNER" # 승리 화면
@@ -98,8 +97,8 @@ class Image(object):
         self.icon = pygame.transform.scale_by(icon, (width/1000, height/600))
         bg = pygame.image.load("./images/background.png")
         self.bg = pygame.transform.scale_by(bg, (width/1000, height/600))
-        back = pygame.image.load("./images/return-button.png")
-        self.back = pygame.transform.scale_by(back, (width/1000, height/600))
+        pause = pygame.image.load("./images/pause-button.png")
+        self.pause = pygame.transform.scale_by(pause, (width/1000, height/600))
         
         shouted = pygame.image.load("./images/shouted.png")
         self.shouted = pygame.transform.scale_by(shouted, (width/1000, height/600))
@@ -133,7 +132,8 @@ class Image(object):
         self.card_back_r = pygame.transform.scale_by(card_back_r, (width/1000, height/600))
         card_back_i = pygame.image.load("./images/Back_inverted.png")
         self.card_back_i = pygame.transform.scale_by(card_back_i, (width/1000, height/600))
-        done = pygame.image.load("./images/checked.png")
+        
+        done = pygame.image.load("./images/done.png")
         self.done = pygame.transform.scale_by(done, (width/1000, height/600))
         line = pygame.image.load("./images/minus-line.png")
         self.line = pygame.transform.scale_by(line, (width/1000, height/600))
@@ -147,14 +147,14 @@ class Image(object):
         uno_button = pygame.image.load("./images/UNOButton.png")
         self.uno_button = pygame.transform.scale_by(uno_button, (width/1000, height/600))
         
-        red = pygame.image.load("./images/SmallRed.png")
-        self.red = pygame.transform.scale_by(red, (width/1000, height/600))
-        blue = pygame.image.load("./images/SmallBlue.png")
-        self.blue = pygame.transform.scale_by(blue, (width/1000, height/600))
-        yellow = pygame.image.load("./images/SmallYellow.png")
-        self.yellow = pygame.transform.scale_by(yellow, (width/1000, height/600))
-        green = pygame.image.load("./images/SmallGreen.png")
-        self.green = pygame.transform.scale_by(green, (width/1000, height/600))
+        pick_red = pygame.image.load("./images/SmallRed.png")
+        self.pick_red = pygame.transform.scale_by(pick_red, (width/1000, height/600))
+        pick_blue = pygame.image.load("./images/SmallBlue.png")
+        self.pick_blue = pygame.transform.scale_by(pick_blue, (width/1000, height/600))
+        pick_yellow = pygame.image.load("./images/SmallYellow.png")
+        self.pick_yellow = pygame.transform.scale_by(pick_yellow, (width/1000, height/600))
+        pick_green = pygame.image.load("./images/SmallGreen.png")
+        self.pick_green = pygame.transform.scale_by(pick_green, (width/1000, height/600))
 
 
 class Sound(object):
@@ -195,4 +195,4 @@ class UNOGame(object):
 # 스토리 모드를 관리하는 클래스 생성
 class StoryMode(object):
     def __init__(self):
-        self.Is_story_passed = 3 # 0은 하나도 클리어 하지 못했다는 뜻, 모든 스토리를 선택할 수 있는 상태는 3이다
+        self.Is_story_passed = 0 # 0은 하나도 클리어 하지 못했다는 뜻, 모든 스토리를 선택할 수 있는 상태는 3이다

@@ -57,7 +57,7 @@ class UNOGame():
                         if selected == 2:
                             #실행할 내용
                             pass
-                   
+
                 if event.type == MOUSEBUTTONDOWN:
                     mouse_pos = pygame.mouse.get_pos()
                     if  MAP2_rect.collidepoint(mouse_pos):
@@ -69,7 +69,7 @@ class UNOGame():
                     elif  MAP4_rect.collidepoint(mouse_pos):
                         selected = 3
                         pass
-                       
+
             if selected == 1:
                 text_MAP2 = self.text_format("OPTION", self.font, 50, (0,0,0))
             else:
@@ -86,7 +86,7 @@ class UNOGame():
                 text_MAP4= self.text_format("QUIT", self.font, 50, (255, 255, 255))
 
             #질문 내용 표시
-            text_MAP1= self.text_format("PAUSE", self.font, 70, (255, 255, 255))
+            text_MAP1 = self.text_format("PAUSE", self.font, 70, (255, 255, 255))
 
             # 메뉴 아이템 표시
             MAP1_rect = text_MAP1.get_rect()
