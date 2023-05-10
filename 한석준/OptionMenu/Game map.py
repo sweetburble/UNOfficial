@@ -62,8 +62,6 @@ class UNOGame():
                             #실행할 내용
                             pass
                         if selected >= 4:
-                   
-                  
                             pass
                 if event.type == MOUSEBUTTONDOWN:
                     mouse_pos = pygame.mouse.get_pos()
@@ -79,7 +77,6 @@ class UNOGame():
                     elif  MAP4_rect.collidepoint(mouse_pos):
                         selected = 4
                         pass
-                       
 
             if selected == 1:
                 text_MAP1 = self.text_format("CHALLENGE", self.font, 50, (0,0,255))

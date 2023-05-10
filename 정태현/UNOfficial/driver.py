@@ -11,6 +11,7 @@ sound = Sound()
 FONT = TextFont()
 ess = Essentials()
 uno = UNOGame()
+STORY = StoryMode()
 
 # 파일 아이콘 설정
 pygame.display.set_icon(img.icon)
@@ -133,7 +134,7 @@ while True:
         pygame.mixer.music.set_volume(saves["background"]) # 배경음악과 효과음 설정을 적용한다
         volumesetting(sound, saves["effects"])
 
-        main_menu(ess, uno) # 필수적인 이미지와 텍스트를 표시한다
+        main_menu(ess, uno, STORY) # 필수적인 이미지와 텍스트를 표시한다
 
     # 게임 화면 
     elif ess.play_mode == PM.in_game:
@@ -213,9 +214,10 @@ while True:
 
         uno.screen.blit(img.uno_button, (width*(640/1000), height*(500/600))) # -> 일단 플레이어의 UNO 버튼은 항상 표시되게 함
 
+        # 각 플레이어가 UNO를 외쳤다면, UNO 이미지를 표시한다
+        if ess.shouted_uno[0] == True:
+            uno.screen.blit(img.shouted, (width*(490/1000), height*(400/600)))
         for i in range(1, uno.player_num):
-            if ess.shouted_uno[0] == True:
-                uno.screen.blit(img.shouted, (width*(490/1000), height*(400/600)))
             if (ess.shouted_uno[i] == True):
                 uno.screen.blit(img.shouted, (width*(800/1000), height*(120 * (i - 1)/600)))
 
@@ -376,10 +378,11 @@ while True:
         uno.screen.blit(text, [width*(190/1000), height*(100/600)])
 
     # 배경음악 / 효과음 토글 버튼
-    if music_on:
-        uno.screen.blit(img.mute, (width*(60/1000), height*(10/600)))
-    else:
-        uno.screen.blit(img.unmute, (width*(60/1000), height*(10/600)))
+    if ess.play_mode == PM.in_game:
+        if music_on:
+            uno.screen.blit(img.mute, (width*(60/1000), height*(10/600)))
+        else:
+            uno.screen.blit(img.unmute, (width*(60/1000), height*(10/600)))
 
     # 화면 지속적으로 갱신
     pygame.display.update()

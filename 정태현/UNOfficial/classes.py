@@ -79,14 +79,16 @@ class Essentials(object):
 class PlayMode(object):
     def __init__(self):
         # 다양한 플레이 모드를 선언했다 (Declaring various playing modes)
-        self.load = "LOAD PAGE"
-        self.in_game = "IN GAME"
-        self.setting = "SETTING"
-        self.win = "WINNER"
-        self.key = "KEY CONFIGURATION"
-        self.stroy = "STORY MODE"
-        self.volume = "VOLUME"
-        self.pause = "GAME PAUSE"
+        self.load = "LOAD PAGE" # 시작 화면
+        self.setting = "SETTING" # 설정 화면
+        self.key = "KEY CONFIGURATION" # 키 설정 화면
+        self.volume = "VOLUME" # 볼륨 설정 화면
+        self.in_game = "IN GAME" # 게임 화면
+        self.pause = "GAME PAUSE" # 게임 일시정지 화면
+        self.win = "WINNER" # 승리 화면
+        self.stroy = "STORY MODE" # 스토리 모드 화면
+        self.multiplay = "MULTIPLAY" # 멀티플레이 화면
+        self.achievement = "ACHIEVEMENT" # 업적 화면
 
 
 class Image(object):
@@ -189,3 +191,8 @@ class UNOGame(object):
         self.screen.fill(self.background_Color)
         self.screen.blit(self.background, (-30, -30))
         pygame.display.update()
+
+# 스토리 모드를 관리하는 클래스 생성
+class StoryMode(object):
+    def __init__(self):
+        self.Is_story_passed = 3 # 0은 하나도 클리어 하지 못했다는 뜻, 모든 스토리를 선택할 수 있는 상태는 3이다

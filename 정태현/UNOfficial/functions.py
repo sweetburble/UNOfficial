@@ -243,19 +243,27 @@ def bot_action(ob, uno, sounds):
                     ob.player_list[ob.position].append(new_card)
 
 # =================================================================
+# 선택하는 객체가 아니라 그냥 텍스트만 화면에 출력하고 싶을 때 사용하세요
+def draw_text(uno, text, text_size, text_col, x, y):
+    font = pygame.font.Font('./fonts/JosefinSans-Bold.ttf', text_size)
+    img = font.render(text, True, text_col)
+    uno.screen.blit(img, (x, y))
+
 def text_format(message, textFont, textSize, textColor):
     newFont = pygame.font.SysFont(textFont, textSize)
     newText = newFont.render(message, True, textColor)
     return newText
 
 """ 시작 화면 """
-def main_menu(ob, uno):
+def main_menu(ob, uno, STORY):
     selected = 1
 
-    start_rect = pygame.Rect(uno.screen_width/2-50, int(uno.screen_height*0.4), 200, 50)
-    story_rect = pygame.Rect(uno.screen_width/2-50, int(uno.screen_height*0.5), 200, 50)
-    setting_rect = pygame.Rect(uno.screen_width/2-50, int(uno.screen_height*0.6), 200, 50)
-    quit_rect = pygame.Rect(uno.screen_width/2-50, int(uno.screen_height*0.7), 200, 50)
+    start_rect = pygame.Rect(uno.screen_width/2-50, int(uno.screen_height*0.3), 200, 50)
+    story_rect = pygame.Rect(uno.screen_width/2-50, int(uno.screen_height*0.4), 200, 50)
+    setting_rect = pygame.Rect(uno.screen_width/2-50, int(uno.screen_height*0.5), 200, 50)
+    multiplay_rect = pygame.Rect(uno.screen_width/2-50, int(uno.screen_height*0.6), 200, 50)
+    achievement_rect = pygame.Rect(uno.screen_width/2-50, int(uno.screen_height*0.7), 200, 50)
+    quit_rect = pygame.Rect(uno.screen_width/2-50, int(uno.screen_height*0.8), 200, 50)
 
     while True:
         pygame.init()
@@ -270,8 +278,8 @@ def main_menu(ob, uno):
                     else:
                         selected = selected - 1
                 elif event.key == KEYS["down"]:
-                    if selected >= 4:
-                        selected = 4
+                    if selected >= 6:
+                        selected = 6
                     else:
                         selected = selected + 1
                 if event.key == KEYS["select"]: # K_RETURN은 엔터키
@@ -280,15 +288,20 @@ def main_menu(ob, uno):
                         if (ob.play_mode == "IN GAME"):
                             return
                         uno.screen.blit(uno.background, (-30, -30))
-                    if selected == 2: # 스토리 모드 버튼
-                        selected = 2
-                        ob.play_mode = story_mode(ob, uno)
+                    elif selected == 2: # 스토리 모드 버튼
+                        ob.play_mode = story_mode(ob, uno, STORY)
                         uno.screen.blit(uno.background, (-30, -30))
                         return
-                    if selected == 3: # 설정 버튼
+                    elif selected == 3: # 설정 버튼
                         ob.play_mode = "SETTING"
                         return
-                    if selected >= 4: # 종료 버튼
+                    elif selected == 4: # 멀티플레이 버튼
+                        # ob.play_mode = "MULTIPLAY"
+                        return
+                    elif selected == 5: # 업적 버튼
+                        # ob.play_mode = "ACHIEVEMENT"
+                        return
+                    elif selected >= 6: # 종료 버튼
                         pygame.quit()
                         sys.exit()
             if event.type == MOUSEBUTTONDOWN:
@@ -300,18 +313,22 @@ def main_menu(ob, uno):
                     return
                 elif story_rect.collidepoint(mouse_pos): # 스토리 모드 버튼
                     selected = 2
-                    ob.play_mode = story_mode(ob, uno)
+                    ob.play_mode = story_mode(ob, uno, STORY)
                     uno.screen.blit(uno.background, (-30, -30))
                     return
                 elif setting_rect.collidepoint(mouse_pos): # 설정 버튼
                     selected = 3
                     ob.play_mode = "SETTING"
                     return
+                elif multiplay_rect.collidepoint(mouse_pos): # 멀티플레이 버튼
+                    selected = 4
+                    # ob.play_mode = "MULTIPLAY"
+                    return
+                elif achievement_rect.collidepoint(mouse_pos): # 업적 버튼
+                    selected = 5
+                    # ob.play_mode = "ACHIEVEMENT"
+                    return
                 elif quit_rect.collidepoint(mouse_pos): # 종료 버튼
-                    text_quit = text_format("QUIT", uno.font, 50, (0,0,0))
-                    uno.screen.blit(text_quit, quit_rect)
-                    pygame.display.update()
-                    pygame.time.delay(500)
                     pygame.quit()
                     sys.exit()
 
@@ -331,6 +348,16 @@ def main_menu(ob, uno):
             text_setting = text_format("SETTING", uno.font, 50, (255, 255, 255))
 
         if selected == 4:
+            text_multiplay = text_format("MULTIPLAY", uno.font, 50, (0,0,0))
+        else:
+            text_multiplay = text_format("MULTIPLAY", uno.font, 50, (255, 255, 255))
+
+        if selected == 5:
+            text_achievement = text_format("ACHIEVEMENT", uno.font, 50, (0,0,0))
+        else:
+            text_achievement = text_format("ACHIEVEMENT", uno.font, 50, (255, 255, 255))
+
+        if selected == 6:
             text_quit = text_format("QUIT", uno.font, 50, (0,0,0))
         else:
             text_quit = text_format("QUIT", uno.font, 50, (255, 255, 255))
@@ -350,6 +377,8 @@ def main_menu(ob, uno):
         start_rect = text_start.get_rect()
         story_rect = text_story.get_rect()
         setting_rect = text_setting.get_rect()
+        multiplay_rect = text_multiplay.get_rect()
+        achievement_rect = text_achievement.get_rect()
         quit_rect = text_quit.get_rect()
 
         # 시작 화면에 사용할 수 있는 키 표시
@@ -364,11 +393,13 @@ def main_menu(ob, uno):
         downs_rect = text_downs.get_rect()
         enters_rect = text_enters.get_rect()
 
-
-        start_rect = pygame.Rect(uno.screen_width/2-50, int(uno.screen_height*0.4), 200, 50)
-        story_rect = pygame.Rect(uno.screen_width/2-50, int(uno.screen_height*0.5), 200, 50)          
-        setting_rect = pygame.Rect(uno.screen_width/2-50, int(uno.screen_height*0.6), 200, 50)
-        quit_rect = pygame.Rect(uno.screen_width/2-50, int(uno.screen_height*0.7), 200, 50)
+        # 시작 화면의 메뉴들을 출력한다
+        start_rect = pygame.Rect(uno.screen_width/2-50, int(uno.screen_height*0.3), 200, 50)
+        story_rect = pygame.Rect(uno.screen_width/2-50, int(uno.screen_height*0.4), 200, 50)          
+        setting_rect = pygame.Rect(uno.screen_width/2-50, int(uno.screen_height*0.5), 200, 50)
+        multiplay_rect = pygame.Rect(uno.screen_width/2-50, int(uno.screen_height*0.6), 200, 50)
+        achievement_rect = pygame.Rect(uno.screen_width/2-50, int(uno.screen_height*0.7), 200, 50)
+        quit_rect = pygame.Rect(uno.screen_width/2-50, int(uno.screen_height*0.8), 200, 50)
 
         # 시작 화면에 사용할 수 있는 키 표시
         up_rect = pygame.Rect(int(uno.screen_width*0.01), int(uno.screen_height*0.01),100,25)
@@ -385,6 +416,8 @@ def main_menu(ob, uno):
         uno.screen.blit(text_start, start_rect)
         uno.screen.blit(text_story, story_rect)
         uno.screen.blit(text_setting, setting_rect)
+        uno.screen.blit(text_multiplay, multiplay_rect)
+        uno.screen.blit(text_achievement, achievement_rect)
         uno.screen.blit(text_quit, quit_rect)
         uno.screen.blit(text_up,up_rect)
         uno.screen.blit(text_ups,ups_rect)
@@ -398,7 +431,6 @@ def main_menu(ob, uno):
         uno.screen.blit(text_enters,enters_rect)
 
         pygame.display.update()
-        pygame.display.set_caption("UNO!")
 
 """ 게임 시작 전, 로비 화면 """
 def set_start(ob, uno):
@@ -453,8 +485,9 @@ def set_start(ob, uno):
                         create(ob, uno)
                         uno.background = pygame.image.load('./images/Main_background.png')
                         return set_players(ob, uno, uno.player_num)
-                    if selected >= 6:
+                    if selected >= 6: # 시작화면으로 돌아감
                         uno.background = pygame.image.load('./images/Main_background.png')
+                        uno.background = pygame.transform.scale_by(uno.background, (uno.screen_width/800, uno.screen_height/600))
                         return "LOAD PAGE"
             if event.type == MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
@@ -483,9 +516,10 @@ def set_start(ob, uno):
                     create(ob, uno)
                     selected = 5
                     return set_players(ob, uno, uno.player_num)
-                elif quit_rect.collidepoint(mouse_pos):
+                elif quit_rect.collidepoint(mouse_pos): # 시작화면으로 돌아감
                     selected = 5
                     uno.background = pygame.image.load('./images/Main_background.png')
+                    uno.background = pygame.transform.scale_by(uno.background, (uno.screen_width/800, uno.screen_height/600))
                     return "LOAD PAGE"
         
         # 선택한 글자의 색을 빨간색으로 표시      
@@ -677,8 +711,8 @@ def set_players(ob, uno, player_num):
 
 
 # =====================================================================
-""" 스토리 모드 선택 """
-def story_mode(ob, uno):
+""" 스토리 모드 선택 화면 """
+def story_mode(ob, uno, STORY):
     pygame.init()
     uno.background = pygame.image.load('./images/Story map.jpg')
     uno.background = pygame.transform.scale_by(uno.background, (uno.screen_width/930, uno.screen_height/690))
@@ -693,52 +727,59 @@ def story_mode(ob, uno):
                 sys.exit()
 
             if event.type == KEYDOWN:
-                if event.key == KEYS["down"]:
-                    if selected <= 1:
-                        selected = 1
+                if event.key == KEYS["down"] or event.key == KEYS["left"]:
+                    if selected <= 0:
+                        selected = 0
                     else:
                         selected = selected - 1
-                elif event.key == KEYS["up"]:
-                    if selected >= 5:
-                        selected = 5
+                elif event.key == KEYS["up"] or event.key == KEYS["right"]:
+                    # 0 ~ 최대 4까지
+                    if selected >= STORY.Is_story_passed + 1:
+                        selected = STORY.Is_story_passed + 1
                     else:
                         selected = selected + 1
                 if event.key == KEYS["select"]: # K_RETURN은 엔터키
-                    if selected <= 1:
-                        # 실행할 내용
-                        pass
-                    if selected == 2:
-                        # 실행할 내용
-                        pass
-                    if selected == 3:
-                        # 실행할 내용
-                        pass
-                    if selected == 4:
-                        pass
-                    if selected >= 5: # 시작 화면으로 돌아간다
+                    if selected <= 0: # 시작 화면으로 돌아간다
                         uno.background = pygame.image.load('./images/Main_background.png')
                         uno.background = pygame.transform.scale_by(uno.background, (uno.screen_width/800, uno.screen_height/600))
                         return "LOAD PAGE"
+                    if selected == 1:
+                        select_story(ob, uno, STORY, 1)
+                    if selected == 2:
+                        select_story(ob, uno, STORY, 2)
+                    if selected == 3:
+                        select_story(ob, uno, STORY, 3)
+                    if selected >= 4:
+                        select_story(ob, uno, STORY, 4)
 
             if event.type == MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
-                if MAP1_rect.collidepoint(mouse_pos):
-                    selected = 1
-                    pass
-                elif MAP2_rect.collidepoint(mouse_pos):
-                    selected = 2
-                    pass
-                elif MAP3_rect.collidepoint(mouse_pos):
-                    selected = 3
-                    pass
-                elif MAP4_rect.collidepoint(mouse_pos):
-                    selected = 4
-                    pass
-                elif back_rect.collidepoint(mouse_pos): # 시작 화면으로 돌아간다
-                    selected = 5
+                if back_rect.collidepoint(mouse_pos): # 시작 화면으로 돌아간다
+                    selected = 0
                     uno.background = pygame.image.load('./images/Main_background.png')
                     uno.background = pygame.transform.scale_by(uno.background, (uno.screen_width/800, uno.screen_height/600))
                     return "LOAD PAGE"
+                elif MAP1_rect.collidepoint(mouse_pos):
+                    selected = 1
+                    select_story(ob, uno, STORY, 1)
+                elif MAP2_rect.collidepoint(mouse_pos):
+                    selected = 2
+                    select_story(ob, uno, STORY, 2)
+                elif MAP3_rect.collidepoint(mouse_pos):
+                    selected = 3
+                    select_story(ob, uno, STORY, 3)
+                elif MAP4_rect.collidepoint(mouse_pos):
+                    selected = 4
+                    select_story(ob, uno, STORY, 4)
+
+        # 메인 화면으로 돌아가는 버튼은 항상 존재한다
+        if selected == 0:
+            back_text = text_format("BACK", uno.font, 20, (0,0,0))
+        else:
+            back_text = text_format("BACK", uno.font, 20, (255, 255, 255))
+        back_rect = back_text.get_rect()
+        back_rect = pygame.Rect(uno.screen_width/2-470, int(uno.screen_height*0.2-100), 200, 50)
+        uno.screen.blit(back_text, back_rect)
 
         if selected == 1:
             text_MAP1 = text_format("CHALLENGE", uno.font, 50, (0,0,0))
@@ -760,28 +801,92 @@ def story_mode(ob, uno):
         else:
             text_MAP4 = text_format("CHALLENGE", uno.font, 50, (255, 255, 255))
         
-        if selected == 5:
-            back_text = text_format("BACK", uno.font, 20, (0,0,0))
-        else:
-            back_text = text_format("BACK", uno.font, 20, (255, 255, 255))
-
         # 글자 객체를 그린다
-        back_rect = back_text.get_rect()
         MAP1_rect = text_MAP1.get_rect()
         MAP2_rect = text_MAP2.get_rect()
         MAP3_rect = text_MAP3.get_rect()
         MAP4_rect = text_MAP4.get_rect()
 
-        back_rect = pygame.Rect(uno.screen_width/2-470, int(uno.screen_height*0.2-100), 200, 50)
         MAP1_rect = pygame.Rect(uno.screen_width/2-275, int(uno.screen_height*0.8+20), 200, 50)
         MAP2_rect = pygame.Rect(uno.screen_width/2-245, int(uno.screen_height*0.2+20), 200, 50)          
         MAP3_rect = pygame.Rect(uno.screen_width/2-40, int(uno.screen_height*0.5-20), 200, 50)
         MAP4_rect = pygame.Rect(uno.screen_width/2+140, int(uno.screen_height*0.2-20), 200, 50)
 
-        uno.screen.blit(back_text, back_rect)
-        uno.screen.blit(text_MAP1, MAP1_rect)
-        uno.screen.blit(text_MAP2, MAP2_rect)
-        uno.screen.blit(text_MAP3, MAP3_rect)
-        uno.screen.blit(text_MAP4, MAP4_rect)
+        # 이전 스토리를 클리어하지 않은 경우, 다음 스토리는 선택할 수 없다
+        if STORY.Is_story_passed >= 0:
+            uno.screen.blit(text_MAP1, MAP1_rect)
+            if STORY.Is_story_passed >= 1:
+                uno.screen.blit(text_MAP2, MAP2_rect)
+                if STORY.Is_story_passed >= 2:
+                    uno.screen.blit(text_MAP3, MAP3_rect)
+                    if STORY.Is_story_passed >= 3:
+                        uno.screen.blit(text_MAP4, MAP4_rect)
+
+        pygame.display.update()
+
+def select_story(ob, uno, STORY, stage):
+    pygame.init()
+    uno.background = pygame.image.load('./images/Story map.jpg')
+    uno.background = pygame.transform.scale_by(uno.background, (uno.screen_width/930, uno.screen_height/690))
+    uno.screen.blit(uno.background, (-10, -10))
+
+    select_yes_no = 0 # yes는 0, no는 1
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == KEYDOWN:
+                if event.key == KEYS["left"]:
+                    select_yes_no = 0
+                elif event.key == KEYS["right"]:
+                    select_yes_no = 1
+                elif event.key == KEYS["select"]:
+                    if select_yes_no == 0:
+                        pass
+                    elif select_yes_no == 1: # no를 선택하면 다시 스토리 선택 화면으로 돌아간다
+                        uno.background = pygame.image.load('./images/Story map.jpg')
+                        uno.background = pygame.transform.scale_by(uno.background, (uno.screen_width/930, uno.screen_height/690))
+                        uno.screen.blit(uno.background, (-10, -10))
+                        return
+            
+            if event.type == MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+                if yes_rect.collidepoint(mouse_pos):
+                    select_yes_no = 0
+                    pass
+                elif no_rect.collidepoint(mouse_pos):
+                    select_yes_no = 1
+                    uno.background = pygame.image.load('./images/Story map.jpg')
+                    uno.background = pygame.transform.scale_by(uno.background, (uno.screen_width/930, uno.screen_height/690))
+                    uno.screen.blit(uno.background, (-10, -10))
+                    return
+
+        if select_yes_no == 0: # yes가 선택되어 있는 경우
+            text_yes = text_format("YES", uno.font, 50, (0, 0, 0))
+            text_no = text_format("NO", uno.font, 50, (255, 255, 255))
+        else: # no가 선택되어 있는 경우
+            text_yes = text_format("YES", uno.font, 50, (255, 255, 255))
+            text_no = text_format("NO", uno.font, 50, (0, 0, 0))
+        
+        yes_rect = pygame.Rect(int(uno.screen_width/2-100), int(uno.screen_height*0.8), 100, 40)
+        no_rect = pygame.Rect(int(uno.screen_width/2+50), int(uno.screen_height*0.8), 100, 40)
+        uno.screen.blit(text_yes, yes_rect)
+        uno.screen.blit(text_no, no_rect)
+
+        # 해당 스토리에 대한 설명
+        draw_text(uno, "ARE YOU SURE?", 50, (255, 255, 255), uno.screen_width*(300/1000), int(uno.screen_height*0.1))
+        if stage == 1:
+            draw_text(uno, " - computer will get skill card 50% more at first", 30, (255, 255, 255), 0, int(uno.screen_height*0.3))
+            draw_text(uno, " - computer use combo that use 2-3 or more cards at once", 30, (255, 255, 255), 0, int(uno.screen_height*0.4))
+        elif stage == 2:
+            draw_text(uno, " - play with 3 computers", 30, (255, 255, 255), 0, int(uno.screen_height*0.3))
+            draw_text(uno, " - distribute all cards to the players equally, except first", 30, (255, 255, 255), 0, int(uno.screen_height*0.4))
+        elif stage == 3:
+            draw_text(uno, " - play with 2 computers", 30, (255, 255, 255), 0, int(uno.screen_height*0.3))
+            draw_text(uno, " - every 5 turns, the color of the cards changes randomly", 30, (255, 255, 255), 0, int(uno.screen_height*0.4))
+        elif stage == 4:
+            draw_text(uno, " - play with 1 computers", 30, (255, 255, 255), 0, int(uno.screen_height*0.3))
+            draw_text(uno, " - destroy a card of the computer each turn", 30, (255, 255, 255), 0, int(uno.screen_height*0.4))
 
         pygame.display.update()

@@ -4,7 +4,7 @@ from pygame.locals import *
 
 selected_item = 0 # 설정 창에서 쓰는 선택 바
 
-""" keyconfigure 에서 쓰는 키보드 설정을 바꾸는 update 함수"""
+""" keyconfigure 에서 쓰는 키보드 설정을 바꾸는 update 함수 """
 def update_key(saves, something):
     updating = True
     while updating:
@@ -152,7 +152,6 @@ def load_setting(ess, uno, PM, FONT, saves):
             if event.key == saves["select"]: # 결정의 경우
                 if selected_item == 0:
                     saves["size"] = 'small'
-                    # 만약 즉시 적용으로 수정할 거라면 if event.type == pygame.VIDEORESIZE: 를 좀 사용해보면 좋겠다.
                 elif selected_item == 0.1:
                     saves["size"] ='medium'
                 elif selected_item == 0.2:

@@ -8,7 +8,7 @@ img_basic_address = './img/'
 class UNOGame():
     def __init__(self):
         pygame.init()
-        self.background = pygame.image.load('img/Game map.jpg')
+        self.background = pygame.image.load('../img/Story map.jpg')
         self.screen_width = 600
         self.screen_height = 400
         self.background_Color = (0,66,0)
@@ -57,7 +57,7 @@ class UNOGame():
                         if selected == 2:
                             #실행할 내용
                             pass
-                   
+
                 if event.type == MOUSEBUTTONDOWN:
                     mouse_pos = pygame.mouse.get_pos()
                     if  MAP1_rect.collidepoint(mouse_pos):

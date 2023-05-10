@@ -8,7 +8,7 @@ img_basic_address = './img/'
 class UNOGame():
     def __init__(self):
         pygame.init()
-        self.background = pygame.image.load('img/background.jpg')
+        self.background = pygame.image.load('../img/background.jpg')
         self.screen_width = 300
         self.screen_height = 300
         self.background_Color = (0,66,0)

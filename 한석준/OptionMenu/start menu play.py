@@ -8,7 +8,7 @@ img_basic_address = './img/'
 class UNOGame():
     def __init__(self):
         pygame.init()
-        self.background = pygame.image.load('img/background.png')
+        self.background = pygame.image.load('../img/background.png')
         self.screen_width = 800
         self.screen_height = 600
         self.background_Color = (0,66,0)
@@ -39,7 +39,7 @@ class UNOGame():
         set_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.7), 200, 50)
         quit_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.8), 200, 50)
         achievement_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.9), 200, 50)
-  
+
         while menu:
             pygame.init()
             for event in pygame.event.get():
@@ -146,7 +146,7 @@ class UNOGame():
             set_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.7), 200, 50)
             achievement_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.8), 200, 50)
             quit_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.9), 200, 50)
-  
+
             self.screen.blit(text_start, start_rect)
             self.screen.blit(text_story, story_rect)
             self.screen.blit(text_multiplay, multiplay_rect)
