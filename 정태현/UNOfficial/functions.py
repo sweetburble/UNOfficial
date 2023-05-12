@@ -6,8 +6,8 @@ import pygame_gui
 from pygame.locals import *
 
 KEYS = {} # 키 설정이 저장된 딕셔너리
+""" functions.py에서 사용할 키 설정을 불러온다 """
 def function_key_config(KEYS):
-    """ functions.py에서 사용할 키 설정을 불러온다 """
     with open('save.txt', 'r') as f:
         lines = f.readlines()
         settings = lines[:3]
@@ -25,8 +25,27 @@ def function_key_config(KEYS):
         key = float(key_name)
         KEYS[action] = key
 
+""" 기타 설정이 저장되어 있는 saves를 업데이트 한다 """
+def update_saves(saves):
+    with open('save.txt', 'r') as f:
+        lines = f.readlines()
+        settings = lines[:3]
+        settings2 = lines[3:8]
+        settings3 = lines[8:]
+    for line in settings:
+        key, value = line.strip().split(':')
+        saves[key] = value
+    for line in settings2:
+        action, key_name = line.strip().split(':')
+        key = int(key_name)
+        saves[action] = key
+    for line in settings3:
+        action, key_name = line.strip().split(':')
+        key = float(key_name)
+        saves[action] = key
+
 # =================================================================
-# 선택하는 객체가 아니라 그냥 텍스트만 화면에 출력하고 싶을 때 사용하세요
+""" 선택하는 객체가 아니라 그냥 텍스트만 화면에 출력하고 싶을 때 사용하는 함수 """
 def draw_text(uno, text, text_size, text_col, x, y):
     font = pygame.font.Font('./fonts/JosefinSans-Bold.ttf', text_size)
     img = font.render(text, True, text_col)

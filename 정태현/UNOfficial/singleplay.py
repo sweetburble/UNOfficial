@@ -3,7 +3,7 @@ import sys
 import random
 import itertools
 from pygame.locals import *
-from functions import KEYS, draw_text, text_format # singleplay.py에서 사용할 키값들을 저장하는 딕셔너리
+from functions import KEYS, draw_text, text_format, function_key_config, update_saves # singleplay.py에서 사용할 키값들을 저장하는 딕셔너리
 from settings import volumesetting, load_setting
 
 def peek(s):
@@ -20,12 +20,12 @@ def create(Object, uno):
 
     a = ('0', '1', '1', '2', '2', '3', '3', '4', '4', '5', '5', '6', '6', '7', '7', '8', '8', '9', '9',
             '+1', '+1', '+2', '+2', '+4', 'Skip', 'Skip', 'Reverse', 'Reverse') # 색깔 +1, +4 기술 카드 추가
-    Object.deck1 = list(itertools.product(a, Object.color)) # 덱 생성
-    for _ in range(4): # 덱에 와일드 카드 2종류 4장씩 추가
+    Object.deck1 = list(itertools.product(a, Object.color)) # 덱 생성 -> 총 120장
+    for _ in range(4): # 덱에 와일드 카드 2종류 4장씩 추가 
         Object.deck1.append(('Wild', 'Black'))
         Object.deck1.append(('+4', 'Black'))
     random.shuffle(Object.deck1) # 덱 셔플
-
+    
     while peek(Object.deck1) in [('Wild', 'Black'), ('+4', 'Black'), ('Skip', 'Red'), ('Skip', 'Green'),
                             ('Skip', 'Blue'), ('Skip', 'Yellow'), ('Reverse', 'Red'), ('Reverse', 'Green'),
                             ('Reverse', 'Blue'), ('Reverse', 'Yellow'), ('+2', 'Red'), ('+2', 'Green'),
@@ -38,7 +38,7 @@ def create(Object, uno):
     Object.current = peek(Object.deck2) # 버려진 카드 덱의 peek
 
     for j in range(uno.player_num):  # 모든 플레이어에게 카드를 7장씩 나누어 준다
-        for _ in range(2):
+        for _ in range(25):
             Object.player_list[j].append(Object.deck1.pop())
 
     # Object.player_list[0] = [('Wild', 'Black'), ('+4', 'Black'), ('Skip', 'Red'), ('Reverse', 'Green'), ("+2", "Blue")]
@@ -228,6 +228,50 @@ def bot_action(ob, uno, sounds):
 def Make_Rect(uno, x, y, w, h):
     return pygame.Rect(uno.screen_width*(x/1000), uno.screen_height*(y/600), uno.screen_width*(w/1000), uno.screen_height*(h/600))
 
+# def move_card(ess, uno, img, card, screen, image, background_image, start_pos, end_pos, duration, background=None):
+#     """
+#     Move an image from start_pos to end_pos with animation
+#     :param screen: Pygame screen object
+#     :param image: Pygame surface object representing the image to be moved
+#     :param start_pos: Tuple representing the starting position of the image (x, y)
+#     :param end_pos: Tuple representing the ending position of the image (x, y)
+#     :param duration: Duration of the animation in milliseconds
+#     :param background: Optional Pygame surface object representing the background image of the screen
+#     """
+#     # Calculate the distance to move in each frame
+#     # distance_x = (end_pos[0] - start_pos[0]) / duration
+#     # distance_y = (end_pos[1] - start_pos[1]) / duration
+#     distance_y = 100 / duration
+
+#     # Get the current time
+#     start_time = pygame.time.get_ticks()
+
+#     # while 시작에서 500 tick이 지나면 while 종료
+#     while pygame.time.get_ticks() - start_time < duration:
+#         # Create a new background surface with the same size as the screen
+#         if background is None:
+#             background = pygame.Surface(screen.get_size())
+#             background.fill((0, 0, 0))
+
+#         # Blit the background image to the background surface
+#         background.blit(background_image, (0, 0))
+
+#         # Calculate the position of the image in this frame
+#         elapsed_time = pygame.time.get_ticks() - start_time
+#         current_pos_x = int(start_pos[0])
+#         current_pos_y = int(start_pos[1] + (elapsed_time * distance_y))
+
+#         # Blit the moving image to the background surface at the current position
+#         background.blit(image, (current_pos_x, current_pos_y))
+
+#         # Blit the entire background surface to the screen
+#         screen.blit(background, (0, 0))
+
+#         # Update the screen
+#         pygame.display.u()
+
+#         # Wait for a short amount of time to control the animation speed
+#         pygame.time.wait(10)
 # ============================================================================================================
 def game_screen(ess, uno, sound, img, PM, saves):
     pygame.init()
@@ -243,29 +287,45 @@ def game_screen(ess, uno, sound, img, PM, saves):
     # function_key_config(KEYS)
     joe_fin = "./fonts/JosefinSans-Bold.ttf"
     width, height = uno.screen_width, uno.screen_height # 화면 크기
-
+    selected_card = 0
     while True:
         for event in pygame.event.get():
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
             if event.type == KEYDOWN:
-                if event.key == KEYS["up"]:
-                    # TODO: 선택되어 있는 카드 제출
-                    pass
-                elif event.key == KEYS["down"]:
-                    # TODO: 덱에서 카드 한장 드로우
-                    pass
-                elif event.key == KEYS["right"]: 
-                    # TODO: 오른쪽으로 카드 선택
-                    pass
-                elif event.key == KEYS["left"]:
-                    # TODO: 왼쪽으로 카드 선택
-                    pass
+                if ess.player_playing:
+                    if event.key == KEYS["up"]: # 선택한 카드를 낸다
+                        play_this_card(ess, uno, ess.player_list[0][selected_card])
+                        sound.card_played.play()
+                    elif event.key == KEYS["down"]: # 덱에서 카드 한장 드로우
+                        take_from_stack(ess)
+                        sound.card_drawn.play()
+                    elif event.key == KEYS["select"]: # 턴을 넘긴다
+                        sound.click.play()
+                        ess.player_playing = False
+                        ess.play_lag = 0
+                if event.key == KEYS["left"]: # 왼쪽으로 카드 선택
+                    if (selected_card >= len(ess.player_list[0]) - 1):
+                        selected_card = 0
+                    else:
+                        selected_card += 1
+                elif event.key == KEYS["right"]: # 오른쪽으로 카드 선택
+                    if (selected_card <= 0):
+                        selected_card = len(ess.player_list[0]) - 1
+                    else:
+                        selected_card -= 1
                 elif event.key == K_ESCAPE: # ESC 버튼을 누르면 게임이 일시정지됨
                     sound.click.play()
                     ess.is_game_paused = True
                     paused_game(ess, uno, sound, PM, saves)
+            if event.type == MOUSEMOTION:
+                mouse_pos = pygame.mouse.get_pos()
+                if ess.player_playing:
+                    # 1) 유저가 카드 위에 마우스를 올려놓았을 때
+                    for i in range(int((width/1000)*410), int((width/1000)*410 - 30 * len(ess.player_list[0])), -30):
+                        if i < mouse_pos[0] < (i + 30) and height*(520/600) < mouse_pos[1] < height*(590/600):
+                            selected_card = int(((width/1000)*425 - i) / 30)
             if event.type == MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
                 if ess.player_playing:  # 유저가 플레이 중일 때, 동작 로직
@@ -282,9 +342,9 @@ def game_screen(ess, uno, sound, img, PM, saves):
                         sound.card_drawn.play()
 
                     # 4) 유저가 카드를 클릭했는지 감지
-                    for i in range(int((width/1000)*425), int((width/1000)*425 - 50 * len(ess.player_list[0])), -50):
-                        if i < mouse_pos[0] < (i + 50) and height*(470/600) < mouse_pos[1] < height*(585/600):
-                            play_this_card(ess, uno, ess.player_list[0][int(((width/1000)*425 - i) / 50)])
+                    for i in range(int((width/1000)*410), int((width/1000)*410 - 30 * len(ess.player_list[0])), -30):
+                        if i < mouse_pos[0] < (i + 30) and height*(520/600) < mouse_pos[1] < height*(590/600):
+                            play_this_card(ess, uno, ess.player_list[0][int(((width/1000)*410 - i) / 30)])
                             sound.card_played.play()
 
                 # 5) 이번 턴에 와일드 카드를 냈으면, 새로운 색깔 선택
@@ -345,41 +405,68 @@ def game_screen(ess, uno, sound, img, PM, saves):
         text_user = pygame.font.Font(joe_fin, int(height*(20/600))).render(ess.bot_map[6], True, (255, 238, 46))
         uno.screen.blit(text_user, [width*(490/1000), height*(460/600)]) # 유저 이름 텍스트
         
-        for i in range(len(ess.player_list[0])): # 유저 플레이어의 카드 이미지
-            uno.screen.blit(pygame.image.load("./images/" + ess.player_list[0][i][1] + str(ess.player_list[0][i][0]) + ".png"), (width*((390 - 50 * i)/1000), height*(470/600)))
-
+        for i in range(len(ess.player_list[0])):
+            x_diff = i % 10
+            y_diff = i // 10
+            if (selected_card == i): # 카드 선택 애니메이션 구현
+                uno.screen.blit(pygame.image.load("./images/" + ess.player_list[0][i][1] + str(ess.player_list[0][i][0]) + ".png"), (width*((390 - 30 * x_diff)/1000), height*((480 - 80 * y_diff)/600)))
+            else:
+                uno.screen.blit(pygame.image.load("./images/" + ess.player_list[0][i][1] + str(ess.player_list[0][i][0]) + ".png"), (width*((390 - 30 * x_diff)/1000), height*((520 - 80 * y_diff)/600)))
+        # 카드 선택의 가시성을 위해 선택된 카드를 다시 그린다
+        uno.screen.blit(pygame.image.load("./images/" + ess.player_list[0][selected_card][1] + str(ess.player_list[0][selected_card][0]) + ".png"), (width*((390 - 30 * (selected_card % 10))/1000), height*((480 - 80 * (selected_card // 10))/600)))
+        
         text_p1 = pygame.font.Font(joe_fin, int(height*(20/600))).render(ess.bot_map[1], True, (255, 238, 46))
         text_p2 = pygame.font.Font(joe_fin, int(height*(20/600))).render(ess.bot_map[2], True, (255, 238, 46))
         text_p3 = pygame.font.Font(joe_fin, int(height*(20/600))).render(ess.bot_map[3], True, (255, 238, 46))
         text_p4 = pygame.font.Font(joe_fin, int(height*(20/600))).render(ess.bot_map[4], True, (255, 238, 46))
         text_p5 = pygame.font.Font(joe_fin, int(height*(20/600))).render(ess.bot_map[5], True, (255, 238, 46))
 
-        # 컴퓨터 플레이어들의 초기 카드 이미지 표시 -> Back_computer.png
+        # 컴퓨터 플레이어들의 초기 카드 이미지 표시 -> 컴퓨터의 카드가 11장 이상이면 카드 이미지 x 숫자로 표시
         if uno.player_num >= 2:
             uno.screen.blit(img.p1, (width*(940/1000), height*(10/600))) # JARVIS 이미지
             uno.screen.blit(text_p1, [width*(860/1000), height*(10/600)]) # JARVIS 텍스트 표시
-            for i in range(len(ess.player_list[1])): # JARVIS의 카드 이미지
-                uno.screen.blit(img.card_back_computer, (width*((940 - 20 * i)/1000), height*(60/600)))
+            if len(ess.player_list[1]) >= 11: 
+                uno.screen.blit(img.card_back_computer, [width*(800/1000), height*(60/600)])
+                draw_text(uno, ("x " + str(len(ess.player_list[1]))), 40, (0, 0, 255), width*(850/1000), height*(70/600))
+            else:
+                for i in range(len(ess.player_list[1])): # JARVIS의 카드 이미지
+                    uno.screen.blit(img.card_back_computer, (width*((940 - 20 * i)/1000), height*(60/600)))
             if uno.player_num >= 3:
                 uno.screen.blit(img.p2, (width*(940/1000), height*(130/600))) # EDITH 이미지
                 uno.screen.blit(text_p2, [width*(860/1000), height*(130/600)]) # EDITH 텍스트 표시
-                for i in range(len(ess.player_list[2])): # EDITH의 카드 이미지
-                    uno.screen.blit(img.card_back_computer, (width*((940 - 20 * i)/1000), height*(180/600)))
+                if len(ess.player_list[2]) >= 11:
+                    uno.screen.blit(img.card_back_computer, [width*(800/1000), height*(180/600)])
+                    draw_text(uno, ("x " + str(len(ess.player_list[2]))), 40, (0, 0, 255), width*(850/1000), height*(190/600))
+                else:
+                    for i in range(len(ess.player_list[2])): # EDITH의 카드 이미지
+                        uno.screen.blit(img.card_back_computer, (width*((940 - 20 * i)/1000), height*(180/600)))
                 if uno.player_num >= 4:
                     uno.screen.blit(img.p3, (width*(940/1000), height*(250/600))) # FRIDAY 이미지
                     uno.screen.blit(text_p3, [width*(860/1000), height*(250/600)]) # FRIDAY 텍스트 표시
-                    for i in range(len(ess.player_list[3])): # FRIDAY의 카드 이미지
-                        uno.screen.blit(img.card_back_computer, (width*((940 - 20 * i)/1000), height*(300/600)))
+                    if len(ess.player_list[3]) >= 11:
+                        uno.screen.blit(img.card_back_computer, [width*(800/1000), height*(300/600)])
+                        draw_text(uno, ("x " + str(len(ess.player_list[3]))), 40, (0, 0, 255), width*(850/1000), height*(310/600))
+                    else:
+                        for i in range(len(ess.player_list[3])): # FRIDAY의 카드 이미지
+                            uno.screen.blit(img.card_back_computer, (width*((940 - 20 * i)/1000), height*(300/600)))
                     if uno.player_num >= 5:
                         uno.screen.blit(img.p4, (width*(940/1000), height*(370/600))) # BRIAN 이미지
                         uno.screen.blit(text_p4, [width*(860/1000), height*(370/600)]) # BRIAN 텍스트 표시
-                        for i in range(len(ess.player_list[4])): # BRIAN의 카드 이미지
-                            uno.screen.blit(img.card_back_computer, (width*((940 - 20 * i)/1000), height*(420/600)))
+                        if len(ess.player_list[4]) >= 11:
+                            uno.screen.blit(img.card_back_computer, [width*(800/1000), height*(420/600)])
+                            draw_text(uno, ("x " + str(len(ess.player_list[4]))), 40, (0, 0, 255), width*(850/1000), height*(430/600))
+                        else:
+                            for i in range(len(ess.player_list[4])): # BRIAN의 카드 이미지
+                                uno.screen.blit(img.card_back_computer, (width*((940 - 20 * i)/1000), height*(420/600)))
                         if uno.player_num == 6:
                             uno.screen.blit(img.p5, (width*(940/1000), height*(490/600))) # SWIFT 이미지
                             uno.screen.blit(text_p5, [width*(860/1000), height*(490/600)]) # SWIFT 텍스트 표시
-                            for i in range(len(ess.player_list[5])): # SWIFT의 카드 이미지
-                                uno.screen.blit(img.card_back_computer, (width*((940 - 20 * i)/1000), height*(540/600)))
+                            if len(ess.player_list[5]) >= 11:
+                                uno.screen.blit(img.card_back_computer, [width*(800/1000), height*(540/600)])
+                                draw_text(uno, ("x " + str(len(ess.player_list[5]))), 40, (0, 0, 255), width*(850/1000), height*(550/600))
+                            else:
+                                for i in range(len(ess.player_list[5])): # SWIFT의 카드 이미지
+                                    uno.screen.blit(img.card_back_computer, (width*((940 - 20 * i)/1000), height*(540/600)))
 
         text = pygame.font.Font(joe_fin, int(height*(20/600))).render(ess.message, True, (255, 238, 46))
         uno.screen.blit(text, [width*(140/1000), height*(110/600)]) # 게임 진행 메시지
@@ -545,10 +632,13 @@ def paused_game(ess, uno, sound, PM, saves):
                         bg = pygame.image.load("./images/background.png")
                         bg = pygame.transform.scale_by(bg, (uno.screen_width/1000, uno.screen_height/600))
                         uno.screen.blit(bg,(0,0))
-                        pygame.mixer.music.set_volume(saves["background"])
-                        volumesetting(sound, saves["effects"])
                         
                         load_setting(ess, uno, sound, PM, saves) # 처음 설정 화면을 불러온다
+                        
+                        function_key_config(KEYS) # 키 설정을 불러온다
+                        update_saves(saves) # 기타 설정을 불러온다
+                        pygame.mixer.music.set_volume(saves["background"]) # 설정에 맞게 소리를 조절한다
+                        volumesetting(sound, saves["effects"])
                     elif selected == 2: # 업적 메뉴
                         pass
                     elif selected == 3: # 게임 재개
@@ -569,10 +659,13 @@ def paused_game(ess, uno, sound, PM, saves):
                     bg = pygame.image.load("./images/background.png")
                     bg = pygame.transform.scale_by(bg, (uno.screen_width/1000, uno.screen_height/600))
                     uno.screen.blit(bg,(0,0))
-                    pygame.mixer.music.set_volume(saves["background"])
-                    volumesetting(sound, saves["effects"])
 
                     load_setting(ess, uno, sound, PM, saves) # 처음 설정 화면을 불러온다
+                    
+                    function_key_config(KEYS) # 키 설정을 불러온다
+                    update_saves(saves) # 기타 설정을 불러온다
+                    pygame.mixer.music.set_volume(saves["background"]) # 설정에 맞게 소리를 조절한다
+                    volumesetting(sound, saves["effects"])
                 elif achievement_rect.collidepoint(mouse_pos): # 업적 메뉴
                     selected = 2
                 elif resume_rect.collidepoint(mouse_pos): # 게임 재개

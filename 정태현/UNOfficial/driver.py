@@ -50,6 +50,7 @@ while True:
     # 시작 화면
     if ess.play_mode == PM.load:
         function_key_config(KEYS) # 키 설정을 불러온다
+        update_saves(saves) # 설정을 불러온다
         pygame.mixer.music.set_volume(saves["background"]) # 배경음악과 효과음 설정을 적용한다
         volumesetting(sound, saves["effects"])
 
