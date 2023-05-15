@@ -57,7 +57,7 @@ class Essentials(object):
         self.deck2 = list() # deck2 =  버려진 카드 덱
         
         self.direction_check = 1  # 게임의 진행 방향, 1은 시계 방향, -1은 반시계 방향
-        self.position = -1  # 플레이 하는 플레이어 인덱스 (Playing player index)
+        self.position = -1  # 플레이 하는 플레이어의 인덱스 (Playing player index)
         self.current = list()  # Current card on top of stack, 버려진 카드 덱의 맨 위에 있는 카드
 
         self.drawn = False  # 유저 플레이 플래그 (User play flags)

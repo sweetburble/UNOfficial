@@ -98,7 +98,7 @@ def main_menu(ob, uno, STORY):
                         ob.play_mode = "SETTING"
                         return
                     elif selected == 4: # 멀티플레이 버튼
-                        # ob.play_mode = "MULTIPLAY"
+                        ob.play_mode = "MULTIPLAY"
                         return
                     elif selected == 5: # 업적 버튼
                         # ob.play_mode = "ACHIEVEMENT"
@@ -124,7 +124,7 @@ def main_menu(ob, uno, STORY):
                     return
                 elif multiplay_rect.collidepoint(mouse_pos): # 멀티플레이 버튼
                     selected = 4
-                    # ob.play_mode = "MULTIPLAY"
+                    ob.play_mode = "MULTIPLAY"
                     return
                 elif achievement_rect.collidepoint(mouse_pos): # 업적 버튼
                     selected = 5
@@ -221,16 +221,16 @@ def main_menu(ob, uno, STORY):
         uno.screen.blit(text_multiplay, multiplay_rect)
         uno.screen.blit(text_achievement, achievement_rect)
         uno.screen.blit(text_quit, quit_rect)
-        uno.screen.blit(text_up,up_rect)
-        uno.screen.blit(text_ups,ups_rect)
-        uno.screen.blit(text_left,left_rect)
-        uno.screen.blit(text_lefts,lefts_rect)
-        uno.screen.blit(text_right,right_rect)
-        uno.screen.blit(text_rights,rights_rect)
-        uno.screen.blit(text_down,down_rect)
-        uno.screen.blit(text_downs,downs_rect)
-        uno.screen.blit(text_enter,enter_rect)
-        uno.screen.blit(text_enters,enters_rect)
+        uno.screen.blit(text_up, up_rect)
+        uno.screen.blit(text_ups, ups_rect)
+        uno.screen.blit(text_left, left_rect)
+        uno.screen.blit(text_lefts, lefts_rect)
+        uno.screen.blit(text_right, right_rect)
+        uno.screen.blit(text_rights, rights_rect)
+        uno.screen.blit(text_down, down_rect)
+        uno.screen.blit(text_downs, downs_rect)
+        uno.screen.blit(text_enter, enter_rect)
+        uno.screen.blit(text_enters, enters_rect)
 
         pygame.display.update()
 

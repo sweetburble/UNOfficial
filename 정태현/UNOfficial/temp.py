@@ -76,7 +76,7 @@ import pygame
 
 
 # ============================================================
-def move_card(ess, uno, img, card, screen, image, background_image, duration):
+def move_card(ess, uno, img, card, screen, image, background_image, end_pos, start_pos):
     """
     Move an image from start_pos to end_pos with animation
     :param screen: Pygame screen object
@@ -86,10 +86,12 @@ def move_card(ess, uno, img, card, screen, image, background_image, duration):
     :param duration: Duration of the animation in milliseconds
     :param background: Optional Pygame surface object representing the background image of the screen
     """
+    duration = 500 # 틱을 미리 정함
+
     # Calculate the distance to move in each frame
-    # distance_x = (end_pos[0] - start_pos[0]) / duration
-    # distance_y = (end_pos[1] - start_pos[1]) / duration
-    distance_y = 100 / duration
+    distance_x = (end_pos[0] - start_pos[0]) / duration # 500 tick 동안 이동
+    distance_y = (end_pos[1] - start_pos[1]) / duration
+    # distance_y = 100 / duration
 
     # Get the current time
     start_time = pygame.time.get_ticks()
@@ -106,7 +108,7 @@ def move_card(ess, uno, img, card, screen, image, background_image, duration):
 
         # Calculate the position of the image in this frame
         elapsed_time = pygame.time.get_ticks() - start_time
-        current_pos_x = int(start_pos[0])
+        current_pos_x = int(start_pos[0] + (elapsed_time * distance_x))
         current_pos_y = int(start_pos[1] + (elapsed_time * distance_y))
 
         # Blit the moving image to the background surface at the current position
@@ -116,7 +118,7 @@ def move_card(ess, uno, img, card, screen, image, background_image, duration):
         screen.blit(background, (0, 0))
 
         # Update the screen
-        pygame.display.u()
+        pygame.display.update()
 
         # Wait for a short amount of time to control the animation speed
         pygame.time.wait(10)

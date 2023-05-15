@@ -2,8 +2,10 @@ from classes import *
 from functions import *
 from settings import *
 from singleplay import *
+from client import *
 
 pygame.init()
+pygame.font.init()
 
 # classes.py의 클래스들의 객체를 생성
 img = Image()
@@ -56,7 +58,7 @@ while True:
 
         main_menu(ess, uno, STORY) # 필수적인 이미지와 텍스트를 표시한다
 
-    # 게임 화면 
+    # 싱글플레이 게임 화면 
     elif ess.play_mode == PM.in_game:
         # 게임 중에도 설정을 변경할 수 있으므로 saves 딕셔너리를 넘겨준다
         game_screen(ess, uno, sound, img, PM, saves)
@@ -81,6 +83,10 @@ while True:
         uno.screen.blit(img.win, (0, 0))
         text = pygame.font.Font(FONT.pacifico, int(height*(40/600))).render(string, True, (255, 238, 46))
         uno.screen.blit(text, [width*(190/1000), height*(100/600)])
+
+    # 멀티플레이 게임 화면
+    elif ess.play_mode == PM.multiplay:
+        select_screen(ess, uno, saves)
 
     # 화면을 지속적으로 갱신
     pygame.display.update()

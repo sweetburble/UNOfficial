@@ -38,7 +38,7 @@ def create(Object, uno):
     Object.current = peek(Object.deck2) # 버려진 카드 덱의 peek
 
     for j in range(uno.player_num):  # 모든 플레이어에게 카드를 7장씩 나누어 준다
-        for _ in range(25):
+        for _ in range(7):
             Object.player_list[j].append(Object.deck1.pop())
 
     # Object.player_list[0] = [('Wild', 'Black'), ('+4', 'Black'), ('Skip', 'Red'), ('Reverse', 'Green'), ("+2", "Blue")]
@@ -108,9 +108,11 @@ def play_this_card(ob, uno, card): # ob = ess, card = ess.player_list[0][int((62
             ob.choose_color = True # 와일드 카드는 모두 색깔을 선택하게 한다
             ob.player_list[0].remove(card)
             ob.deck2.append(card)
+        
+        move_card(ob, uno, "./images/" + str(card[1]) + str(card[0]) + ".png") # 카드를 냈으면, 카드를 옮긴다
 
 # driver.py에서 6번째로 호출
-def play_this_card_2(ob, color): # color = "Red" or "Blue" or "Green" or "Yellow"가 들어간다
+def change_card_color(ob, color): # color = "Red" or "Blue" or "Green" or "Yellow"가 들어간다
     """ 다음 색깔 선택 """
     ob.deck2[-1] = (ob.deck2[-1][0], color) # color에 맞는 이미지 파일(EX - Red.png)이 로딩될 것이다
     ob.current = peek(ob.deck2)
@@ -130,12 +132,13 @@ def handle24(ob, n): # (ob, int(ob.current[0][1]))
     ob.special_check = 1 # 기술 카드 상태 비활성화
 
 # bot_action()에서 10번째로 호출
-def handle_black(ob, item):
+def handle_black(ob, uno, item):
     """ 와일드 카드를 처리한다 """
+    move_card(ob, uno, "./images/Back_computer.png")
+
     ob.special_check = 0 # 기술 카드 상태 활성화
     ob.deck2.append(item)
     ob.current = peek(ob.deck2)
-    
     d = dict()
     d['Blue'] = 0
     d['Green'] = 0
@@ -153,8 +156,9 @@ def handle_black(ob, item):
     ob.current = (ob.current[0], new_color) # AI가 선택한 색깔로, 버려진 카드 덱에 이미지 파일(EX - Red.png)을 그린다
 
 # bot_action()에서 9번째로 호출
-def bot_play_card(ob, item):
+def bot_play_card(ob, uno, item):
     """ AI가 카드를 플레이한다 """
+    move_card(ob, uno, "./images/Back_computer.png")
     ob.special_check = 0 # 기술 카드 상태 활성화
     ob.deck2.append(item)
     ob.current = peek(ob.deck2)
@@ -185,10 +189,10 @@ def bot_action(ob, uno, sounds):
         check = 0
         for item in ob.player_list[ob.position]: # AI가 가지고 있는 카드 중에서
             if ob.current[1] == item[1] or ob.current[0] == item[0]: # 색깔이나 숫자가 같은 카드가 있다면
-                bot_play_card(ob, item)
+                bot_play_card(ob, uno, item)
 
                 if item[1] == 'Black': # 그게 와일드 카드면
-                    handle_black(ob, item)
+                    handle_black(ob, uno, item)
 
                 ob.player_list[ob.position].remove(item)
 
@@ -201,7 +205,7 @@ def bot_action(ob, uno, sounds):
             for item in ob.player_list[ob.position]:
                 if item[1] == 'Black': # 근데 와일드 카드가 있다면
                     ob.message = "%s plays %s" % (ob.bot_map[ob.position], item[0] + " " + item[1])
-                    handle_black(ob, item)
+                    handle_black(ob, uno, item)
                     ob.player_list[ob.position].remove(item)
                     black_check = 1
                     break
@@ -217,9 +221,9 @@ def bot_action(ob, uno, sounds):
 
                 if new_card[1] == 'Black': # 뽑은 카드가 와일드 카드라면
                     ob.message = "%s plays %s" % (ob.bot_map[ob.position], new_card[0] + " " + new_card[1])
-                    handle_black(ob, new_card) 
+                    handle_black(ob, uno, new_card) 
                 elif new_card[1] == ob.current[1] or new_card[0] == ob.current[0]: # 뽑은 카드가 버려진 카드 덱의 맨 위에 있는 카드와 색깔이나 숫자가 같다면
-                    bot_play_card(ob, new_card)
+                    bot_play_card(ob, uno, new_card)
                 else:
                     ob.player_list[ob.position].append(new_card)
 
@@ -228,50 +232,39 @@ def bot_action(ob, uno, sounds):
 def Make_Rect(uno, x, y, w, h):
     return pygame.Rect(uno.screen_width*(x/1000), uno.screen_height*(y/600), uno.screen_width*(w/1000), uno.screen_height*(h/600))
 
-# def move_card(ess, uno, img, card, screen, image, background_image, start_pos, end_pos, duration, background=None):
-#     """
-#     Move an image from start_pos to end_pos with animation
-#     :param screen: Pygame screen object
-#     :param image: Pygame surface object representing the image to be moved
-#     :param start_pos: Tuple representing the starting position of the image (x, y)
-#     :param end_pos: Tuple representing the ending position of the image (x, y)
-#     :param duration: Duration of the animation in milliseconds
-#     :param background: Optional Pygame surface object representing the background image of the screen
-#     """
-#     # Calculate the distance to move in each frame
-#     # distance_x = (end_pos[0] - start_pos[0]) / duration
-#     # distance_y = (end_pos[1] - start_pos[1]) / duration
-#     distance_y = 100 / duration
+def move_card(ess, uno, img_path):
+    width, height = uno.screen_width, uno.screen_height
+    duration = 100 # 틱을 미리 정함
+    card_img = pygame.image.load(img_path) # 입력받은 이미지 경로를 통해 이미지를 불러옴
+    card_img = pygame.transform.scale_by(card_img, (uno.screen_width/1000, uno.screen_height/600))
 
-#     # Get the current time
-#     start_time = pygame.time.get_ticks()
+    if ess.player_playing == False:
+        distance_x = 200 / duration
+        distance_y = 0
+        start_pos = ((width*(800/1000)), height/600*(-110 + ess.position * 120))
+    else:
+        distance_x = 0
+        distance_y = 200 / duration
+        start_pos = (width*(490/1000), height*(380/600))
 
-#     # while 시작에서 500 tick이 지나면 while 종료
-#     while pygame.time.get_ticks() - start_time < duration:
-#         # Create a new background surface with the same size as the screen
-#         if background is None:
-#             background = pygame.Surface(screen.get_size())
-#             background.fill((0, 0, 0))
+    # Get the current time
+    start_time = pygame.time.get_ticks()
 
-#         # Blit the background image to the background surface
-#         background.blit(background_image, (0, 0))
+    # while 시작에서 500 tick이 지나면 while 종료
+    while pygame.time.get_ticks() - start_time < duration:
 
-#         # Calculate the position of the image in this frame
-#         elapsed_time = pygame.time.get_ticks() - start_time
-#         current_pos_x = int(start_pos[0])
-#         current_pos_y = int(start_pos[1] + (elapsed_time * distance_y))
+        # Calculate the position of the image in this frame
+        elapsed_time = pygame.time.get_ticks() - start_time
+        current_pos_x = int(start_pos[0] - (elapsed_time * distance_x))
+        current_pos_y = int(start_pos[1] - (elapsed_time * distance_y))
 
-#         # Blit the moving image to the background surface at the current position
-#         background.blit(image, (current_pos_x, current_pos_y))
+        # Blit the moving image to the background surface at the current position
+        uno.screen.blit(card_img, (current_pos_x, current_pos_y))
 
-#         # Blit the entire background surface to the screen
-#         screen.blit(background, (0, 0))
+        pygame.display.update()
 
-#         # Update the screen
-#         pygame.display.u()
-
-#         # Wait for a short amount of time to control the animation speed
-#         pygame.time.wait(10)
+        # Wait for a short amount of time to control the animation speed
+        pygame.time.wait(10)
 # ============================================================================================================
 def game_screen(ess, uno, sound, img, PM, saves):
     pygame.init()
@@ -351,19 +344,19 @@ def game_screen(ess, uno, sound, img, PM, saves):
                 if ess.choose_color:
                     if width*(395/1000) < mouse_pos[0] < width*(440/1000) and height*(390/600) < mouse_pos[1] < height*(450/600): # 빨간색 버튼
                         ess.choose_color = False
-                        play_this_card_2(ess, "Red")
+                        change_card_color(ess, "Red")
                         sound.click.play()
                     if width*(450/1000) < mouse_pos[0] < width*(495/1000) and height*(390/600) < mouse_pos[1] < height*(450/600): # 초록색 버튼
                         ess.choose_color = False
-                        play_this_card_2(ess, "Green")
+                        change_card_color(ess, "Green")
                         sound.click.play()
                     if width*(505/1000) < mouse_pos[0] < width*(550/1000) and height*(390/600) < mouse_pos[1] < height*(450/600): # 파란색 버튼
                         ess.choose_color = False
-                        play_this_card_2(ess, "Blue")
+                        change_card_color(ess, "Blue")
                         sound.click.play()
                     if width*(560/1000) < mouse_pos[0] < width*(605/1000) and height*(390/600) < mouse_pos[1] < height*(450/600): # 노란색 버튼
                         ess.choose_color = False
-                        play_this_card_2(ess, "Yellow")
+                        change_card_color(ess, "Yellow")
                         sound.click.play()
                 
                 if pause_button_rect.collidepoint(mouse_pos): # 일시 정지 버튼을 클릭
@@ -399,7 +392,6 @@ def game_screen(ess, uno, sound, img, PM, saves):
         except:
             uno.screen.blit(pygame.image.load("./images/" + ess.current[1] + ".png"), (width*(380/1000), height*(140/600)))
 
-        # 유저와 컴퓨터 플레이어의 이미지를 표현한다
         uno.screen.blit(img.p_user, (width*(475/1000), height*(490/600))) # 유저 플레이어 이미지
         
         text_user = pygame.font.Font(joe_fin, int(height*(20/600))).render(ess.bot_map[6], True, (255, 238, 46))
@@ -412,7 +404,7 @@ def game_screen(ess, uno, sound, img, PM, saves):
                 uno.screen.blit(pygame.image.load("./images/" + ess.player_list[0][i][1] + str(ess.player_list[0][i][0]) + ".png"), (width*((390 - 30 * x_diff)/1000), height*((480 - 80 * y_diff)/600)))
             else:
                 uno.screen.blit(pygame.image.load("./images/" + ess.player_list[0][i][1] + str(ess.player_list[0][i][0]) + ".png"), (width*((390 - 30 * x_diff)/1000), height*((520 - 80 * y_diff)/600)))
-        # 카드 선택의 가시성을 위해 선택된 카드를 다시 그린다
+        # 카드 선택의 가시성을 위해 선택된 카드를 한 번 다시 그렸다
         uno.screen.blit(pygame.image.load("./images/" + ess.player_list[0][selected_card][1] + str(ess.player_list[0][selected_card][0]) + ".png"), (width*((390 - 30 * (selected_card % 10))/1000), height*((480 - 80 * (selected_card // 10))/600)))
         
         text_p1 = pygame.font.Font(joe_fin, int(height*(20/600))).render(ess.bot_map[1], True, (255, 238, 46))
@@ -531,7 +523,7 @@ def game_screen(ess, uno, sound, img, PM, saves):
                         ess.player_playing = False
                     
                     if len(ess.player_list[0]) == 1 and ess.shouted_uno[0] == False:
-                        # 전에 UNO를 외치지 않았는데, 1장 남았다면,
+                        # 이전 턴에 UNO를 외치지 않았는데, 카드가 1장 남았다면,
                         try: 
                             ess.player_list[0].append(ess.deck1.pop()) # 페널티로 덱에서 카드 한장을 뽑는다.
                         except:
