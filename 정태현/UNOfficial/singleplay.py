@@ -38,7 +38,7 @@ def create(Object, uno):
     Object.current = peek(Object.deck2) # 버려진 카드 덱의 peek
 
     for j in range(uno.player_num):  # 모든 플레이어에게 카드를 7장씩 나누어 준다
-        for _ in range(7):
+        for _ in range(25):
             Object.player_list[j].append(Object.deck1.pop())
 
     # Object.player_list[0] = [('Wild', 'Black'), ('+4', 'Black'), ('Skip', 'Red'), ('Reverse', 'Green'), ("+2", "Blue")]
@@ -58,6 +58,7 @@ def set_curr_player(ob, uno, default): # (ob, uno, False)
 
     if default: # AI가 플레이 하는 경우 True, 유저인 경우 False
         ob.position = (ob.position + ob.direction_check) % uno.player_num # direction_check대로 진행한다
+        self.sot
 
 # driver.py에서 2번째로 호출
 def re_initialize(ob, uno):
@@ -232,6 +233,7 @@ def bot_action(ob, uno, sounds):
 def Make_Rect(uno, x, y, w, h):
     return pygame.Rect(uno.screen_width*(x/1000), uno.screen_height*(y/600), uno.screen_width*(w/1000), uno.screen_height*(h/600))
 
+""" 간단한 애니메이션 효과를 구현하는 함수 """
 def move_card(ess, uno, img_path):
     width, height = uno.screen_width, uno.screen_height
     duration = 100 # 틱을 미리 정함

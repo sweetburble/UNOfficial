@@ -5,7 +5,7 @@ from game import Game
 
 class socketServer():
     client_sockets = [] # 클라이언트들의 목록
-    server = "192.168.0.127"
+    server = "10.50.99.36"
     port = 5555
 
     def __init__(self):

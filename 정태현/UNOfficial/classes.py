@@ -196,3 +196,4 @@ class UNOGame(object):
 class StoryMode(object):
     def __init__(self):
         self.Is_story_passed = 0 # 0은 하나도 클리어 하지 못했다는 뜻, 모든 스토리를 선택할 수 있는 상태는 3이다
+        self.StoryC_turn = 0
