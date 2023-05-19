@@ -534,13 +534,13 @@ def story_mode(ob, uno, STORY):
                         uno.background = pygame.transform.scale_by(uno.background, (uno.screen_width/800, uno.screen_height/600))
                         return "START SCREEN"
                     if selected == 1:
-                        select_story(ob, uno, STORY, 1)
+                        return select_story(ob, uno, STORY, 1)
                     if selected == 2:
-                        select_story(ob, uno, STORY, 2)
+                        return select_story(ob, uno, STORY, 2)
                     if selected == 3:
-                        select_story(ob, uno, STORY, 3)
+                        return select_story(ob, uno, STORY, 3)
                     if selected >= 4:
-                        select_story(ob, uno, STORY, 4)
+                        return select_story(ob, uno, STORY, 4)
 
             if event.type == MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
@@ -614,6 +614,7 @@ def story_mode(ob, uno, STORY):
 
         pygame.display.update()
 
+""" 어떤 한 지역을 선택하면 설명을 보여주고 선택 여부를 묻는다 """
 def select_story(ob, uno, STORY, stage):
     pygame.init()
     uno.background = pygame.image.load('./images/Story map.jpg')

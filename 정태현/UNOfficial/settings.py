@@ -65,13 +65,13 @@ def load_setting(ess, uno, sound, PM, saves):
                 mouse_pos = pygame.mouse.get_pos()
                 if small_rect.collidepoint(mouse_pos):
                     selected_item = 0
-                    saves["size"] ='small'
+                    saves["size"] = 'small'
                 elif medium_rect.collidepoint(mouse_pos):
                     selected_item = 0.1
-                    saves["size"] ='medium'
+                    saves["size"] = 'medium'
                 elif large_rect.collidepoint(mouse_pos):
                     selected_item = 0.2
-                    saves["size"] ='large'
+                    saves["size"] = 'large'
                 elif keycon_rect.collidepoint(mouse_pos): # key configuration으로 이동
                     selected_item = 1
                     with open('save.txt', 'w') as file:
@@ -81,12 +81,12 @@ def load_setting(ess, uno, sound, PM, saves):
                     go_to = load_key_config(ess, uno, sound, PM, saves)
                     if go_to == 'START SCREEN':
                         return
-                elif altcol_rect.collidepoint(mouse_pos): # 색약 모드
+                elif origin_rect.collidepoint(mouse_pos): # 색약 모드
                     selected_item = 2
-                    if saves["color_change"].startswith('original'):
-                        saves["color_change"] = 'alternative'
-                    else:
-                        saves["color_change"] = 'original'
+                    saves["color_change"] = 'original'
+                elif altcol_rect.collidepoint(mouse_pos):
+                    selected_item = 2.1
+                    saves["color_change"] = 'alternative'
                 elif reset_rect.collidepoint(mouse_pos): # 리셋 버튼
                     selected_item = 3
                     saves = return_default_setting()
@@ -117,10 +117,9 @@ def load_setting(ess, uno, sound, PM, saves):
                         if go_to == 'START SCREEN':
                             return
                     elif selected_item == 2: # 색약 모드
-                        if saves["color_change"].startswith('original'):
-                            saves["color_change"] = 'alternative'
-                        else:
-                            saves["color_change"] = 'original'
+                        saves["color_change"] = 'original'
+                    elif selected_item == 2.1:
+                        saves["color_change"] = 'alternative'
                     elif selected_item == 3: # 리셋 버튼
                         saves = return_default_setting()
                     elif selected_item == 4: # 시작화면으로 돌아가기
@@ -149,6 +148,21 @@ def load_setting(ess, uno, sound, PM, saves):
                                 selected_item = 1
                         elif event.key == saves["up"]:
                                 selected_item = 4
+                    elif selected_item == 2 or selected_item == 2.1:
+                        if event.key == saves["right"]:
+                            if selected_item == 2.1:
+                                selected_item = 2
+                            else:
+                                selected_item += 0.1
+                        elif event.key == saves["left"]:
+                            if selected_item == 2:
+                                selected_item = 2.1
+                            else:
+                                selected_item -= 0.1
+                        elif event.key == saves["down"]:
+                                selected_item = 3
+                        elif event.key == saves["up"]:
+                                selected_item = 1                        
                     else:
                         if event.key == saves['down']:
                             if selected_item == 4:
@@ -175,8 +189,12 @@ def load_setting(ess, uno, sound, PM, saves):
         large_rect = large_text.get_rect(center=(4*width//5, 2*height//7))
         keycon_text = font.render("Key Config & Sounds",True,(255,255,255))
         keycon_rect = keycon_text.get_rect(center=(width//2,3*height//7))
+        
+        origin_text = font.render("Original Colors",True,(255,255,255))
+        origin_rect = origin_text.get_rect(center=(2*width//6,4*height//7))
         altcol_text = font.render("Alternative Colors",True,(255,255,255))
-        altcol_rect=altcol_text.get_rect(center=(width//2,4*height//7))
+        altcol_rect = altcol_text.get_rect(center=(4*width//6,4*height//7))
+        
         reset_text = font.render("RESET ALL SETTINGS",True,(255,255,255))
         reset_rect = reset_text.get_rect(center=(width//2,5*height//7))
         back_text = font.render("Back", True, (255,255,255))
@@ -192,6 +210,8 @@ def load_setting(ess, uno, sound, PM, saves):
         elif selected_item == 1:
             keycon_text = font.render("Key Config & Sounds", True, (0,0,255))   
         elif selected_item == 2:
+            origin_text = font.render("Original Colors", True, (0,0,255))
+        elif selected_item == 2.1:
             altcol_text = font.render("Alternative Colors", True, (0,0,255))
         elif selected_item == 3:
             reset_text = font.render("RESET ALL SETTINGS", True, (0,0,255))
@@ -205,6 +225,7 @@ def load_setting(ess, uno, sound, PM, saves):
         uno.screen.blit(medium_text, medium_rect)
         uno.screen.blit(large_text, large_rect)
         uno.screen.blit(keycon_text, keycon_rect)
+        uno.screen.blit(origin_text, origin_rect)
         uno.screen.blit(altcol_text, altcol_rect)
         uno.screen.blit(reset_text, reset_rect)
         uno.screen.blit(back_text, back_rect)

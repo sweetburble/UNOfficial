@@ -49,6 +49,10 @@ elif saves["size"] == 'small':
     width = 750
     height = 450
 
+if saves["color_change"] == 'original':
+    path = 'original'
+else:
+    path = 'alternative'
 
 class Essentials(object):
     def __init__(self):
@@ -76,6 +80,8 @@ class Essentials(object):
         self.bot_map = {1: "JARVIS", 2: "EDITH", 3: "FRIDAY", 4: "BRIAN", 5: "SWIFT", 6: "YOU"}  # 플레이어 인덱스를 이름으로 인덱싱
         self.color = ['Blue', 'Red', 'Green', 'Yellow']  # 카드 색깔들
 
+        self.path = path # 색약 모드를 위해 이미지 파일을 불러오는 경로
+
 
 class PlayMode(object):
     def __init__(self):
@@ -93,7 +99,7 @@ class PlayMode(object):
 class Image(object):
     def __init__(self):
         # 필요한 이미지 파일 로딩
-        icon = pygame.image.load("./images/icon.png")
+        icon = pygame.image.load("./images/" + path + "/icon.png")
         self.icon = pygame.transform.scale_by(icon, (width/1000, height/600))
         bg = pygame.image.load("./images/background.png")
         self.bg = pygame.transform.scale_by(bg, (width/1000, height/600))
@@ -140,20 +146,20 @@ class Image(object):
 
         win = pygame.image.load("./images/winner.png")
         self.win = pygame.transform.scale_by(win, (width/1000, height/600))
-        pick_color = pygame.image.load("./images/microsoft.png")
+        pick_color = pygame.image.load("./images/" + path + "/microsoft.png")
         self.pick_color = pygame.transform.scale_by(pick_color, (width/1000, height/600))
         uno = pygame.image.load("./images/UNO.png")
         self.uno = pygame.transform.scale_by(uno, (width/1000, height/600))
         uno_button = pygame.image.load("./images/UNOButton.png")
         self.uno_button = pygame.transform.scale_by(uno_button, (width/1000, height/600))
         
-        pick_red = pygame.image.load("./images/SmallRed.png")
+        pick_red = pygame.image.load("./images/" + path + "/SmallRed.png")
         self.pick_red = pygame.transform.scale_by(pick_red, (width/1000, height/600))
-        pick_blue = pygame.image.load("./images/SmallBlue.png")
+        pick_blue = pygame.image.load("./images/" + path + "/SmallBlue.png")
         self.pick_blue = pygame.transform.scale_by(pick_blue, (width/1000, height/600))
-        pick_yellow = pygame.image.load("./images/SmallYellow.png")
+        pick_yellow = pygame.image.load("./images/" + path + "/SmallYellow.png")
         self.pick_yellow = pygame.transform.scale_by(pick_yellow, (width/1000, height/600))
-        pick_green = pygame.image.load("./images/SmallGreen.png")
+        pick_green = pygame.image.load("./images/" + path + "/SmallGreen.png")
         self.pick_green = pygame.transform.scale_by(pick_green, (width/1000, height/600))
 
 
