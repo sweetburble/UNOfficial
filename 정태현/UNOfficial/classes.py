@@ -49,6 +49,7 @@ elif saves["size"] == 'small':
     width = 750
     height = 450
 
+# 주어진 설정에 따라 이미지 경로 결정
 if saves["color_change"] == 'original':
     path = 'original'
 else:
@@ -61,10 +62,10 @@ class Essentials(object):
         self.deck2 = list() # deck2 =  버려진 카드 덱
         
         self.direction_check = 1  # 게임의 진행 방향, 1은 시계 방향, -1은 반시계 방향
-        self.position = -1  # 플레이 하는 플레이어의 인덱스 (Playing player index)
-        self.current = list()  # Current card on top of stack, 버려진 카드 덱의 맨 위에 있는 카드
+        self.position = -1 # 플레이 하는 플레이어의 인덱스
+        self.current = list() # 버려진 카드 덱의 맨 위에 있는 카드
 
-        self.drawn = False  # 유저 플레이 플래그 (User play flags)
+        self.drawn = False  # 유저가 카드를 뽑았는지 확인하는 플래그
         self.played = False # 유저가 카드를 플레이 했는지 확인하는 플래그
         self.choose_color = False
         self.player_playing = False # 유저가 플레이하고 있으면 True, 아니면 False
@@ -99,7 +100,7 @@ class PlayMode(object):
 class Image(object):
     def __init__(self):
         # 필요한 이미지 파일 로딩
-        icon = pygame.image.load("./images/" + path + "/icon.png")
+        icon = pygame.image.load("./images/icon.png")
         self.icon = pygame.transform.scale_by(icon, (width/1000, height/600))
         bg = pygame.image.load("./images/background.png")
         self.bg = pygame.transform.scale_by(bg, (width/1000, height/600))
@@ -108,12 +109,7 @@ class Image(object):
         
         shouted = pygame.image.load("./images/shouted.png")
         self.shouted = pygame.transform.scale_by(shouted, (width/1000, height/600))
-        
-        mute = pygame.image.load("./images/mute.png")
-        self.mute = pygame.transform.scale_by(mute, (width/1000, height/600))
-        unmute = pygame.image.load("./images/unmute.png")
-        self.unmute = pygame.transform.scale_by(unmute, (width/1000, height/600))
-        
+
         p_user = pygame.image.load("./images/man_1.png") # 유저 플레이어 이미지
         self.p_user = pygame.transform.scale_by(p_user, (width/1000, height/600))
 

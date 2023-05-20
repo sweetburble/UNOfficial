@@ -43,6 +43,29 @@ def create(Object, uno):
 
     # Object.player_list[0] = [('Wild', 'Black'), ('+4', 'Black'), ('Skip', 'Red'), ('Reverse', 'Green'), ("+2", "Blue")]
 
+# driver.py에서 2번째로 호출
+def re_initialize(ob, uno):
+    """ 모든 게임 변수와 플래그를 초기화한다 """
+    ob.player_list = []
+    ob.deck1 = list()
+    ob.deck2 = list()
+
+    ob.direction_check = 1  # 게임 플레이 방향 플래그
+    ob.position = -1  # 위치 카운터
+    ob.current = list()
+
+    ob.drawn, ob.played, ob.choose_color = False, False, False
+    ob.player_playing = False
+    ob.winner = -1
+    ob.play_lag = -1
+    ob.is_game_paused = False
+
+    ob.played_check = 0  # Play checker
+    ob.special_check = 0  # 기술 카드 상태 활성화, 1은 비활성화
+    ob.shouted_uno = [False] * 4
+    ob.message = "" # 메세지를 출력하기 위해서
+
+
 # play_this_card에서 4번째로 호출
 def set_curr_player(ob, uno, default): # (ob, uno, False)
     """ 다음 플레이어 결정 """
@@ -59,22 +82,6 @@ def set_curr_player(ob, uno, default): # (ob, uno, False)
     if default: # AI가 플레이 하는 경우 True, 유저인 경우 False
         ob.position = (ob.position + ob.direction_check) % uno.player_num # direction_check대로 진행한다
 
-# driver.py에서 2번째로 호출
-def re_initialize(ob, uno):
-    """ 모든 게임 변수와 플래그를 초기화한다 """
-    ob.message = "" # 메세지를 출력하기 위해서
-    ob.winner = -1
-    ob.player_playing = False
-    ob.play_lag = -1
-    ob.player_list = []
-    ob.deck1 = list()
-    ob.deck2 = list()
-    ob.direction_check = 1  # 게임 플레이 방향 플래그
-    ob.position = -1  # 위치 카운터
-    ob.special_check = 0  # Flag to check status of special card
-    ob.current = tuple()
-    ob.drawn, ob.played, ob.choose_color = False, False, False
-    ob.shouted_uno = [False] * 4
 
 # driver.py에서 5번째로 호출
 def take_from_stack(ob):
@@ -89,8 +96,7 @@ def take_from_stack(ob):
         finally:
             ob.drawn = True # 드로우 했나?를 True로 바꾼다
 
-# driver.py에서 3번째로 호출
-def play_this_card(ob, uno, card): # ob = ess, card = ess.player_list[0][int((625 - i) / 50)
+def play_this_card(ob, uno, card, AltCol_path): # ob = ess, card = ess.player_list[0][int((625 - i) / 50)
     """ 유저에 의해 카드가 플레이 될 때 """
     if not ob.played:
         # ob.current = 버려진 카드 덱의 맨 위에 있는 카드
@@ -101,7 +107,7 @@ def play_this_card(ob, uno, card): # ob = ess, card = ess.player_list[0][int((62
             ob.current = peek(ob.deck2)
             ob.player_list[0].remove(ob.current)
             ob.special_check = 0 # 기술 카드 상태 활성화 (만약 기술 카드를 냈으면 적용된다)
-            move_card(ob, uno, "./images/" + str(card[1]) + str(card[0]) + ".png") # 카드를 냈으면, 카드를 옮긴다
+            move_card(ob, uno, "./images/" + AltCol_path + str(card[1]) + str(card[0]) + ".png") # 카드를 냈으면, 카드를 옮긴다
             set_curr_player(ob, uno, False)
 
         if card[1] == 'Black':
@@ -109,7 +115,7 @@ def play_this_card(ob, uno, card): # ob = ess, card = ess.player_list[0][int((62
             ob.choose_color = True # 와일드 카드는 모두 색깔을 선택하게 한다
             ob.player_list[0].remove(card)
             ob.deck2.append(card)
-            move_card(ob, uno, "./images/" + str(card[1]) + str(card[0]) + ".png") # 카드를 냈으면, 카드를 옮긴다
+            move_card(ob, uno, "./images/"+ AltCol_path + str(card[1]) + str(card[0]) + ".png") # 카드를 냈으면, 카드를 옮긴다
 
 # driver.py에서 6번째로 호출
 def change_card_color(ob, color): # color = "Red" or "Blue" or "Green" or "Yellow"가 들어간다
@@ -133,7 +139,7 @@ def handle24(ob, n): # (ob, int(ob.current[0][1]))
 
 # bot_action()에서 10번째로 호출
 def handle_black(ob, uno, item):
-    """ 와일드 카드를 처리한다 """
+    """ AI가 와일드 카드를 냈을 때 행동 구현 """
     move_card(ob, uno, "./images/Back_computer.png")
 
     ob.special_check = 0 # 기술 카드 상태 활성화
@@ -266,6 +272,7 @@ def move_card(ess, uno, img_path):
 
         # Wait for a short amount of time to control the animation speed
         pygame.time.wait(10)
+
 # ============================================================================================================
 def game_screen(ess, uno, sound, img, PM, saves):
     pygame.init()
@@ -279,7 +286,7 @@ def game_screen(ess, uno, sound, img, PM, saves):
     # 타이머 변수 세팅
     max_time = 10 # 플레이어에게 10초의 시간을 주고, 그 시간 안에 카드를 내지 않으면 자동으로 턴이 넘어간다
     
-    img_path = saves["color_change"] + "/" # 이미지 경로
+    AltCol_path = saves["color_change"] + "/" # 이미지 경로
     joe_fin = "./fonts/JosefinSans-Bold.ttf"
     width, height = uno.screen_width, uno.screen_height # 화면 크기
     
@@ -292,7 +299,7 @@ def game_screen(ess, uno, sound, img, PM, saves):
             if event.type == KEYDOWN:
                 if ess.player_playing:
                     if event.key == KEYS["up"]: # 선택한 카드를 낸다
-                        play_this_card(ess, uno, ess.player_list[0][selected_card])
+                        play_this_card(ess, uno, ess.player_list[0][selected_card], AltCol_path)
                         sound.card_played.play()
                         selected_card = 0 # 카드를 낸 뒤에는 선택한 카드를 초기화
                     elif event.key == KEYS["down"]: # 덱에서 카드 한장 드로우
@@ -316,7 +323,7 @@ def game_screen(ess, uno, sound, img, PM, saves):
                     sound.click.play()
                     ess.is_game_paused = True
                     paused_game(ess, uno, sound, PM, saves)
-                    img_path = saves["color_change"] + "/" # 이미지 경로 갱신
+                    AltCol_path = saves["color_change"] + "/" # 이미지 경로 갱신
             if event.type == MOUSEMOTION:
                 mouse_pos = pygame.mouse.get_pos()
                 if ess.player_playing:
@@ -342,7 +349,7 @@ def game_screen(ess, uno, sound, img, PM, saves):
                     # 4) 유저가 카드를 클릭했는지 감지
                     for i in range(int((width/1000)*410), int((width/1000)*410 - 30 * len(ess.player_list[0])), -30):
                         if i < mouse_pos[0] < (i + 30) and height*(520/600) < mouse_pos[1] < height*(590/600):
-                            play_this_card(ess, uno, ess.player_list[0][int(((width/1000)*410 - i) / 30)])
+                            play_this_card(ess, uno, ess.player_list[0][int(((width/1000)*410 - i) / 30)], AltCol_path)
                             sound.card_played.play()
                             selected_card = 0 # 카드를 낸 뒤에는 선택한 카드를 초기화
 
@@ -369,7 +376,7 @@ def game_screen(ess, uno, sound, img, PM, saves):
                     sound.click.play()
                     ess.is_game_paused = True
                     paused_game(ess, uno, sound, PM, saves)
-                    img_path = saves["color_change"] + "/" # 이미지 경로 갱신
+                    AltCol_path = saves["color_change"] + "/" # 이미지 경로 갱신
 
         # 처음 덱 섞는 소리
         if ess.play_lag == -1:
@@ -395,9 +402,9 @@ def game_screen(ess, uno, sound, img, PM, saves):
         uno.screen.blit(img.uno_button, (width*(640/1000), height*(500/600))) # -> 일단 플레이어의 UNO 버튼은 항상 표시되게 함
 
         try: # 게임을 시작하면, 버려진 카드 덱에 놓이는 처음 카드 이미지를 표시한다
-            uno.screen.blit(pygame.image.load("./images/" + img_path + ess.current[1] + str(ess.current[0]) + ".png"), (width*(380/1000), height*(140/600)))
+            uno.screen.blit(pygame.image.load("./images/" + AltCol_path + ess.current[1] + str(ess.current[0]) + ".png"), (width*(380/1000), height*(140/600)))
         except:
-            uno.screen.blit(pygame.image.load("./images/" + img_path + ess.current[1] + ".png"), (width*(380/1000), height*(140/600)))
+            uno.screen.blit(pygame.image.load("./images/" + AltCol_path + ess.current[1] + ".png"), (width*(380/1000), height*(140/600)))
 
         uno.screen.blit(img.p_user, (width*(475/1000), height*(490/600))) # 유저 플레이어 이미지
         
@@ -408,11 +415,11 @@ def game_screen(ess, uno, sound, img, PM, saves):
             x_diff = i % 10
             y_diff = i // 10
             if (selected_card == i): # 카드 선택 애니메이션 구현
-                uno.screen.blit(pygame.image.load("./images/" + img_path + ess.player_list[0][i][1] + str(ess.player_list[0][i][0]) + ".png"), (width*((390 - 30 * x_diff)/1000), height*((480 - 80 * y_diff)/600)))
+                uno.screen.blit(pygame.image.load("./images/" + AltCol_path + ess.player_list[0][i][1] + str(ess.player_list[0][i][0]) + ".png"), (width*((390 - 30 * x_diff)/1000), height*((480 - 80 * y_diff)/600)))
             else:
-                uno.screen.blit(pygame.image.load("./images/" + img_path + ess.player_list[0][i][1] + str(ess.player_list[0][i][0]) + ".png"), (width*((390 - 30 * x_diff)/1000), height*((520 - 80 * y_diff)/600)))
+                uno.screen.blit(pygame.image.load("./images/" + AltCol_path + ess.player_list[0][i][1] + str(ess.player_list[0][i][0]) + ".png"), (width*((390 - 30 * x_diff)/1000), height*((520 - 80 * y_diff)/600)))
         # 카드 선택의 가시성을 위해 선택된 카드를 한 번 다시 그렸다
-        uno.screen.blit(pygame.image.load("./images/" + img_path + ess.player_list[0][selected_card][1] + str(ess.player_list[0][selected_card][0]) + ".png"), (width*((390 - 30 * (selected_card % 10))/1000), height*((480 - 80 * (selected_card // 10))/600)))
+        uno.screen.blit(pygame.image.load("./images/" + AltCol_path + ess.player_list[0][selected_card][1] + str(ess.player_list[0][selected_card][0]) + ".png"), (width*((390 - 30 * (selected_card % 10))/1000), height*((480 - 80 * (selected_card // 10))/600)))
         
         text_p1 = pygame.font.Font(joe_fin, int(height*(20/600))).render(ess.bot_map[1], True, (255, 238, 46))
         text_p2 = pygame.font.Font(joe_fin, int(height*(20/600))).render(ess.bot_map[2], True, (255, 238, 46))

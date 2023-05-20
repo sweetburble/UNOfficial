@@ -86,7 +86,7 @@ while True:
 
     # 멀티플레이 게임 화면
     elif ess.play_mode == PM.multiplay:
-        select_screen(ess, uno, saves)
+        select_screen(ess, uno, sound, img, saves)
 
     # 화면을 지속적으로 갱신
     pygame.display.update()

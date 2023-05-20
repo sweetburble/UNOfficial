@@ -1,5 +1,5 @@
 size:medium
-color_change:original
+color_change:alternative
 mouse:false
 up:1073741906
 left:1073741904
