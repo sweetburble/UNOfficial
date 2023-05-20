@@ -1,3 +1,4 @@
+import achievement
 import tkinter as tk
 from tkinter import messagebox
 
@@ -7,14 +8,14 @@ def check_achievement():
 
     if achievement_achieved:
         # 알림창을 표시합니다.
-        messagebox.showinfo("알림", "업적이 달성되었습니다!")
+        messagebox.showinfo("알림", f"업적이 달성되었습니다! 달성한 업적: {achievement.name}")
 
 # 메인 윈도우를 생성합니다.
 root = tk.Tk()
 root.withdraw()  # 윈도우를 숨깁니다.
 
 # 아이콘 파일 경로를 설정합니다.
-icon_path = "img/achieve_icon.png"
+icon_path = "img\\achieve.ico"
 
 # 아이콘을 설정합니다.
 root.iconbitmap(icon_path)
