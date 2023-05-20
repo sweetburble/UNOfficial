@@ -1,167 +1,160 @@
-import sys
 import pygame
-from pygame.locals import *
+import datetime
 
-img_basic_address = './img/'
+# 게임 초기화
+pygame.init()
 
+# 게임 창 설정
+screen_width = 800
+screen_height = 600
+screen = pygame.display.set_mode((screen_width, screen_height))
+pygame.display.set_caption("게임")
 
-class UNOGame():
+# 업적 창 설정
+achievement_font = pygame.font.Font(None, 36)
+achievement_window_width = 400
+achievement_window_height = 400
+achievement_window_bg_color = (0, 0, 0)
+achievement_window_border_color = (255, 255, 255)
+achievement_window_text_color = (255, 255, 255)
+achievement_window_padding = 20
+achievement_text_padding = 10
+
+# 스크롤 설정
+scroll_position = 0
+scroll_speed = 10
+
+# 업적 시스템 초기화
+class Achievement:
+    def __init__(self, name):
+        self.name = name
+        self.achieved = False
+        self.achieved_time = None
+
+    def set_achieved(self):
+        self.achieved = True
+        self.achieved_time = datetime.datetime.now()
+
+class AchievementSystem:
     def __init__(self):
-        pygame.init()
-        self.background = pygame.image.load('img/background.jpg')
-        self.screen_width = 800
-        self.screen_height = 600
-        self.background_Color = (0,66,0)
-        self.playernum = 2
-        self.difficulty = 1
-        self.font = 'Berlin Sans FB'
-        self.clock = pygame.time.Clock()
-        self.FPS = 30
-        self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
-        pygame.display.set_caption("UNO!")
-        self.screen.fill(self.background_Color)
-        self.screen.blit(self.background, (-30, -30))
-        pygame.display.update()
-        self.main_menu()
+        self.achievements = []
 
-    def text_format(self, message, textFont, textSize, textColor):
-        newFont = pygame.font.SysFont(textFont, textSize)
-        newText = newFont.render(message, True, textColor)
-        return newText
+    def add_achievement(self, achievement):
+        self.achievements.append(achievement)
 
-    def main_menu(self):
-        menu = True
-        selected = 1
+    def check_achievements(self):
+        for achievement in self.achievements:
+            if not achievement.achieved:
+                # 여기에서 업적 달성을 확인할 조건을 추가하세요
+                if 조건:
+                    achievement.set_achieved()
 
-        start_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.4), 200, 50)
-        story_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.5), 200, 50)
-        multiplay_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.6), 200, 50)
-        set_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.7), 200, 50)
-        quit_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.8), 200, 50)
-        achievement_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.9), 200, 50)
+achievement_1 = Achievement('Singleplay_win')
+achievement_2 = Achievement('storymod_1_win')
+achievement_3 = Achievement('storymod_2_win')
+achievement_4 = Achievement('storymod_3_win')
+achievement_5 = Achievement('storymod_4_win')
+achievement_6 = Achievement('fast_win')
+achievement_7 = Achievement('handicap')
+achievement_8 = Achievement('win_afterUNO')
+achievement_9 = Achievement('apply_color_weakness')
+achievement_10 = Achievement('open_setting')
+achievement_11 = Achievement('open_storymod')
 
-        while menu:
-            pygame.init()
-            for event in pygame.event.get():
-                if event.type == QUIT:
-                    pygame.quit()
-                    sys.exit()
-                if event.type == KEYDOWN:
-                    if event.key == K_UP:
-                        if selected <= 1:
-                            selected = 1
-                        else:
-                            selected = selected - 1
-                    elif event.key == K_DOWN:
-                        if selected >= 6:
-                            selected = 6
-                        else:
-                            selected = selected + 1
-                    if event.key == K_RETURN: # K_RETURN은 엔터키
-                        if selected <= 1:
-                            #실행할 내용
-                            pass
-                        if selected == 2:
-                            #실행할 내용
-                            pass
-                        if selected == 3:
-                            #실행할 내용
-                            pass
-                        if selected == 4:
-                            #실행할 내용
-                            pass
-                        if selected == 5:
-                            #실행할 내용
-                            pass
-                        if selected >= 6:
-                            pygame.quit()
-                            sys.exit()
-                            pass
-                if event.type == MOUSEBUTTONDOWN:
-                    mouse_pos = pygame.mouse.get_pos()
-                    if start_rect.collidepoint(mouse_pos):
-                        selected = 1
-                        pass
-                    elif story_rect.collidepoint(mouse_pos):
-                        selected = 2
-                        pass
-                    elif multiplay_rect.collidepoint(mouse_pos):
-                        selected = 3
-                        pass
-                    elif set_rect.collidepoint(mouse_pos):
-                        selected = 4
-                        pass
-                    elif achievement_rect.collidepoint(mouse_pos):
-                        selected = 5
-                        pass
-                    elif quit_rect.collidepoint(mouse_pos):
-                        text_quit = self.text_format("QUIT", self.font, 50, (0,0,0))
-                        self.screen.blit(text_quit, quit_rect)
-                        pygame.display.update()
-                        pygame.time.delay(500)
-                        pygame.quit()
-                        sys.exit()
+achievement_system = AchievementSystem()
+achievement_system.add_achievement(achievement_1)
+achievement_system.add_achievement(achievement_2)
+achievement_system.add_achievement(achievement_3)
+achievement_system.add_achievement(achievement_4)
+achievement_system.add_achievement(achievement_5)
+achievement_system.add_achievement(achievement_6)
+achievement_system.add_achievement(achievement_7)
+achievement_system.add_achievement(achievement_8)
+achievement_system.add_achievement(achievement_9)
+achievement_system.add_achievement(achievement_10)
+achievement_system.add_achievement(achievement_11)
 
-            if selected == 1:
-                text_start = self.text_format("START", self.font, 50, (0,0,0))
-            else:
-                text_start = self.text_format("START", self.font, 50, (255, 255, 255))
+# 게임 루프
+running = True
 
-            if selected == 2:
-                text_story = self.text_format("STORY MOD", self.font, 50, (0,0,0))
-            else:
-                text_story= self.text_format("STORY MOD", self.font, 50, (255, 255, 255))
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 4:  # 마우스 휠을 위로 스크롤하는 경우
+                scroll_position += scroll_speed
+            elif event.button == 5:  # 마우스 휠을 아래로 스크롤하는 경우
+                scroll_position -= scroll_speed
+        elif event.type == pygame.QUIT:  # 게임 창 종료 이벤트
+            running = False
 
-            if selected == 3:
-                text_multiplay = self.text_format("MULTIPLAY", self.font, 50, (0,0,0))
-            else:
-                text_multiplay = self.text_format("MULTIPLAY", self.font, 50, (255, 255, 255))
+    # 업적 창 업데이트
+    achievement_text_render_list = []
+    for achievement in achievement_system.achievements:
+        if achievement.achieved:
+            achievement_text = f"{achievement.name} - 달성 시간: {achievement.achieved_time}"
+            achievement_text_color = (0, 0, 255)  # 달성된 업적의 텍스트 색상 (파란색)
 
-            if selected == 4:
-                text_setting = self.text_format("SETTING", self.font, 50, (0,0,0))
-            else:
-                text_setting = self.text_format("SETTING", self.font, 50, (255, 255, 255))
+        else:
+            achievement_text = f"{achievement.name}"
+            achievement_text_color = achievement_window_text_color  # 달성되지 않은 업적의 텍스트 색상
 
-            if selected == 5:
-                text_achievement = self.text_format("ACHIEVEMENT", self.font, 50, (0,0,0))
-            else:
-                text_achievement = self.text_format("ACHIEVEMENT", self.font, 50, (255, 255, 255))
+        achievement_text_render = achievement_font.render(achievement_text, True, achievement_window_text_color)
+        achievement_text_render_list.append(achievement_text_render)
 
-            if selected == 6:
-                text_quit = self.text_format("QUIT", self.font, 50, (0,0,0))
-            else:
-                text_quit = self.text_format("QUIT", self.font, 50, (255, 255, 255))
+    # 스크롤 기능
+    achievement_window_surface = pygame.Surface((achievement_window_width, achievement_window_height))
+    achievement_window_surface.fill(achievement_window_bg_color)
+    text_y = achievement_window_padding - scroll_position
+    for achievement_text_render in achievement_text_render_list:
+        if text_y + achievement_text_render.get_height() > achievement_window_height:
+            break
+        if text_y > 0:
+            achievement_window_surface.blit(achievement_text_render, (achievement_window_padding, text_y))
+        text_y += achievement_text_render.get_height() + achievement_text_padding
 
-            # 메뉴 아이템 표시
-            start_rect = text_start.get_rect()
-            story_rect = text_story.get_rect()
-            multiplay_rect = text_multiplay.get_rect()
-            set_rect = text_setting.get_rect()
-            achievement_rect = text_achievement.get_rect()
-            quit_rect = text_quit.get_rect()
 
-            start_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.4), 200, 50)
-            story_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.5), 200, 50)  
-            multiplay_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.6), 200, 50)         
-            set_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.7), 200, 50)
-            achievement_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.8), 200, 50)
-            quit_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.9), 200, 50)
-
-            self.screen.blit(text_start, start_rect)
-            self.screen.blit(text_story, story_rect)
-            self.screen.blit(text_multiplay, multiplay_rect)
-            self.screen.blit(text_setting, set_rect)
-            self.screen.blit(text_achievement, achievement_rect)
-            self.screen.blit(text_quit, quit_rect)
-
-            pygame.display.update()
-            self.clock.tick(self.FPS)
-            pygame.display.set_caption("UNO!")
     
+    # 스크롤 한계 설정
+    scroll_position_max = 0
+    scroll_position_min = -(text_y - achievement_window_height)
+    scroll_position_min -= 200  # 한계를 더욱 확장 (예: 50 픽셀)
 
-def main():
-    game = UNOGame() 
-    game.main_menu()
+    if scroll_position > scroll_position_max:
+        scroll_position = scroll_position_max
+    elif scroll_position < scroll_position_min:
+        scroll_position = scroll_position_min
+    
+    for achievement_text_render in achievement_text_render_list:
+        if text_y + achievement_text_render.get_height() > achievement_window_height:
+            break
+    if text_y > 0:
+        achievement_window_surface.blit(achievement_text_render, (achievement_window_padding, text_y))
+    text_y += achievement_text_render.get_height() + achievement_text_padding
 
-if __name__ == '__main__': 
-    main()
+
+
+
+    # 스크롤 바 그리기
+    scrollbar_width = 10
+    scrollbar_padding = 5
+    scrollbar_color = (150, 150, 150)
+    scrollbar_handle_color = (100, 100, 100)
+
+    scrollbar_height = achievement_window_height * achievement_window_height / text_y
+    scrollbar_y = scroll_position * (achievement_window_height - scrollbar_height) / (text_y - achievement_window_height)
+    pygame.draw.rect(achievement_window_surface, scrollbar_color, (achievement_window_width - scrollbar_width - scrollbar_padding, 0, scrollbar_width, achievement_window_height))
+    pygame.draw.rect(achievement_window_surface, scrollbar_handle_color, (achievement_window_width - scrollbar_width - scrollbar_padding, scrollbar_y, scrollbar_width, scrollbar_height))
+
+    # 화면 업데이트
+    screen.fill((0, 0, 0))  # 검은색 배경
+
+    # 업적 창 그리기
+    achievement_window_x = (screen_width - achievement_window_width) // 2
+    achievement_window_y = (screen_height - achievement_window_height) // 2
+    pygame.draw.rect(screen, achievement_window_border_color, (achievement_window_x, achievement_window_y, achievement_window_width, achievement_window_height))
+    screen.blit(achievement_window_surface, (achievement_window_x + 2, achievement_window_y + 2))
+
+    pygame.display.flip()
+
+# 게임 종료
+pygame.quit()
