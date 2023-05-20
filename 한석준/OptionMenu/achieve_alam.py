@@ -13,6 +13,12 @@ def check_achievement():
 root = tk.Tk()
 root.withdraw()  # 윈도우를 숨깁니다.
 
+# 아이콘 파일 경로를 설정합니다.
+icon_path = "img/achieve_icon.png"
+
+# 아이콘을 설정합니다.
+root.iconbitmap(icon_path)
+
 # 업적을 체크하는 함수를 호출합니다.
 check_achievement()
 
