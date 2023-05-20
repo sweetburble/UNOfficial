@@ -1,4 +1,5 @@
 import pygame
+import datetime
 
 # 게임 초기화
 pygame.init()
@@ -74,6 +75,11 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:  # 게임 창 종료 이벤트
             running = False
+        elif event.type == pygame.MOUSEBUTTONDOWN:  # 마우스 클릭 이벤트
+            if event.button == 1:  # 마우스 왼쪽 버튼 클릭 확인
+                mouse_pos = pygame.mouse.get_pos()
+                if back_button_x <= mouse_pos[0] <= back_button_x + back_button_image.get_width() and back_button_y <= mouse_pos[1] <= back_button_y + back_button_image.get_height():
+                    running = False  
 
     # 업적 창 업데이트
     achievement_text_render_list = []
