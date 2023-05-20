@@ -8,7 +8,7 @@ img_basic_address = './img/'
 class UNOGame():
     def __init__(self):
         pygame.init()
-        self.background = pygame.image.load('img/Game map.jpg')
+        self.background = pygame.image.load('../img/Story map.jpg')
         self.screen_width = 930
         self.screen_height = 690
         self.background_Color = (0,66,0)
@@ -47,8 +47,8 @@ class UNOGame():
                         else:
                             selected = selected - 1
                     elif event.key == K_UP:
-                        if selected >= 4:
-                            selected = 4
+                        if selected >= 1:
+                            selected = 1
                         else:
                             selected = selected + 1
                     if event.key == K_RETURN: # K_RETURN은 엔터키
@@ -62,8 +62,6 @@ class UNOGame():
                             #실행할 내용
                             pass
                         if selected >= 4:
-                   
-                  
                             pass
                 if event.type == MOUSEBUTTONDOWN:
                     mouse_pos = pygame.mouse.get_pos()
@@ -79,10 +77,9 @@ class UNOGame():
                     elif  MAP4_rect.collidepoint(mouse_pos):
                         selected = 4
                         pass
-                       
 
             if selected == 1:
-                text_MAP1 = self.text_format("CHALLENGE", self.font, 50, (0,0,0))
+                text_MAP1 = self.text_format("CHALLENGE", self.font, 50, (0,0,255))
             else:
                 text_MAP1 = self.text_format("CHALLENGE", self.font, 50, (255, 255, 255))
 
@@ -111,11 +108,8 @@ class UNOGame():
             MAP2_rect = pygame.Rect(self.screen_width/2-245, int(self.screen_height*0.2+20), 200, 50)          
             MAP3_rect = pygame.Rect(self.screen_width/2-40, int(self.screen_height*0.5-20), 200, 50)
             MAP4_rect = pygame.Rect(self.screen_width/2+140, int(self.screen_height*0.2-20), 200, 50)
-  
+
             self.screen.blit(text_MAP1, MAP1_rect)
-            self.screen.blit(text_MAP2, MAP2_rect)
-            self.screen.blit(text_MAP3, MAP3_rect)
-            self.screen.blit(text_MAP4, MAP4_rect)
 
             pygame.display.update()
             self.clock.tick(self.FPS)

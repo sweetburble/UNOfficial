@@ -37,7 +37,7 @@ class UNOGame():
         story_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.5), 200, 50)
         set_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.6), 200, 50)
         quit_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.7), 200, 50)
-  
+
         while menu:
             pygame.init()
             for event in pygame.event.get():
@@ -118,7 +118,7 @@ class UNOGame():
             story_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.5), 200, 50)          
             set_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.6), 200, 50)
             quit_rect = pygame.Rect(self.screen_width/2-50, int(self.screen_height*0.7), 200, 50)
-  
+
             self.screen.blit(text_start, start_rect)
             self.screen.blit(text_story, story_rect)
             self.screen.blit(text_setting, set_rect)
