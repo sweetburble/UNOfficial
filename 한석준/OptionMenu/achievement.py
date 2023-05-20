@@ -19,9 +19,11 @@ achievement_text_padding = 10
 
 # 업적 시스템 초기화
 class Achievement:
-    def __init__(self, name, description):
+    def __init__(self, name, description, icon_path):
         self.name = name
         self.description = description
+        self.icon = pygame.image.load(icon_path)  # Load the icon image
+        self.icon = pygame.transform.scale(self.icon, (50, 50))  # Scale the icon image to a desired size
         self.achieved = False
         self.achieved_time = None
 
@@ -36,17 +38,17 @@ class AchievementSystem:
     def add_achievement(self, achievement):
         self.achievements.append(achievement)
 
-achievement_1 = Achievement('Singleplay_win', 'win at the Singleplay')
-achievement_2 = Achievement('storymod_1_win', 'win at the story mod stage 1')
-achievement_3 = Achievement('storymod_2_win', 'win at the story mod stage 2')
-achievement_4 = Achievement('storymod_3_win', 'win at the story mod stage 3')
-achievement_5 = Achievement('storymod_4_win', 'win at the story mod stage 4')
-achievement_6 = Achievement('fast_win', 'win in 10 turns')
-achievement_7 = Achievement('handicap', 'win without a skill card')
-achievement_8 = Achievement('win_afterUNO', 'winning after the opponent shouts UNO')
-achievement_9 = Achievement('apply_color_weakness', 'apply color weakness mode')
-achievement_10 = Achievement('open_setting', 'open setting')
-achievement_11 = Achievement('open_storymod', 'open storymod')
+achievement_1 = Achievement('Singleplay_win', 'win at the Singleplay', 'img/single.ico')
+achievement_2 = Achievement('storymod_1_win', 'win at the story mod stage 1', 'img/storymod.ico')
+achievement_3 = Achievement('storymod_2_win', 'win at the story mod stage 2', 'img/storymod.ico')
+achievement_4 = Achievement('storymod_3_win', 'win at the story mod stage 3', 'img/storymod.ico')
+achievement_5 = Achievement('storymod_4_win', 'win at the story mod stage 4', 'img/storymod.ico')
+achievement_6 = Achievement('fast_win', 'win in 10 turns', 'img/fast.ico')
+achievement_7 = Achievement('handicap', 'win without a skill card', 'img/handicap.ico')
+achievement_8 = Achievement('win_afterUNO', 'winning after the opponent shouts UNO', 'img/uno.ico')
+achievement_9 = Achievement('apply_color_weakness', 'apply color weakness mode', 'img/color.ico')
+achievement_10 = Achievement('open_setting', 'open setting', 'img/setting.ico')
+achievement_11 = Achievement('open_storymod', 'open storymod', 'img/story.ico')
 
 achievement_system = AchievementSystem()
 achievement_system.add_achievement(achievement_1)
@@ -100,9 +102,10 @@ while running:
     achievement_window_surface.blit(achievement_window_bg_image, (0, 0))  # 배경 이미지 그리기
     text_y = achievement_window_padding
 
-    for achievement_text_render in achievement_text_render_list:
-        achievement_window_surface.blit(achievement_text_render, (achievement_window_padding, text_y))
-        text_y += achievement_text_render.get_height() + achievement_text_padding
+    for achievement, achievement_text_render in zip(achievement_system.achievements, achievement_text_render_list):
+        achievement_window_surface.blit(achievement.icon, (achievement_window_padding, text_y))  # Draw the icon
+        achievement_window_surface.blit(achievement_text_render, (achievement_window_padding + achievement.icon.get_width() + achievement_text_padding, text_y))
+        text_y += max(achievement_text_render.get_height(), achievement.icon.get_height()) + achievement_text_padding
 
     # 업적 창 중앙에 위치
     achievement_window_x = (screen_width - achievement_window_width) // 2
