@@ -86,7 +86,7 @@ def main_menu(ob, uno, STORY):
                         selected = selected + 1
                 if event.key == KEYS["select"]: # K_RETURN은 엔터키
                     if selected <= 1: # 게임 시작 버튼
-                        ob.play_mode = set_start(ob, uno)
+                        ob.play_mode = set_start(ob, uno, STORY)
                         if (ob.play_mode == "IN GAME"):
                             return
                         uno.screen.blit(uno.background, (-30, -30))
@@ -110,7 +110,7 @@ def main_menu(ob, uno, STORY):
                 mouse_pos = pygame.mouse.get_pos()
                 if start_rect.collidepoint(mouse_pos): # 게임 시작 버튼
                     selected = 1
-                    ob.play_mode = set_start(ob, uno)
+                    ob.play_mode = set_start(ob, uno, STORY)
                     uno.screen.blit(uno.background, (-30, -30))
                     return
                 elif story_rect.collidepoint(mouse_pos): # 스토리 모드 버튼
@@ -235,7 +235,7 @@ def main_menu(ob, uno, STORY):
         pygame.display.update()
 
 """ 게임 시작 전, 로비 화면 """
-def set_start(ob, uno):
+def set_start(ob, uno, STORY):
     pygame.init()
     uno.background = pygame.image.load('./images/default.png')
     uno.background = pygame.transform.scale_by(uno.background, (uno.screen_width/800, uno.screen_height/600))
@@ -265,23 +265,23 @@ def set_start(ob, uno):
                         uno.player_num = 2
                         # 카드 덱을 세팅하고, 버려진 카드덱에 카드를 한장 놓고, 플레이어들에게 카드를 배분한다
                         uno.background = pygame.image.load('./images/Main_background.png')
-                        return set_players(ob, uno, uno.player_num)
+                        return set_players(ob, uno, uno.player_num, STORY)
                     if selected == 2:
                         uno.player_num = 3
                         uno.background = pygame.image.load('./images/Main_background.png')
-                        return set_players(ob, uno, uno.player_num)
+                        return set_players(ob, uno, uno.player_num, STORY)
                     if selected == 3:
                         uno.player_num = 4
                         uno.background = pygame.image.load('./images/Main_background.png')
-                        return set_players(ob, uno, uno.player_num)
+                        return set_players(ob, uno, uno.player_num, STORY)
                     if selected == 4:
                         uno.player_num = 5
                         uno.background = pygame.image.load('./images/Main_background.png')
-                        return set_players(ob, uno, uno.player_num)
+                        return set_players(ob, uno, uno.player_num, STORY)
                     if selected == 5:
                         uno.player_num = 6
                         uno.background = pygame.image.load('./images/Main_background.png')
-                        return set_players(ob, uno, uno.player_num)
+                        return set_players(ob, uno, uno.player_num, STORY)
                     if selected >= 6: # 시작화면으로 돌아감
                         uno.background = pygame.image.load('./images/Main_background.png')
                         uno.background = pygame.transform.scale_by(uno.background, (uno.screen_width/800, uno.screen_height/600))
@@ -291,23 +291,23 @@ def set_start(ob, uno):
                 if two_rect.collidepoint(mouse_pos):
                     uno.player_num = 2
                     selected = 1
-                    return set_players(ob, uno, uno.player_num)
+                    return set_players(ob, uno, uno.player_num, STORY)
                 elif three_rect.collidepoint(mouse_pos):
                     uno.player_num = 3
                     selected = 2
-                    return set_players(ob, uno, uno.player_num)
+                    return set_players(ob, uno, uno.player_num, STORY)
                 elif four_rect.collidepoint(mouse_pos):
                     uno.player_num = 4
                     selected = 3
-                    return set_players(ob, uno, uno.player_num)
+                    return set_players(ob, uno, uno.player_num, STORY)
                 elif five_rect.collidepoint(mouse_pos):
                     uno.player_num = 5
                     selected = 4
-                    return set_players(ob, uno, uno.player_num)
+                    return set_players(ob, uno, uno.player_num, STORY)
                 elif six_rect.collidepoint(mouse_pos):
                     uno.player_num = 6
                     selected = 5
-                    return set_players(ob, uno, uno.player_num)
+                    return set_players(ob, uno, uno.player_num, STORY)
                 elif quit_rect.collidepoint(mouse_pos): # 시작화면으로 돌아감
                     selected = 5
                     uno.background = pygame.image.load('./images/Main_background.png')
@@ -364,13 +364,14 @@ def set_start(ob, uno):
 
 
 """ 싱글 플레이어 모드 컴퓨터 이름 변경 화면 """
-def set_players(ob, uno, player_num):
+def set_players(ob, uno, player_num, STORY):
     pygame.init()
     uno.background = pygame.image.load('./images/default.png')
     uno.background = pygame.transform.scale_by(uno.background, (uno.screen_width/800, uno.screen_height/600))
     uno.player_num = player_num
     uno.screen.blit(uno.background, (-100, -70))
     selected = 1
+    
 
     MANAGER = pygame_gui.UIManager((uno.screen_width, uno.screen_height))
 
@@ -422,7 +423,34 @@ def set_players(ob, uno, player_num):
                     selected = 5
                 elif start_rect.collidepoint(mouse_pos):
                     selected = uno.player_num
-                    return "IN GAME"                
+                    return "IN GAME"  
+                
+                elif chapter1_rect.collidepoint(mouse_pos):
+                    if STORY.Is_stage_on[0] == False:#추가됨
+                        STORY.Is_stage_on[0]=True
+                        if STORY.Is_stage_on[1]==True:
+                            STORY.Is_stage_on[1]=False
+                    else:
+                        STORY.Is_stage_on[0]=False
+                elif chapter2_rect.collidepoint(mouse_pos):
+                    if STORY.Is_stage_on[1] == False:#추가됨
+                        STORY.Is_stage_on[1]=True
+                        if STORY.Is_stage_on[0]==True:
+                            STORY.Is_stage_on[0]=False
+                    else:
+                        STORY.Is_stage_on[1]=False
+                elif chapter3_rect.collidepoint(mouse_pos):
+                    if STORY.Is_stage_on[2] == False:#추가됨
+                        STORY.Is_stage_on[2]=True
+                    else:
+                        STORY.Is_stage_on[2]=False
+                elif chapter4_rect.collidepoint(mouse_pos):
+                    if STORY.Is_stage_on[3] == False:#추가됨
+                        STORY.Is_stage_on[3]=True
+                    else:
+                        STORY.Is_stage_on[3]=False
+                      
+                            
             if event.type == pygame_gui.UI_TEXT_ENTRY_FINISHED and event.ui_object_id == "#com1_text_entry":
                 ob.bot_map[1] = event.text                
             if event.type == pygame_gui.UI_TEXT_ENTRY_FINISHED and event.ui_object_id == "#com2_text_entry":                
@@ -436,7 +464,8 @@ def set_players(ob, uno, player_num):
             if event.type == pygame_gui.UI_TEXT_ENTRY_FINISHED and event.ui_object_id == "#my_text_entry":
                 ob.bot_map[6] = event.text
 
-        # 선택한 글자의 색을 빨간색으로 표시      
+        # 선택한 글자의 색을 빨간색으로 표시
+        text_rules = text_format("RULES ON", uno.font, 40, (0,0,0)) #추가됨    
         if selected == 1:
             text_one = text_format("COM 1", uno.font, 50, (255,24,0))
         else:
@@ -461,6 +490,26 @@ def set_players(ob, uno, player_num):
             text_start = text_format("START", uno.font, 50, (255,24,0))
         else:
             text_start = text_format("START", uno.font, 50, (0,0,0))
+        
+       
+        if STORY.Is_stage_on[0] == False:  #추가됨
+            text_chapter1 = text_format("1", uno.font, 50, (0,0,0))
+        else:
+            text_chapter1 = text_format("1", uno.font, 50, (255,24,0))
+        if STORY.Is_stage_on[1] == False:  #추가됨
+            text_chapter2 = text_format("2", uno.font, 50, (0,0,0))
+        else:
+            text_chapter2 = text_format("2", uno.font, 50, (255,24,0))
+        if STORY.Is_stage_on[2] == False:  #추가됨
+            text_chapter3 = text_format("3", uno.font, 50, (0,0,0))
+        else:
+            text_chapter3 = text_format("3", uno.font, 50, (255,24,0))
+        if STORY.Is_stage_on[3] == False:  #추가됨
+            text_chapter4 = text_format("4", uno.font, 50, (0,0,0))
+        else:
+            text_chapter4 = text_format("4", uno.font, 50, (255,24,0))
+            
+        
 
         one_rect = pygame.Rect(int(uno.screen_width*(320/800)), int(uno.screen_height*(120/600)), 200, 50)
         two_rect = pygame.Rect(int(uno.screen_width*(320/800)), int(uno.screen_height*(180/600)), 200, 50)
@@ -468,6 +517,14 @@ def set_players(ob, uno, player_num):
         four_rect = pygame.Rect(int(uno.screen_width*(320/800)), int(uno.screen_height*(300/600)), 200, 50)
         five_rect = pygame.Rect(int(uno.screen_width*(320/800)), int(uno.screen_height*(360/600)), 200, 50)
         start_rect = pygame.Rect(int(uno.screen_width*(320/800)), int(uno.screen_height*(420/600)), 200, 50)
+
+        rules_rect = pygame.Rect(int(uno.screen_width*(1/7)), int(uno.screen_height*(60/600)),50,50)#추가됨
+        chapter1_rect = pygame.Rect(int(uno.screen_width*(1/7)), int(uno.screen_height*(120/600)),50,50)
+        chapter2_rect = pygame.Rect(int(uno.screen_width*(1/7)), int(uno.screen_height*(180/600)),50,50)
+        chapter3_rect = pygame.Rect(int(uno.screen_width*(1/7)), int(uno.screen_height*(240/600)),50,50)
+        chapter4_rect = pygame.Rect(int(uno.screen_width*(1/7)), int(uno.screen_height*(300/600)),50,50)
+        
+        
 
         if uno.player_num == 2:
             uno.screen.blit(text_one, one_rect)
@@ -494,6 +551,12 @@ def set_players(ob, uno, player_num):
             uno.screen.blit(text_four, four_rect)
             uno.screen.blit(text_five, five_rect)
             uno.screen.blit(text_start, start_rect)
+
+        uno.screen.blit(text_rules,rules_rect)#추가됨
+        uno.screen.blit(text_chapter1,chapter1_rect)
+        uno.screen.blit(text_chapter2,chapter2_rect)
+        uno.screen.blit(text_chapter3,chapter3_rect)
+        uno.screen.blit(text_chapter4,chapter4_rect)
 
         MANAGER.update(60)
         MANAGER.draw_ui(uno.screen)

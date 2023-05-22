@@ -45,35 +45,46 @@ def create(Object, uno, card_num):
 
 def stage1_al(Object, uno, card_num): #첫번째 스테이지 알고리즘
     Object.deck1.append(Object.deck2.pop()) # 버려진 카드 한장 있는걸 뽑을 덱으로 옮김
-    for i in range(card_num):
-        Object.deck1.append(Object.player_list[1].pop())
+    for index,j in enumerate(Object.player_list):
+        if index != 0:
+            for i in range(card_num):
+                Object.deck1.append(Object.player_list[index].pop())
     random.shuffle(Object.deck1)
-    for _ in range(card_num):  
-        adding = random.randrange(1,10)
-        while True:
-            if adding >=5 or adding <= 10:
-                if peek(Object.deck1) in [('Wild', 'Black'), ('+4', 'Black'), ('Skip', 'Red'), ('Skip', 'Green'),
-                                ('Skip', 'Blue'), ('Skip', 'Yellow'), ('Reverse', 'Red'), ('Reverse', 'Green'),
-                                ('Reverse', 'Blue'), ('Reverse', 'Yellow'), ('+2', 'Red'), ('+2', 'Green'),
-                                ('+2', 'Blue'), ('+2', 'Yellow'), ('+1', 'Red'), ('+1', 'Green'),
-                                ('+1', 'Blue'), ('+1', 'Yellow'), ('+4', 'Red'), ('+4', 'Green'),
-                                ('+4', 'Blue'), ('+4', 'Yellow')]:
-                    Object.player_list[1].append(Object.deck1.pop())
-                    break
+    for index,j in enumerate(Object.player_list):
+        if index == 0:
+            continue
+        for _ in range(card_num):  
+            adding = random.randrange(1,10)
+            for i in range(10):
+                if adding >=5 or adding <= 10:
+                    if i == 9:
+                        Object.player_list[index].append(Object.deck1.pop())
+                    else:
+                        if peek(Object.deck1) in [('Wild', 'Black'), ('+4', 'Black'), ('Skip', 'Red'), ('Skip', 'Green'),
+                                        ('Skip', 'Blue'), ('Skip', 'Yellow'), ('Reverse', 'Red'), ('Reverse', 'Green'),
+                                        ('Reverse', 'Blue'), ('Reverse', 'Yellow'), ('+2', 'Red'), ('+2', 'Green'),
+                                        ('+2', 'Blue'), ('+2', 'Yellow'), ('+1', 'Red'), ('+1', 'Green'),
+                                        ('+1', 'Blue'), ('+1', 'Yellow'), ('+4', 'Red'), ('+4', 'Green'),
+                                        ('+4', 'Blue'), ('+4', 'Yellow')]:
+                            Object.player_list[index].append(Object.deck1.pop())
+                            break
 
+                        else:
+                            random.shuffle(Object.deck1)
                 else:
-                    random.shuffle(Object.deck1)
-            else:
-                if peek(Object.deck1) in [('Wild', 'Black'), ('+4', 'Black'), ('Skip', 'Red'), ('Skip', 'Green'),
-                                ('Skip', 'Blue'), ('Skip', 'Yellow'), ('Reverse', 'Red'), ('Reverse', 'Green'),
-                                ('Reverse', 'Blue'), ('Reverse', 'Yellow'), ('+2', 'Red'), ('+2', 'Green'),
-                                ('+2', 'Blue'), ('+2', 'Yellow'), ('+1', 'Red'), ('+1', 'Green'),
-                                ('+1', 'Blue'), ('+1', 'Yellow'), ('+4', 'Red'), ('+4', 'Green'),
-                                ('+4', 'Blue'), ('+4', 'Yellow')]:
-                    random.shuffle(Object.deck1)
-                else:
-                    Object.player_list[1].append(Object.deck1.pop())
-                    break
+                    if i == 9:
+                        Object.player_list[index].append(Object.deck1.pop())
+                    else:
+                        if peek(Object.deck1) in [('Wild', 'Black'), ('+4', 'Black'), ('Skip', 'Red'), ('Skip', 'Green'),
+                                        ('Skip', 'Blue'), ('Skip', 'Yellow'), ('Reverse', 'Red'), ('Reverse', 'Green'),
+                                        ('Reverse', 'Blue'), ('Reverse', 'Yellow'), ('+2', 'Red'), ('+2', 'Green'),
+                                        ('+2', 'Blue'), ('+2', 'Yellow'), ('+1', 'Red'), ('+1', 'Green'),
+                                        ('+1', 'Blue'), ('+1', 'Yellow'), ('+4', 'Red'), ('+4', 'Green'),
+                                        ('+4', 'Blue'), ('+4', 'Yellow')]:
+                            random.shuffle(Object.deck1)
+                        else:
+                            Object.player_list[index].append(Object.deck1.pop())
+                            break
     
     while peek(Object.deck1) in [('Wild', 'Black'), ('+4', 'Black'), ('Skip', 'Red'), ('Skip', 'Green'),
                             ('Skip', 'Blue'), ('Skip', 'Yellow'), ('Reverse', 'Red'), ('Reverse', 'Green'),
@@ -90,7 +101,7 @@ def stage2_al(Object, uno, card_num): # 2번째 스테이지 알고리즘
         popped_item = Object.player_list[0].pop()
         Object.deck2.append(popped_item)
         Object.deck1.append(popped_item)
-    for i in range(1,3):
+    for i in range(1,len(Object.player_list)):
         for _ in range(card_num):
             Object.deck1.append(Object.player_list[i].pop())
     random.shuffle(Object.deck1)
@@ -99,13 +110,35 @@ def stage2_al(Object, uno, card_num): # 2번째 스테이지 알고리즘
     for card in range(len(Object.deck1)):
         if i==0:
             Object.player_list[i].append(Object.deck1.pop())
-            i+=1
+            i+=1 
         elif i==1:
             Object.player_list[i].append(Object.deck1.pop())
-            i+=1
+            i+=1    
         elif i==2:
+            if i == (len(Object.player_list)-1):
+                Object.player_list[i].append(Object.deck1.pop())
+                i=0
+            else:
+                Object.player_list[i].append(Object.deck1.pop())
+                i+=1
+        elif i==3:
+            if i == (len(Object.player_list)-1):
+                Object.player_list[i].append(Object.deck1.pop())
+                i=0
+            else:
+                Object.player_list[i].append(Object.deck1.pop())
+                i+=1
+        elif i==4:
+            if i == (len(Object.player_list)-1):
+                Object.player_list[i].append(Object.deck1.pop())
+                i=0
+            else:
+                Object.player_list[i].append(Object.deck1.pop())
+                i+=1
+        elif i==5:
             Object.player_list[i].append(Object.deck1.pop())
             i=0
+                
 
 def stage3_al(ob, uno): # 고쳐야할 것 한 3번째 턴에 바꾸는것. 블랙때 안바뀌는듯?
     changed = False
@@ -149,7 +182,8 @@ def stage3_al(ob, uno): # 고쳐야할 것 한 3번째 턴에 바꾸는것. 블�
         pass#그 지랄을 했는데도 안변한경우
 
 def stage4_al(ob,uno):#고쳐야할 것 들, 블랙카드 낼시 한장 안사라짐, 3장일때 하나 내고 uno 안함
-    ob.deck2.insert(0, ob.player_list[1].pop(0))
+    if ob.position !=0:
+        ob.deck2.insert(0, ob.player_list[ob.position].pop(0))
 
 # play_this_card에서 4번째로 호출
 def set_curr_player(ob, uno, default): # (ob, uno, False)
