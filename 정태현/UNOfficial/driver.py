@@ -61,7 +61,12 @@ while True:
     # 싱글플레이 게임 화면 
     elif ess.play_mode == PM.in_game:
         # 게임 중에도 설정을 변경할 수 있으므로 saves 딕셔너리를 넘겨준다
-        game_screen(ess, uno, sound, img, PM, saves)
+        game_screen(ess, uno, sound, img, PM, saves, STORY)
+
+    # 스토리모드 선택 화면
+    elif ess.play_mode == PM.story:
+        ess.play_mode = story_mode(ess, uno, STORY)
+        uno.screen.blit(uno.background, (-30, -30))
 
     # 설정(SETTING) 화면
     elif ess.play_mode == PM.setting:
@@ -69,6 +74,10 @@ while True:
         volumesetting(sound, saves["effects"])
         
         load_setting(ess, uno, sound, PM, saves) # 처음 설정 화면을 불러온다
+    
+    # 업적 화면
+    elif ess.play_mode == PM.achievement:
+        draw_achieve_screen(ess, uno, Achieve_system)
 
     # 게임 승리 화면
     elif ess.play_mode == PM.win and ess.winner != -1:

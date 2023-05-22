@@ -3,7 +3,7 @@ import sys
 import random
 import itertools
 from pygame.locals import *
-from functions import KEYS, draw_text, text_format, function_key_config, update_saves # singleplay.py에서 사용할 키값들을 저장하는 딕셔너리
+from functions import KEYS, draw_text, text_format, Make_Rect, function_key_config, update_saves # singleplay.py에서 사용할 키값들을 저장하는 딕셔너리
 from settings import volumesetting, load_setting
 
 def peek(s):
@@ -11,7 +11,7 @@ def peek(s):
     return s[-1]
 
 # driver.py에서 1번째로 호출
-def create(Object, uno):
+def create(Object, uno, card_num):
     """ 카드를 생성하고, 분배한다 """
     for _ in range(uno.player_num):
         Object.player_list.append([]) # 플레이어 수만큼 2차원 리스트 생성 -> 플레이어들의 카드를 저장하기 위해서
@@ -38,7 +38,7 @@ def create(Object, uno):
     Object.current = peek(Object.deck2) # 버려진 카드 덱의 peek
 
     for j in range(uno.player_num):  # 모든 플레이어에게 카드를 7장씩 나누어 준다
-        for _ in range(8):
+        for _ in range(card_num):
             Object.player_list[j].append(Object.deck1.pop())
 
     # Object.player_list[0] = [('Wild', 'Black'), ('+4', 'Black'), ('Skip', 'Red'), ('Reverse', 'Green'), ("+2", "Blue")]
@@ -193,8 +193,8 @@ def bot_action(ob, uno, sounds):
             ob.message = "%s shouted UNO!" % ob.bot_map[ob.position]
 
         check = 0
-        for item in ob.player_list[ob.position]: # AI가 가지고 있는 카드 중에서
-            if ob.current[1] == item[1] or ob.current[0] == item[0]: # 색깔이나 숫자가 같은 카드가 있다면
+        for item in ob.player_list[ob.position]: # item = ('+1', 'Red')
+            if (item[0] == '+1' or item[0] == '+2' or item[0] == '+4' or item[0] == 'Skip' or item[0] == 'Reverse') and item[0] == ob.current[0]: # AI가 낼 수 있는 기술 카드가 있다면
                 bot_play_card(ob, uno, item)
 
                 if item[1] == 'Black': # 그게 와일드 카드면
@@ -205,7 +205,19 @@ def bot_action(ob, uno, sounds):
                 set_curr_player(ob, uno, False)
                 check = 1
                 break
+        if check == 0:
+            for item in ob.player_list[ob.position]:
+                if ob.current[1] == item[1] or ob.current[0] == item[0]: # 그냥 색깔이나 숫자가 같은 카드가 있다면
+                    bot_play_card(ob, uno, item)
 
+                    if item[1] == 'Black': # 그게 와일드 카드면
+                        handle_black(ob, uno, item)
+
+                    ob.player_list[ob.position].remove(item)
+
+                    set_curr_player(ob, uno, False)
+                    check = 1
+                    break
         if check == 0: # AI가 낼 수 있는 카드가 없다면
             black_check = 0
             for item in ob.player_list[ob.position]:
@@ -234,10 +246,121 @@ def bot_action(ob, uno, sounds):
                     ob.player_list[ob.position].append(new_card)
 
 # ============================================================================================================
-""" x좌표, y좌표, 이미지의 원래 너비, 원래 높이를 받아서, 화면 크기에 맞게 조정한 뒤, pygame.Rect 객체를 반환 """
-def Make_Rect(uno, x, y, w, h):
-    return pygame.Rect(uno.screen_width*(x/1000), uno.screen_height*(y/600), uno.screen_width*(w/1000), uno.screen_height*(h/600))
+def stage1_ai(Object, uno, card_num): # 첫번째 스테이지 알고리즘
+    create(Object, uno, card_num)
+    Object.deck1.append(Object.deck2.pop()) # 버려진 카드 덱의 카드를 다시 덱에 추가한다
+    for i in range(card_num):
+        Object.deck1.append(Object.player_list[1].pop())
+    random.shuffle(Object.deck1)
 
+    for _ in range(card_num):  
+        Probability = random.randrange(1,10)
+        while True:
+            if Probability >= 5 and Probability <= 10: # 60% 확률로 기술카드 추가
+                if peek(Object.deck1) in [('Wild', 'Black'), ('+4', 'Black'), ('Skip', 'Red'), ('Skip', 'Green'),
+                                ('Skip', 'Blue'), ('Skip', 'Yellow'), ('Reverse', 'Red'), ('Reverse', 'Green'),
+                                ('Reverse', 'Blue'), ('Reverse', 'Yellow'), ('+2', 'Red'), ('+2', 'Green'),
+                                ('+2', 'Blue'), ('+2', 'Yellow'), ('+1', 'Red'), ('+1', 'Green'), ('+1', 'Blue'), 
+                                ('+1', 'Yellow'), ('+4', 'Red'), ('+4', 'Green'), ('+4', 'Blue'), ('+4', 'Yellow')]:
+                    Object.player_list[1].append(Object.deck1.pop())
+                    break
+                else:
+                    random.shuffle(Object.deck1)
+            else:
+                if peek(Object.deck1) in [('Wild', 'Black'), ('+4', 'Black'), ('Skip', 'Red'), ('Skip', 'Green'),
+                                ('Skip', 'Blue'), ('Skip', 'Yellow'), ('Reverse', 'Red'), ('Reverse', 'Green'),
+                                ('Reverse', 'Blue'), ('Reverse', 'Yellow'), ('+2', 'Red'), ('+2', 'Green'),
+                                ('+2', 'Blue'), ('+2', 'Yellow'), ('+1', 'Red'), ('+1', 'Green'), ('+1', 'Blue'), 
+                                ('+1', 'Yellow'), ('+4', 'Red'), ('+4', 'Green'), ('+4', 'Blue'), ('+4', 'Yellow')]:
+                    random.shuffle(Object.deck1)
+                else:
+                    Object.player_list[1].append(Object.deck1.pop())
+                    break
+    
+    while peek(Object.deck1) in [('Wild', 'Black'), ('+4', 'Black'), ('Skip', 'Red'), ('Skip', 'Green'),
+                            ('Skip', 'Blue'), ('Skip', 'Yellow'), ('Reverse', 'Red'), ('Reverse', 'Green'),
+                            ('Reverse', 'Blue'), ('Reverse', 'Yellow'), ('+2', 'Red'), ('+2', 'Green'),
+                            ('+2', 'Blue'), ('+2', 'Yellow'), ('+1', 'Red'), ('+1', 'Green'), ('+1', 'Blue'), 
+                            ('+1', 'Yellow'), ('+4', 'Red'), ('+4', 'Green'), ('+4', 'Blue'), ('+4', 'Yellow')]: # 첫 번째 카드는 기술카드가 아니어야 한다
+        random.shuffle(Object.deck1)
+    Object.deck2.append(Object.deck1.pop())
+    Object.current = peek(Object.deck2) # 버려진 카드 덱의 peek
+
+def stage2_ai(Object, uno, card_num): # 2번째 스테이지 알고리즘 -> 4명에게 29장씩 분배
+    create(Object, uno, card_num)
+
+    for _ in range(3):
+        Object.deck2.append(Object.deck1.pop())
+    Object.current = peek(Object.deck2) # 버려진 카드 덱의 peek
+
+    # for i in range(card_num):
+    #     popped_item = Object.player_list[0].pop()
+    #     Object.deck2.append(popped_item)
+    #     Object.deck1.append(popped_item)
+    # for i in range(1, 4):
+    #     for _ in range(card_num):
+    #         Object.deck1.append(Object.player_list[i].pop())
+    # random.shuffle(Object.deck1)
+    
+    # i = 0
+    # for card in range(len(Object.deck1)):
+    #     if i == 0:
+    #         Object.player_list[i].append(Object.deck1.pop())
+    #         i += 1
+    #     elif i == 1:
+    #         Object.player_list[i].append(Object.deck1.pop())
+    #         i += 1
+    #     elif i == 2:
+    #         Object.player_list[i].append(Object.deck1.pop())
+    #         i = 0 
+    #     elif i == 3:
+    #         Object.player_list[i].append(Object.deck1.pop())
+    #         i = 0
+
+def stage3_al(ob, uno): # 고쳐야할 것 한 3번째 턴에 바꾸는것. 블랙때 안바뀌는듯?
+    changed = False
+    if ob.current[1] == 'Black':
+        target=random.randrange(1,5)
+        if target == 1:
+            change_card_color(ob, "Red")
+        elif target == 2:
+            change_card_color(ob, "Blue")
+        elif target == 3:
+            change_card_color(ob, "Green")
+        elif target == 4:
+            change_card_color(ob, "Yellow")
+        changed = True
+
+    else:
+        for card in ob.deck2:
+            if changed == False:#카드의 색이 바뀌었는지 플래그
+                if card[0] == ob.current[0] and card[1]!= ob.current[1]:
+                    #여기 고치는중    
+                        ob.deck2.remove(card)
+                        ob.deck2.append(card)
+                        ob.current = peek(ob.deck2)
+                        changed = True
+            else:
+                break
+        for card in ob.deck1:
+            if changed == False:#카드의 색이 바뀌었는지 플래그
+                if card[0] == ob.current[0] and card[1]!= ob.current[1]:
+                    # 여기 고치는중    
+                        ob.deck1.remove(card)
+                        ob.deck1.append(card)
+                        ob.current = peek(ob.deck1)
+                        changed = True
+            else:
+                ob.current = peek(ob.deck2)
+                break
+        
+    if changed == False:
+        ob.current = peek(ob.deck2)
+        pass #그 지랄을 했는데도 안변한경우
+
+def stage4_al(ob,uno):# 고쳐야할 것 들, 블랙카드 낼시 한장 안사라짐, 3장일때 하나 내고 uno 안함
+    ob.deck2.insert(0, ob.player_list[1].pop(0))
+# ============================================================================================================
 """ 간단한 애니메이션 효과를 구현하는 함수 """
 def move_card(ess, uno, img_path):
     width, height = uno.screen_width, uno.screen_height
@@ -274,11 +397,16 @@ def move_card(ess, uno, img_path):
         pygame.time.wait(10)
 
 # ============================================================================================================
-def game_screen(ess, uno, sound, img, PM, saves):
+def game_screen(ess, uno, sound, img, PM, saves, STORY):
     pygame.init()
-    create(ess, uno)
-    print(saves)
-    
+
+    if STORY.Is_stage_on[0] == True:
+        stage1_ai(ess, uno, 10)
+    elif STORY.Is_stage_on[1] == True:
+        stage2_ai(ess, uno, 29)
+    else: # 일반 싱글 플레이
+        create(ess, uno, 7)
+
     disp = False
     win_dec = False  # 승자가 선언되면 True
     pen_check = False  # UNO 페널티 체크 플래그

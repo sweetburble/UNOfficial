@@ -487,6 +487,7 @@ def play(Multi_Uno):
     """ 게임을 진행하는 로직 """
     print("Play: ", end="")
     print(Multi_Uno)
+    
     if Multi_Uno.position == 0:
         check_uno_penalty(Multi_Uno)
 

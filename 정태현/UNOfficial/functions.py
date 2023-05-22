@@ -56,6 +56,10 @@ def text_format(message, textFont, textSize, textColor):
     newText = newFont.render(message, True, textColor)
     return newText
 
+""" x좌표, y좌표, 이미지의 원래 너비, 원래 높이를 받아서, 화면 크기에 맞게 조정한 뒤, pygame.Rect 객체를 반환 """
+def Make_Rect(uno, x, y, w, h):
+    return pygame.Rect(uno.screen_width*(x/1000), uno.screen_height*(y/600), uno.screen_width*(w/1000), uno.screen_height*(h/600))
+
 """ 시작 화면 """
 def main_menu(ob, uno, STORY):
     selected = 1
@@ -101,7 +105,7 @@ def main_menu(ob, uno, STORY):
                         ob.play_mode = "MULTIPLAY"
                         return
                     elif selected == 5: # 업적 버튼
-                        # ob.play_mode = "ACHIEVEMENT"
+                        ob.play_mode = "ACHIEVEMENT"
                         return
                     elif selected >= 6: # 종료 버튼
                         pygame.quit()
@@ -128,7 +132,7 @@ def main_menu(ob, uno, STORY):
                     return
                 elif achievement_rect.collidepoint(mouse_pos): # 업적 버튼
                     selected = 5
-                    # ob.play_mode = "ACHIEVEMENT"
+                    ob.play_mode = "ACHIEVEMENT"
                     return
                 elif quit_rect.collidepoint(mouse_pos): # 종료 버튼
                     pygame.quit()
@@ -551,16 +555,16 @@ def story_mode(ob, uno, STORY):
                     return "START SCREEN"
                 elif MAP1_rect.collidepoint(mouse_pos):
                     selected = 1
-                    select_story(ob, uno, STORY, 1)
+                    return select_story(ob, uno, STORY, 1)
                 elif MAP2_rect.collidepoint(mouse_pos):
                     selected = 2
-                    select_story(ob, uno, STORY, 2)
+                    return select_story(ob, uno, STORY, 2)
                 elif MAP3_rect.collidepoint(mouse_pos):
                     selected = 3
-                    select_story(ob, uno, STORY, 3)
+                    return select_story(ob, uno, STORY, 3)
                 elif MAP4_rect.collidepoint(mouse_pos):
                     selected = 4
-                    select_story(ob, uno, STORY, 4)
+                    return select_story(ob, uno, STORY, 4)
 
         # 메인 화면으로 돌아가는 버튼은 항상 존재한다
         if selected == 0:
@@ -615,7 +619,7 @@ def story_mode(ob, uno, STORY):
         pygame.display.update()
 
 """ 어떤 한 지역을 선택하면 설명을 보여주고 선택 여부를 묻는다 """
-def select_story(ob, uno, STORY, stage):
+def select_story(ess, uno, STORY, stage):
     pygame.init()
     uno.background = pygame.image.load('./images/Story map.jpg')
     uno.background = pygame.transform.scale_by(uno.background, (uno.screen_width/930, uno.screen_height/690))
@@ -634,24 +638,62 @@ def select_story(ob, uno, STORY, stage):
                     select_yes_no = 1
                 elif event.key == KEYS["select"]:
                     if select_yes_no == 0:
-                        pass
+                        if stage == 1: # 첫번째 스토리
+                            STORY.Is_stage_on = [False] * 4
+                            STORY.Is_stage_on[0] = True
+                            uno.player_num = 2
+                            return "IN GAME"
+                        elif stage == 2: # 2번째 스토리
+                            STORY.Is_stage_on = [False] * 4
+                            STORY.Is_stage_on[1] = True
+                            uno.player_num = 4
+                            return "IN GAME"
+                        elif stage == 3: # 3번째 스토리
+                            STORY.Is_stage_on = [False] * 4
+                            STORY.Is_stage_on[2] = True
+                            uno.player_num = 2
+                            return "IN GAME"
+                        elif stage == 4: # 4번째 스토리
+                            STORY.Is_stage_on = [False] * 4
+                            STORY.Is_stage_on[3] = True
+                            uno.player_num = 2
+                            return "IN GAME"
                     elif select_yes_no == 1: # no를 선택하면 다시 스토리 선택 화면으로 돌아간다
                         uno.background = pygame.image.load('./images/Story map.jpg')
                         uno.background = pygame.transform.scale_by(uno.background, (uno.screen_width/930, uno.screen_height/690))
                         uno.screen.blit(uno.background, (-10, -10))
-                        return
-            
+                        return "STORY MODE"
+
             if event.type == MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
                 if yes_rect.collidepoint(mouse_pos):
                     select_yes_no = 0
-                    pass
+                    if stage == 1: # 첫번째 스토리
+                        STORY.Is_stage_on = [False] * 4
+                        STORY.Is_stage_on[0] = True
+                        uno.player_num = 2
+                        return "IN GAME"
+                    elif stage == 2: # 2번째 스토리
+                        STORY.Is_stage_on = [False] * 4
+                        STORY.Is_stage_on[1] = True
+                        uno.player_num = 4
+                        return "IN GAME"
+                    elif stage == 3: # 3번째 스토리
+                        STORY.Is_stage_on = [False] * 4
+                        STORY.Is_stage_on[2] = True
+                        uno.player_num = 2
+                        return "IN GAME"
+                    elif stage == 4: # 4번째 스토리
+                        STORY.Is_stage_on = [False] * 4
+                        STORY.Is_stage_on[3] = True
+                        uno.player_num = 2
+                        return "IN GAME"
                 elif no_rect.collidepoint(mouse_pos):
                     select_yes_no = 1
                     uno.background = pygame.image.load('./images/Story map.jpg')
                     uno.background = pygame.transform.scale_by(uno.background, (uno.screen_width/930, uno.screen_height/690))
                     uno.screen.blit(uno.background, (-10, -10))
-                    return
+                    return "STORY MODE"
 
         if select_yes_no == 0: # yes가 선택되어 있는 경우
             text_yes = text_format("YES", uno.font, 50, (0, 0, 0))
@@ -679,5 +721,62 @@ def select_story(ob, uno, STORY, stage):
         elif stage == 4:
             draw_text(uno, " - play with 1 computers", 30, (255, 255, 255), 0, int(uno.screen_height*0.3))
             draw_text(uno, " - destroy a card of the computer each turn", 30, (255, 255, 255), 0, int(uno.screen_height*0.4))
+
+        pygame.display.update()
+
+def draw_achieve_screen(ess, uno, Achieve_system):
+    pygame.init()
+    width, height = uno.screen_width, uno.screen_height
+
+    uno.background = pygame.image.load('./images/Pause_background.jpg')
+    uno.background = pygame.transform.scale_by(uno.background, (width/1000, height/600))
+    uno.screen.blit(uno.background, (-10, -10))
+
+    selected = 1
+    while True:
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == KEYDOWN:
+                if event.key == KEYS["up"]:
+                    if selected <= 1:
+                        selected = 1
+                    else:
+                        selected = selected - 1
+                elif event.key == KEYS["down"]:
+                    if selected >= 1:
+                        selected = 1
+                    else:
+                        selected = selected + 1
+            
+            if event.type == MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+                if pause_button_rect.collidepoint(mouse_pos): # 시작 화면으로 돌아가기
+                    uno.background = pygame.image.load('./images/Main_background.png')
+                    uno.background = pygame.transform.scale_by(uno.background, (uno.screen_width/800, uno.screen_height/600))
+                    uno.screen.blit(uno.background, (-10, -10))
+                    ess.play_mode = "START SCREEN"
+                    return
+
+        uno.background = pygame.image.load('./images/Pause_background.jpg')
+        uno.background = pygame.transform.scale_by(uno.background, (uno.screen_width/1000, uno.screen_height/600))
+        uno.screen.blit(uno.background, (-10, -10))
+        
+        pause = pygame.image.load("./images/pause-button.png")
+        pause = pygame.transform.scale_by(pause, (width/1000, height/600))
+        uno.screen.blit(pause, (width*(10/1000), height*(10/1000)))
+        pause_button_rect = Make_Rect(uno, 10, 10, 32, 32)
+
+        for idx, achievement in enumerate(Achieve_system.achieve_list):
+            if achievement.achieved:
+                achievement_text = f"{achievement.name} - {achievement.description} ({achievement.achieved_time})"
+                achievement_text_color = (0, 0, 255)  # 달성된 업적의 텍스트 색상 (파란색)
+            else:
+                achievement_text = f"{achievement.name}  ({achievement.description})"
+                achievement_text_color = (255, 255, 255)  # 달성되지 않은 업적의 텍스트 색상
+
+            draw_text(uno, achievement_text, 30, achievement_text_color, width*(50/1000), height*((100 + idx * 100)/1000))
+
 
         pygame.display.update()

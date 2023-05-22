@@ -1,4 +1,5 @@
 import pygame
+import datetime
 
 # saves dictionary에 저장된 설정 내용 불러오기
 saves = {}
@@ -92,7 +93,7 @@ class PlayMode(object):
         self.in_game = "IN GAME" # 게임 화면
         self.pause = "GAME PAUSE" # 게임 일시정지 화면
         self.win = "WINNER" # 승리 화면
-        self.stroy = "STORY MODE" # 스토리 모드 화면
+        self.story = "STORY MODE" # 스토리 모드 화면
         self.multiplay = "MULTIPLAY" # 멀티플레이 화면
         self.achievement = "ACHIEVEMENT" # 업적 화면
 
@@ -197,5 +198,53 @@ class UNOGame(object):
 # 스토리 모드를 관리하는 클래스 생성
 class StoryMode(object):
     def __init__(self):
-        self.Is_story_passed = 0 # 0은 하나도 클리어 하지 못했다는 뜻, 모든 스토리를 선택할 수 있는 상태는 3이다
-        self.StoryC_turn = 0
+        self.Is_story_passed = 3 # 0은 하나도 클리어 하지 못했다는 뜻, 모든 스토리를 선택할 수 있는 상태는 3이다
+        self.Is_stage_on = [False,False,False,False]
+
+
+# 업적 클래스 생성
+class Achievement:
+    def __init__(self, name, description):
+        self.name = name # 업적 이름
+        self.description = description # 업적 설명
+        self.achieved = False # 업적을 달성했는가? True or False
+        self.achieved_time = None # 업적을 달성한 시간
+
+    # 업적을 달성했을 때 호출되는 함수
+    def set_achieved(self):
+        self.achieved = True
+        self.achieved_time = datetime.datetime.now().strftime("%Y-%m-%d")  # 업적 달성 시간을 연-월-일 형식으로 저장
+
+# 업적을 관리하는 시스템 클래스 생성
+class AchievementSystem:
+    def __init__(self):
+        self.achieve_list= [] # 업적 객체 리스트
+
+    # 업적 객체를 추가하는 함수
+    def add_achievement(self, achievement):
+        self.achieve_list.append(achievement)
+
+achieve_single = Achievement('Singleplay_win', 'Win at the Singleplay')
+achieve_story_1 = Achievement('Storymod_1_win', 'Win at the story 1')
+achieve_story_2 = Achievement('Storymod_2_win', 'Win at the story 2')
+achieve_story_3 = Achievement('Storymod_3_win', 'win at the story 3')
+achieve_story_4 = Achievement('Storymod_4_win', 'Win at the story 4')
+achieve_fast = Achievement('Fast_win', 'Win in 10 turns')
+achieve_handicap = Achievement('Handicap', 'Win without a skill card')
+achieve_after_UNO = Achievement('Win_afterUNO', 'Win after the opponent shouts UNO')
+achieve_color = Achievement('Apply_color_weakness', 'Apply color weakness mode')
+achieve_open_setting = Achievement('Open_setting', 'Open setting menu')
+achieve_open_story = Achievement('Open_storymod', 'Open storymode menu')
+
+Achieve_system = AchievementSystem()
+Achieve_system.add_achievement(achieve_single)
+Achieve_system.add_achievement(achieve_story_1)
+Achieve_system.add_achievement(achieve_story_2)
+Achieve_system.add_achievement(achieve_story_3)
+Achieve_system.add_achievement(achieve_story_4)
+Achieve_system.add_achievement(achieve_fast)
+Achieve_system.add_achievement(achieve_handicap)
+Achieve_system.add_achievement(achieve_after_UNO)
+Achieve_system.add_achievement(achieve_color)
+Achieve_system.add_achievement(achieve_open_setting)
+Achieve_system.add_achievement(achieve_open_story)
