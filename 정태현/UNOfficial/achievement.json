@@ -1,0 +1,68 @@
+[
+    {
+        "name": "Singleplay_win",
+        "description": "Win at the Singleplay",
+        "achieved": false,
+        "achieved_time": null
+    },
+    {
+        "name": "Storymod_1_win",
+        "description": "Win at the story 1",
+        "achieved": false,
+        "achieved_time": null
+    },
+    {
+        "name": "Storymod_2_win",
+        "description": "Win at the story 2",
+        "achieved": false,
+        "achieved_time": null
+    },
+    {
+        "name": "Storymod_3_win",
+        "description": "win at the story 3",
+        "achieved": false,
+        "achieved_time": null
+    },
+    {
+        "name": "Storymod_4_win",
+        "description": "Win at the story 4",
+        "achieved": false,
+        "achieved_time": null
+    },
+    {
+        "name": "Fast_win",
+        "description": "Win in 10 turns",
+        "achieved": false,
+        "achieved_time": null
+    },
+    {
+        "name": "Handicap",
+        "description": "Win without a skill card",
+        "achieved": false,
+        "achieved_time": null
+    },
+    {
+        "name": "Win_afterUNO",
+        "description": "Win after the opponent shouts UNO",
+        "achieved": false,
+        "achieved_time": null
+    },
+    {
+        "name": "Apply_color_weakness",
+        "description": "Apply color weakness mode",
+        "achieved": false,
+        "achieved_time": null
+    },
+    {
+        "name": "Open_setting",
+        "description": "Open setting menu",
+        "achieved": false,
+        "achieved_time": null
+    },
+    {
+        "name": "Open_storymod",
+        "description": "Open storymode menu",
+        "achieved": false,
+        "achieved_time": null
+    }
+]

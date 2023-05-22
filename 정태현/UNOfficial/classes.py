@@ -1,5 +1,6 @@
 import pygame
 import datetime
+import json
 
 # saves dictionary에 저장된 설정 내용 불러오기
 saves = {}
@@ -215,15 +216,45 @@ class Achievement:
         self.achieved = True
         self.achieved_time = datetime.datetime.now().strftime("%Y-%m-%d")  # 업적 달성 시간을 연-월-일 형식으로 저장
 
+
 # 업적을 관리하는 시스템 클래스 생성
 class AchievementSystem:
     def __init__(self):
         self.achieve_list= [] # 업적 객체 리스트
+        self.file_path = "achievement.json"
 
-    # 업적 객체를 추가하는 함수
+    # 업적 객체를 추가하는 함수(아마 이제 필요없을듯)
     def add_achievement(self, achievement):
         self.achieve_list.append(achievement)
 
+    #json 파일에서 내부 리스트로 읽어오는 함수
+    def load_achievements_from_file(self, file_path):
+        with open(file_path, "r") as file:
+            data = json.load(file)
+            for achievement_data in data:
+                achievement = Achievement(
+                    achievement_data["name"],
+                    achievement_data["description"]
+                )
+                achievement.achieved = achievement_data["achieved"]
+                achievement.achieved_time = achievement_data["achieved_time"]
+                self.achieve_list.append(achievement)
+
+    #업적 달성시 json 파일에 적기 위한 함수
+    def to_json(self):
+        return {
+            "name": self.name,
+            "description": self.description,
+            "achieved": self.achieved,
+            "achieved_time": self.achieved_time
+        }
+
+    #저장 된 업적 현황을 json 파일에 적을때 호출하는 함수
+    def save_achievements_to_file(self, file_path):
+        with open(file_path, "w") as file:
+            json.dump(self.achieve_list, file, default=lambda o: o.to_json(), indent=4)
+
+"""
 achieve_single = Achievement('Singleplay_win', 'Win at the Singleplay')
 achieve_story_1 = Achievement('Storymod_1_win', 'Win at the story 1')
 achieve_story_2 = Achievement('Storymod_2_win', 'Win at the story 2')
@@ -248,3 +279,4 @@ Achieve_system.add_achievement(achieve_after_UNO)
 Achieve_system.add_achievement(achieve_color)
 Achieve_system.add_achievement(achieve_open_setting)
 Achieve_system.add_achievement(achieve_open_story)
+"""#아마도 여기는 이제 필요없을 것 같아서 주석 처리합니다. 확인 후 확실할 시 지워주세요.
