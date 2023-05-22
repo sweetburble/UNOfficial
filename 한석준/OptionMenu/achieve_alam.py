@@ -7,8 +7,14 @@ def check_achievement():
     achievement_achieved = True
 
     if achievement_achieved:
+        # 업적 아이콘 경로 가져오기
+        achievement_icon_path = achievement.icon
+
         # 알림창을 표시합니다.
-        messagebox.showinfo("알림", f"업적이 달성되었습니다! 달성한 업적: {achievement.name}")
+        root = tk.Tk()
+        root.withdraw()  # 윈도우를 숨깁니다.
+        messagebox.showinfo("알림", f"업적이 달성되었습니다!\n달성한 업적: {achievement.name}", icon=achievement_icon_path)
+        root.destroy()
 
 # 메인 윈도우를 생성합니다.
 root = tk.Tk()
