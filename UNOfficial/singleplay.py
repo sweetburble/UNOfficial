@@ -184,7 +184,7 @@ def bot_play_card(ob, uno, item):
 
 """ AI 로직 구현 """
 def bot_action(ob, uno, sounds, STORY):
-    if STORY.is_story_on[3] == True:
+    if STORY.Is_story_on[3] == True:
         stage4_ai(ob, uno)
 
     ob.message = ""
@@ -197,14 +197,14 @@ def bot_action(ob, uno, sounds, STORY):
         ob.played_check = 1
 
     else:
-        if (ob.played_check != 1 and len(ob.player_list[ob.position]) == 2):
-            pygame.mixer.pre_init(44100, -16, 1, 512)
-            wait_time = random.randint(1000, 2000)
-            pygame.time.delay(wait_time) # 1~2초 동안 기다린 다음, 우노를 외친다!
-            sounds.uno.play()
+        # if (ob.played_check != 1 and len(ob.player_list[ob.position]) == 2):
+        #     pygame.mixer.pre_init(44100, -16, 1, 512)
+        #     wait_time = random.randint(1000, 2000)
+        #     pygame.time.delay(wait_time) # 1~2초 동안 기다린 다음, 우노를 외친다!
+        #     sounds.uno.play()
 
-            ob.shouted_uno[ob.position] = True
-            ob.message = "%s shouted UNO!" % ob.bot_map[ob.position]
+        #     ob.shouted_uno[ob.position] = True
+        #     ob.message = "%s shouted UNO!" % ob.bot_map[ob.position]
 
         check = 0
         for item in ob.player_list[ob.position]: # item = ('+1', 'Red')
@@ -215,6 +215,14 @@ def bot_action(ob, uno, sounds, STORY):
                     handle_black(ob, uno, item)
 
                 ob.player_list[ob.position].remove(item)
+                if len(ob.player_list[ob.position]) == 1:
+                    pygame.mixer.pre_init(44100, -16, 1, 512)
+                    wait_time = random.randint(1000, 2000)
+                    pygame.time.delay(wait_time) # 1~2초 동안 기다린 다음, 우노를 외친다!
+                    sounds.uno.play()
+
+                    ob.shouted_uno[ob.position] = True
+                    ob.message = "%s shouted UNO!" % ob.bot_map[ob.position]
 
                 set_curr_player(ob, uno, False)
                 check = 1
@@ -228,6 +236,14 @@ def bot_action(ob, uno, sounds, STORY):
                         handle_black(ob, uno, item)
 
                     ob.player_list[ob.position].remove(item)
+                    if len(ob.player_list[ob.position]) == 1:
+                        pygame.mixer.pre_init(44100, -16, 1, 512)
+                        wait_time = random.randint(1000, 2000)
+                        pygame.time.delay(wait_time) # 1~2초 동안 기다린 다음, 우노를 외친다!
+                        sounds.uno.play()
+
+                        ob.shouted_uno[ob.position] = True
+                        ob.message = "%s shouted UNO!" % ob.bot_map[ob.position]
 
                     set_curr_player(ob, uno, False)
                     check = 1
@@ -485,7 +501,7 @@ def game_screen(ess, uno, sound, img, PM, saves, STORY, Achieve_system):
             if len(item) == 0: # 플레이어의 카드가 0장이면 게임에서 승리한다.
                 win_dec = True
                 ess.winner = idx # 승자의 인덱스 저장
-                check_win_story(ess, STORY, Achieve_system) # 스토리 모드, 싱글 플레이 모드에서 승리했는지 체크
+                check_win_story(ess, uno, STORY, Achieve_system) # 스토리 모드, 싱글 플레이 모드에서 승리했는지 체크
                 ess.play_mode = PM.win # 승리 모드로 전환
                 return
 
