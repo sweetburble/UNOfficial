@@ -1,0 +1,79 @@
+[
+    {
+        "name": "Singleplay_Win",
+        "description": "Win at the Singleplay",
+        "icon": "./images/single.png",
+        "achieved": false,
+        "achieved_time": null
+    },
+    {
+        "name": "Storymod_1_Win",
+        "description": "Win at the story 1",
+        "icon": "./images/storymod.png",
+        "achieved": false,
+        "achieved_time": null
+    },
+    {
+        "name": "Storymod_2_Win",
+        "description": "Win at the story 2",
+        "icon": "./images/storymod.png",
+        "achieved": false,
+        "achieved_time": null
+    },
+    {
+        "name": "Storymod_3_Win",
+        "description": "win at the story 3",
+        "icon": "./images/storymod.png",
+        "achieved": false,
+        "achieved_time": null
+    },
+    {
+        "name": "Storymod_4_Win",
+        "description": "Win at the story 4",
+        "icon": "./images/storymod.png",
+        "achieved": false,
+        "achieved_time": null
+    },
+    {
+        "name": "Fast_Win",
+        "description": "Win in 10 turns",
+        "icon": "./images/fast.png",
+        "achieved": false,
+        "achieved_time": null
+    },
+    {
+        "name": "Handicap",
+        "description": "Win without a skill card",
+        "icon": "./images/handicap.png",
+        "achieved": false,
+        "achieved_time": null
+    },
+    {
+        "name": "Win_After_UNO",
+        "description": "Win after the opponent shouts UNO",
+        "icon": "./images/uno.png",
+        "achieved": false,
+        "achieved_time": null
+    },
+    {
+        "name": "Apply_Color_Weakness",
+        "description": "Apply color weakness mode",
+        "icon": "./images/color.png",
+        "achieved": false,
+        "achieved_time": null
+    },
+    {
+        "name": "Open_Setting",
+        "description": "Open setting menu",
+        "icon": "./images/setting.png",
+        "achieved": true,
+        "achieved_time": "2023-05-23"
+    },
+    {
+        "name": "Open_Storymode",
+        "description": "Open storymode menu",
+        "icon": "./images/story.png",
+        "achieved": true,
+        "achieved_time": "2023-05-23"
+    }
+]

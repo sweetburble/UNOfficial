@@ -1,9 +1,15 @@
-import itertools
-import random
 import pygame
 import sys
 import pygame_gui
+
 from pygame.locals import *
+from classes import Achievement, AchievementSystem
+import tkinter as tk
+from tkinter import messagebox
+
+tk_root = tk.Tk() # tkinter 메인 윈도우를 생성
+tk_root.withdraw() # 윈도우를 숨긴다
+# tk_root.mainloop() # tkinter 메인 루프를 시작한다
 
 KEYS = {} # 키 설정이 저장된 딕셔너리
 """ functions.py에서 사용할 키 설정을 불러온다 """
@@ -61,7 +67,7 @@ def Make_Rect(uno, x, y, w, h):
     return pygame.Rect(uno.screen_width*(x/1000), uno.screen_height*(y/600), uno.screen_width*(w/1000), uno.screen_height*(h/600))
 
 """ 시작 화면 """
-def main_menu(ob, uno, STORY):
+def main_menu(ob, uno, STORY, Achieve_system):
     selected = 1
 
     start_rect = pygame.Rect(uno.screen_width/2-50, int(uno.screen_height*0.3), 200, 50)
@@ -119,6 +125,7 @@ def main_menu(ob, uno, STORY):
                     return
                 elif story_rect.collidepoint(mouse_pos): # 스토리 모드 버튼
                     selected = 2
+                    draw_achievement_success(tk_root, Achieve_system, 10) # 10번 업적 달성
                     ob.play_mode = story_mode(ob, uno, STORY)
                     uno.screen.blit(uno.background, (-30, -30))
                     return
@@ -639,23 +646,23 @@ def select_story(ess, uno, STORY, stage):
                 elif event.key == KEYS["select"]:
                     if select_yes_no == 0:
                         if stage == 1: # 첫번째 스토리
-                            STORY.Is_stage_on = [False] * 4
-                            STORY.Is_stage_on[0] = True
+                            STORY.Is_story_on = [False] * 4
+                            STORY.Is_story_on[0] = True
                             uno.player_num = 2
                             return "IN GAME"
                         elif stage == 2: # 2번째 스토리
-                            STORY.Is_stage_on = [False] * 4
-                            STORY.Is_stage_on[1] = True
+                            STORY.Is_story_on = [False] * 4
+                            STORY.Is_story_on[1] = True
                             uno.player_num = 4
                             return "IN GAME"
                         elif stage == 3: # 3번째 스토리
-                            STORY.Is_stage_on = [False] * 4
-                            STORY.Is_stage_on[2] = True
+                            STORY.Is_story_on = [False] * 4
+                            STORY.Is_story_on[2] = True
                             uno.player_num = 2
                             return "IN GAME"
                         elif stage == 4: # 4번째 스토리
-                            STORY.Is_stage_on = [False] * 4
-                            STORY.Is_stage_on[3] = True
+                            STORY.Is_story_on = [False] * 4
+                            STORY.Is_story_on[3] = True
                             uno.player_num = 2
                             return "IN GAME"
                     elif select_yes_no == 1: # no를 선택하면 다시 스토리 선택 화면으로 돌아간다
@@ -669,23 +676,23 @@ def select_story(ess, uno, STORY, stage):
                 if yes_rect.collidepoint(mouse_pos):
                     select_yes_no = 0
                     if stage == 1: # 첫번째 스토리
-                        STORY.Is_stage_on = [False] * 4
-                        STORY.Is_stage_on[0] = True
+                        STORY.Is_story_on = [False] * 4
+                        STORY.Is_story_on[0] = True
                         uno.player_num = 2
                         return "IN GAME"
                     elif stage == 2: # 2번째 스토리
-                        STORY.Is_stage_on = [False] * 4
-                        STORY.Is_stage_on[1] = True
+                        STORY.Is_story_on = [False] * 4
+                        STORY.Is_story_on[1] = True
                         uno.player_num = 4
                         return "IN GAME"
                     elif stage == 3: # 3번째 스토리
-                        STORY.Is_stage_on = [False] * 4
-                        STORY.Is_stage_on[2] = True
+                        STORY.Is_story_on = [False] * 4
+                        STORY.Is_story_on[2] = True
                         uno.player_num = 2
                         return "IN GAME"
                     elif stage == 4: # 4번째 스토리
-                        STORY.Is_stage_on = [False] * 4
-                        STORY.Is_stage_on[3] = True
+                        STORY.Is_story_on = [False] * 4
+                        STORY.Is_story_on[3] = True
                         uno.player_num = 2
                         return "IN GAME"
                 elif no_rect.collidepoint(mouse_pos):
@@ -724,6 +731,13 @@ def select_story(ess, uno, STORY, stage):
 
         pygame.display.update()
 
+# =====================================================================
+""" 업적 관리 시스템 객체 생성 """
+Achieve_system = AchievementSystem()
+Achieve_system.load_achievements_from_file(Achieve_system.file_path)
+
+
+""" 업적 확인 화면 """
 def draw_achieve_screen(ess, uno, Achieve_system):
     pygame.init()
     width, height = uno.screen_width, uno.screen_height
@@ -732,24 +746,13 @@ def draw_achieve_screen(ess, uno, Achieve_system):
     uno.background = pygame.transform.scale_by(uno.background, (width/1000, height/600))
     uno.screen.blit(uno.background, (-10, -10))
 
-    selected = 1
+    # 마우스 스크롤 변수
+    scroll_offset = 0
     while True:
         for event in pygame.event.get():
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
-            if event.type == KEYDOWN:
-                if event.key == KEYS["up"]:
-                    if selected <= 1:
-                        selected = 1
-                    else:
-                        selected = selected - 1
-                elif event.key == KEYS["down"]:
-                    if selected >= 1:
-                        selected = 1
-                    else:
-                        selected = selected + 1
-            
             if event.type == MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
                 if pause_button_rect.collidepoint(mouse_pos): # 시작 화면으로 돌아가기
@@ -758,10 +761,17 @@ def draw_achieve_screen(ess, uno, Achieve_system):
                     uno.screen.blit(uno.background, (-10, -10))
                     ess.play_mode = "START SCREEN"
                     return
+                elif event.button == 4: # 마우스 스크롤 업
+                    if scroll_offset >= 0:
+                        scroll_offset -= 10
+                elif event.button == 5:  # 마우스 스크롤 다운
+                    scroll_offset += 10
 
-        uno.background = pygame.image.load('./images/Pause_background.jpg')
-        uno.background = pygame.transform.scale_by(uno.background, (uno.screen_width/1000, uno.screen_height/600))
-        uno.screen.blit(uno.background, (-10, -10))
+        # uno.background = pygame.image.load('./images/Pause_background.jpg')
+        # uno.background = pygame.transform.scale_by(uno.background, (uno.screen_width/1000, uno.screen_height/600))
+        # uno.screen.blit(uno.background, (-10, -10))
+
+        uno.screen.fill((128, 128, 128)) # 배경색 흰색으로 설정
         
         pause = pygame.image.load("./images/pause-button.png")
         pause = pygame.transform.scale_by(pause, (width/1000, height/600))
@@ -770,13 +780,26 @@ def draw_achieve_screen(ess, uno, Achieve_system):
 
         for idx, achievement in enumerate(Achieve_system.achieve_list):
             if achievement.achieved:
-                achievement_text = f"{achievement.name} - {achievement.description} ({achievement.achieved_time})"
+                achievement_text = f"{achievement.name} : {achievement.description} ({achievement.achieved_time})"
                 achievement_text_color = (0, 0, 255)  # 달성된 업적의 텍스트 색상 (파란색)
             else:
-                achievement_text = f"{achievement.name}  ({achievement.description})"
+                achievement_text = f"{achievement.name} : {achievement.description}"
                 achievement_text_color = (255, 255, 255)  # 달성되지 않은 업적의 텍스트 색상
 
-            draw_text(uno, achievement_text, 30, achievement_text_color, width*(50/1000), height*((100 + idx * 100)/1000))
+            icon = pygame.image.load(achievement.icon)  # 업적 아이콘
+            icon = pygame.transform.scale(icon, (50, 40))
+            uno.screen.blit(icon, (width*(10/1000), height*((100 - scroll_offset + idx * 100)/1000)))
+            draw_text(uno, achievement_text, 30, achievement_text_color, width*(70/1000), height*((100 - scroll_offset + idx * 100)/1000))
 
 
         pygame.display.update()
+
+""" 업적 알림 창 구현 """
+def draw_achievement_success(tk_root, Achieve_system, num):
+    tk_root.iconbitmap("./images/achieve.ico")
+
+    if not Achieve_system.achieve_list[num].achieved: # 달성 되지 않은 상태였다면
+        Achieve_system.achieve_list[num].set_achieved() # 달성 상태로 변경
+        messagebox.showinfo("알림", f"업적이 달성되었습니다!\n달성한 업적: {Achieve_system.achieve_list[num].name}")
+
+    Achieve_system.save_achievements_to_file(Achieve_system.file_path) # 갱신된 업적 정보를 파일에 저장

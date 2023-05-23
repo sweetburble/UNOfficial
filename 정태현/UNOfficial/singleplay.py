@@ -3,7 +3,7 @@ import sys
 import random
 import itertools
 from pygame.locals import *
-from functions import KEYS, draw_text, text_format, Make_Rect, function_key_config, update_saves # singleplay.py에서 사용할 키값들을 저장하는 딕셔너리
+from functions import KEYS, draw_text, text_format, Make_Rect, function_key_config, update_saves, draw_achieve_screen, draw_achievement_success, tk_root # singleplay.py에서 사용할 키값들을 저장하는 딕셔너리
 from settings import volumesetting, load_setting
 
 def peek(s):
@@ -64,6 +64,8 @@ def re_initialize(ob, uno):
     ob.special_check = 0  # 기술 카드 상태 활성화, 1은 비활성화
     ob.shouted_uno = [False] * 4
     ob.message = "" # 메세지를 출력하기 위해서
+    
+    ob.Turn_count = 1 # 턴 카운트 초기화
 
 
 # play_this_card에서 4번째로 호출
@@ -74,13 +76,19 @@ def set_curr_player(ob, uno, default): # (ob, uno, False)
         ob.special_check = 1  # 기술 카드 상태 비활성화
         if uno.player_num == 2:
             ob.position = (ob.position + ob.direction_check) % 2
+        
+        ob.Turn_count += 1 # 턴 카운트 증가
     
     if ob.current[0] == 'Skip' and ob.special_check == 0:
         ob.special_check = 1
         ob.position = (ob.position + ob.direction_check) % uno.player_num # 플레이 하는 플레이어 인덱스 (Playing player index)
+        
+        ob.Turn_count += 1 # 턴 카운트 증가
 
     if default: # AI가 플레이 하는 경우 True, 유저인 경우 False
         ob.position = (ob.position + ob.direction_check) % uno.player_num # direction_check대로 진행한다
+
+        ob.Turn_count += 1 # 턴 카운트 증가
 
 
 # driver.py에서 5번째로 호출
@@ -102,6 +110,9 @@ def play_this_card(ob, uno, card, AltCol_path): # ob = ess, card = ess.player_li
         # ob.current = 버려진 카드 덱의 맨 위에 있는 카드
         # 숫자가 같거나, 색깔이 같거나, 와일드 카드가 아니면
         if (card[0] == ob.current[0] or card[1] == ob.current[1]) and (card[1] != 'Black'):
+            if card[0] == '+1' or card[0] == '+2' or card[0] == '+4' or card[0] == 'Skip' or card[0] == 'Reverse':
+                ob.Is_use_special_card = True # 게임 중에 한 번이라도 특수 카드를 사용했다
+
             ob.played, ob.drawn = True, True # 플레이 했나?, 드로우 했나?를 True로 바꾼다
             ob.deck2.append(card)
             ob.current = peek(ob.deck2)
@@ -111,6 +122,7 @@ def play_this_card(ob, uno, card, AltCol_path): # ob = ess, card = ess.player_li
             set_curr_player(ob, uno, False)
 
         if card[1] == 'Black':
+            ob.Is_use_special_card = True # 게임 중에 한 번이라도 특수 카드를 사용했다
             ob.played, ob.drawn = True, True
             ob.choose_color = True # 와일드 카드는 모두 색깔을 선택하게 한다
             ob.player_list[0].remove(card)
@@ -293,34 +305,10 @@ def stage2_ai(Object, uno, card_num): # 2번째 스테이지 알고리즘 -> 4�
         Object.deck2.append(Object.deck1.pop())
     Object.current = peek(Object.deck2) # 버려진 카드 덱의 peek
 
-    # for i in range(card_num):
-    #     popped_item = Object.player_list[0].pop()
-    #     Object.deck2.append(popped_item)
-    #     Object.deck1.append(popped_item)
-    # for i in range(1, 4):
-    #     for _ in range(card_num):
-    #         Object.deck1.append(Object.player_list[i].pop())
-    # random.shuffle(Object.deck1)
-    
-    # i = 0
-    # for card in range(len(Object.deck1)):
-    #     if i == 0:
-    #         Object.player_list[i].append(Object.deck1.pop())
-    #         i += 1
-    #     elif i == 1:
-    #         Object.player_list[i].append(Object.deck1.pop())
-    #         i += 1
-    #     elif i == 2:
-    #         Object.player_list[i].append(Object.deck1.pop())
-    #         i = 0 
-    #     elif i == 3:
-    #         Object.player_list[i].append(Object.deck1.pop())
-    #         i = 0
-
-def stage3_al(ob, uno): # 고쳐야할 것 한 3번째 턴에 바꾸는것. 블랙때 안바뀌는듯?
+def stage3_al(ob, uno): # 고쳐야할 것 한 3번째 턴에 바꾸는것. 블랙 때 안바뀌는듯?
     changed = False
     if ob.current[1] == 'Black':
-        target=random.randrange(1,5)
+        target = random.randrange(1,5)
         if target == 1:
             change_card_color(ob, "Red")
         elif target == 2:
@@ -333,9 +321,9 @@ def stage3_al(ob, uno): # 고쳐야할 것 한 3번째 턴에 바꾸는것. 블�
 
     else:
         for card in ob.deck2:
-            if changed == False:#카드의 색이 바뀌었는지 플래그
+            if changed == False: # 카드의 색이 바뀌었는지 플래그
                 if card[0] == ob.current[0] and card[1]!= ob.current[1]:
-                    #여기 고치는중    
+                    # 여기 고치는중    
                         ob.deck2.remove(card)
                         ob.deck2.append(card)
                         ob.current = peek(ob.deck2)
@@ -343,7 +331,7 @@ def stage3_al(ob, uno): # 고쳐야할 것 한 3번째 턴에 바꾸는것. 블�
             else:
                 break
         for card in ob.deck1:
-            if changed == False:#카드의 색이 바뀌었는지 플래그
+            if changed == False: # 카드의 색이 바뀌었는지 플래그
                 if card[0] == ob.current[0] and card[1]!= ob.current[1]:
                     # 여기 고치는중    
                         ob.deck1.remove(card)
@@ -356,9 +344,9 @@ def stage3_al(ob, uno): # 고쳐야할 것 한 3번째 턴에 바꾸는것. 블�
         
     if changed == False:
         ob.current = peek(ob.deck2)
-        pass #그 지랄을 했는데도 안변한경우
+        pass # 그 지랄을 했는데도 안변한경우
 
-def stage4_al(ob,uno):# 고쳐야할 것 들, 블랙카드 낼시 한장 안사라짐, 3장일때 하나 내고 uno 안함
+def stage4_al(ob,uno): # 고쳐야할 것 들, 블랙카드 낼시 한장 안사라짐, 3장일때 하나 내고 uno 안함
     ob.deck2.insert(0, ob.player_list[1].pop(0))
 # ============================================================================================================
 """ 간단한 애니메이션 효과를 구현하는 함수 """
@@ -397,15 +385,15 @@ def move_card(ess, uno, img_path):
         pygame.time.wait(10)
 
 # ============================================================================================================
-def game_screen(ess, uno, sound, img, PM, saves, STORY):
+def game_screen(ess, uno, sound, img, PM, saves, STORY, Achieve_system):
     pygame.init()
 
-    if STORY.Is_stage_on[0] == True:
+    if STORY.Is_story_on[0] == True:
         stage1_ai(ess, uno, 10)
-    elif STORY.Is_stage_on[1] == True:
+    elif STORY.Is_story_on[1] == True:
         stage2_ai(ess, uno, 29)
     else: # 일반 싱글 플레이
-        create(ess, uno, 7)
+        create(ess, uno, 1)
 
     disp = False
     win_dec = False  # 승자가 선언되면 True
@@ -450,7 +438,7 @@ def game_screen(ess, uno, sound, img, PM, saves, STORY):
                 elif event.key == K_ESCAPE: # ESC 버튼을 누르면 게임이 일시정지됨
                     sound.click.play()
                     ess.is_game_paused = True
-                    paused_game(ess, uno, sound, PM, saves)
+                    paused_game(ess, uno, sound, PM, saves, Achieve_system)
                     AltCol_path = saves["color_change"] + "/" # 이미지 경로 갱신
             if event.type == MOUSEMOTION:
                 mouse_pos = pygame.mouse.get_pos()
@@ -503,7 +491,7 @@ def game_screen(ess, uno, sound, img, PM, saves, STORY):
                 if pause_button_rect.collidepoint(mouse_pos): # 일시 정지 버튼을 클릭
                     sound.click.play()
                     ess.is_game_paused = True
-                    paused_game(ess, uno, sound, PM, saves)
+                    paused_game(ess, uno, sound, PM, saves, Achieve_system)
                     AltCol_path = saves["color_change"] + "/" # 이미지 경로 갱신
 
         # 처음 덱 섞는 소리
@@ -515,6 +503,7 @@ def game_screen(ess, uno, sound, img, PM, saves, STORY):
             if len(item) == 0: # 플레이어의 카드가 0장이면 게임에서 승리한다.
                 win_dec = True
                 ess.winner = idx # 승자의 인덱스 저장
+                check_win_story(ess, STORY, Achieve_system) # 스토리 모드, 싱글 플레이 모드에서 승리했는지 체크
                 ess.play_mode = PM.win # 승리 모드로 전환
                 return
 
@@ -618,6 +607,11 @@ def game_screen(ess, uno, sound, img, PM, saves, STORY):
             if (ess.shouted_uno[i] == True):
                 uno.screen.blit(img.shouted, (width*(800/1000), height*(120 * (i - 1)/600)))
         
+        """ 스토리 모드 3번째 지역 로직 """
+        if STORY.Is_story_on[2] == True:
+            if ess.Turn_count % 5 == 0:
+                stage3_al(ess, uno) # 5턴 마다 카드 색깔을 랜덤하게 변경
+
         # Play Flow, 플레이 흐름
         if ess.player_playing: # 유저가 플레이하고 있으면 True, 아니면 False
             if ess.play_lag == 400: # 약 10초 타이머
@@ -738,7 +732,7 @@ def game_screen(ess, uno, sound, img, PM, saves, STORY):
         pygame.display.update()
 
 """ 게임이 일시정지되었을때의 메뉴 선택 화면 """
-def paused_game(ess, uno, sound, PM, saves):
+def paused_game(ess, uno, sound, PM, saves, Achieve_system):
     pygame.init()
     uno.background = pygame.image.load('./images/Pause_background.jpg')
     uno.background = pygame.transform.scale_by(uno.background, (uno.screen_width/1000, uno.screen_height/600))
@@ -767,14 +761,15 @@ def paused_game(ess, uno, sound, PM, saves):
                         bg = pygame.transform.scale_by(bg, (uno.screen_width/1000, uno.screen_height/600))
                         uno.screen.blit(bg,(0,0))
                         
-                        load_setting(ess, uno, sound, PM, saves) # 처음 설정 화면을 불러온다
+                        load_setting(ess, uno, sound, PM, saves, Achieve_system) # 처음 설정 화면을 불러온다
                         
                         function_key_config(KEYS) # 키 설정을 불러온다
                         update_saves(saves) # 기타 설정을 불러온다
                         pygame.mixer.music.set_volume(saves["background"]) # 설정에 맞게 소리를 조절한다
                         volumesetting(sound, saves["effects"])
                     elif selected == 2: # 업적 메뉴
-                        pass
+                        uno.screen.fill((128, 128, 128))
+                        draw_achieve_screen(ess, uno, Achieve_system)
                     elif selected == 3: # 게임 재개
                         ess.is_game_paused = False
 
@@ -794,7 +789,7 @@ def paused_game(ess, uno, sound, PM, saves):
                     bg = pygame.transform.scale_by(bg, (uno.screen_width/1000, uno.screen_height/600))
                     uno.screen.blit(bg,(0,0))
 
-                    load_setting(ess, uno, sound, PM, saves) # 처음 설정 화면을 불러온다
+                    load_setting(ess, uno, sound, PM, saves, Achieve_system) # 처음 설정 화면을 불러온다
                     
                     function_key_config(KEYS) # 키 설정을 불러온다
                     update_saves(saves) # 기타 설정을 불러온다
@@ -802,6 +797,8 @@ def paused_game(ess, uno, sound, PM, saves):
                     volumesetting(sound, saves["effects"])
                 elif achievement_rect.collidepoint(mouse_pos): # 업적 메뉴
                     selected = 2
+                    uno.screen.fill((128, 128, 128))
+                    draw_achieve_screen(ess, uno, Achieve_system)
                 elif resume_rect.collidepoint(mouse_pos): # 게임 재개
                     selected = 3
                     ess.is_game_paused = False
@@ -846,3 +843,35 @@ def paused_game(ess, uno, sound, PM, saves):
         draw_text(uno, "PAUSE", 50, (255, 255, 255), uno.screen_width*(350/1000), int(uno.screen_height*0.1))
 
         pygame.display.update()
+
+""" 스토리 모드나 일반 싱글플레이를 승리했는지 확인, 처음 승리했다면 업적 달성 """
+def check_win_story(ess, uno, STORY, Achieve_system):
+    if STORY.Is_story_on[0] == True:
+        if STORY.Is_story_passed == 0 and ess.winner == 0:
+            STORY.Is_story_passed = 1
+            draw_achievement_success(tk_root, Achieve_system, 1)
+    elif STORY.Is_story_on[1] == True:
+        if STORY.Is_story_passed == 1 and ess.winner == 0:
+            STORY.Is_story_passed = 2
+            draw_achievement_success(tk_root, Achieve_system, 2)
+    elif STORY.Is_story_on[2] == True:
+        if STORY.Is_story_passed == 2 and ess.winner == 0:
+            STORY.Is_story_passed = 3
+            draw_achievement_success(tk_root, Achieve_system, 3)
+    elif STORY.Is_story_on[3] == True:
+        if STORY.Is_story_passed == 3 and ess.winner == 0:
+            STORY.Is_story_passed = 3 # 3 그대로 둔다
+            draw_achievement_success(tk_root, Achieve_system, 4)
+    else:
+        if ess.winner == 0: # 내가 일반 싱글 플레이 모드에서 승리했을 때
+            if ess.Is_use_special_card == False: # 기술 카드를 사용하지 않았다면
+                draw_achievement_success(tk_root, Achieve_system, 6)
+            if ess.Turn_count <= 10: # 10턴 안에 끝냈다면, 
+                draw_achievement_success(tk_root, Achieve_system, 5)
+            
+            for i in range(1, uno.player_num):
+                if ess.shouted_uno[i] == True: # 나 말고 UNO를 외친 AI가 있다면,
+                    draw_achievement_success(tk_root, Achieve_system, 7)
+            
+            draw_achievement_success(tk_root, Achieve_system, 0) # 아무 업적도 아니고, 그냥 처음 이긴 거라면
+    return

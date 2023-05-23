@@ -7,4 +7,4 @@ right:1073741903
 down:1073741905
 select:13
 background:0.1
-effects:0.7
+effects:0.1

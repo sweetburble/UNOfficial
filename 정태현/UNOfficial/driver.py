@@ -56,24 +56,25 @@ while True:
         pygame.mixer.music.set_volume(saves["background"]) # 배경음악과 효과음 설정을 적용한다
         volumesetting(sound, saves["effects"])
 
-        main_menu(ess, uno, STORY) # 필수적인 이미지와 텍스트를 표시한다
+        main_menu(ess, uno, STORY, Achieve_system) # 필수적인 이미지와 텍스트를 표시한다
 
     # 싱글플레이 게임 화면 
     elif ess.play_mode == PM.in_game:
         # 게임 중에도 설정을 변경할 수 있으므로 saves 딕셔너리를 넘겨준다
-        game_screen(ess, uno, sound, img, PM, saves, STORY)
+        game_screen(ess, uno, sound, img, PM, saves, STORY, Achieve_system)
 
     # 스토리모드 선택 화면
-    elif ess.play_mode == PM.story:
-        ess.play_mode = story_mode(ess, uno, STORY)
-        uno.screen.blit(uno.background, (-30, -30))
+    # elif ess.play_mode == PM.story:
+    #     ess.play_mode = story_mode(ess, uno, STORY)
+    #     uno.screen.blit(uno.background, (-30, -30))
 
     # 설정(SETTING) 화면
     elif ess.play_mode == PM.setting:
         pygame.mixer.music.set_volume(saves["background"])
         volumesetting(sound, saves["effects"])
         
-        load_setting(ess, uno, sound, PM, saves) # 처음 설정 화면을 불러온다
+        draw_achievement_success(tk_root, Achieve_system, 9) # 9번 업적 달성
+        load_setting(ess, uno, sound, PM, saves, Achieve_system) # 처음 설정 화면을 불러온다
     
     # 업적 화면
     elif ess.play_mode == PM.achievement:

@@ -1,5 +1,9 @@
 import pygame
 import datetime
+import tkinter as tk
+from tkinter import messagebox
+import json
+
 
 # saves dictionary에 저장된 설정 내용 불러오기
 saves = {}
@@ -83,6 +87,9 @@ class Essentials(object):
         self.color = ['Blue', 'Red', 'Green', 'Yellow']  # 카드 색깔들
 
         self.path = path # 색약 모드를 위해 이미지 파일을 불러오는 경로
+
+        self.Turn_count = 1 # 몇 턴이 지났는지 (스토리 모드, 업적용 변수)
+        self.Is_use_special_card = False # 특수 카드를 사용했는 지 (업적용 변수)
 
 
 class PlayMode(object):
@@ -199,14 +206,17 @@ class UNOGame(object):
 class StoryMode(object):
     def __init__(self):
         self.Is_story_passed = 3 # 0은 하나도 클리어 하지 못했다는 뜻, 모든 스토리를 선택할 수 있는 상태는 3이다
-        self.Is_stage_on = [False,False,False,False]
+        self.Is_story_on = [False,False,False,False]
 
 
 # 업적 클래스 생성
 class Achievement:
-    def __init__(self, name, description):
+    def __init__(self, name, description, icon_path):
         self.name = name # 업적 이름
         self.description = description # 업적 설명
+        
+        self.icon = icon_path # 업적 아이콘 이미지 경로
+
         self.achieved = False # 업적을 달성했는가? True or False
         self.achieved_time = None # 업적을 달성한 시간
 
@@ -215,36 +225,78 @@ class Achievement:
         self.achieved = True
         self.achieved_time = datetime.datetime.now().strftime("%Y-%m-%d")  # 업적 달성 시간을 연-월-일 형식으로 저장
 
+    # 호출하면 멤버 변수를 json 형식(딕셔너리)으로 변환하여 반환
+    def to_json(self):
+        return {
+            "name": self.name,
+            "description": self.description,
+            "icon": self.icon,
+            "achieved": self.achieved,
+            "achieved_time": self.achieved_time
+        }
+
 # 업적을 관리하는 시스템 클래스 생성
 class AchievementSystem:
     def __init__(self):
-        self.achieve_list= [] # 업적 객체 리스트
+        self.achieve_list = [] # 업적 객체 리스트
+        self.file_path = "achievement.json"
 
     # 업적 객체를 추가하는 함수
     def add_achievement(self, achievement):
         self.achieve_list.append(achievement)
 
-achieve_single = Achievement('Singleplay_win', 'Win at the Singleplay')
-achieve_story_1 = Achievement('Storymod_1_win', 'Win at the story 1')
-achieve_story_2 = Achievement('Storymod_2_win', 'Win at the story 2')
-achieve_story_3 = Achievement('Storymod_3_win', 'win at the story 3')
-achieve_story_4 = Achievement('Storymod_4_win', 'Win at the story 4')
-achieve_fast = Achievement('Fast_win', 'Win in 10 turns')
-achieve_handicap = Achievement('Handicap', 'Win without a skill card')
-achieve_after_UNO = Achievement('Win_afterUNO', 'Win after the opponent shouts UNO')
-achieve_color = Achievement('Apply_color_weakness', 'Apply color weakness mode')
-achieve_open_setting = Achievement('Open_setting', 'Open setting menu')
-achieve_open_story = Achievement('Open_storymod', 'Open storymode menu')
+    # json 파일에서 내부 리스트로 읽어오는 함수
+    def load_achievements_from_file(self, file_path):
+        with open(file_path, "r") as file:
+            data = json.load(file)
+            for achievement_data in data:
+                achievement = Achievement(
+                    achievement_data["name"],
+                    achievement_data["description"],
+                    achievement_data["icon"]
+                )
+                achievement.achieved = achievement_data["achieved"]
+                achievement.achieved_time = achievement_data["achieved_time"]
+                self.achieve_list.append(achievement)
+
+    # 업적 달성 시, json 파일에 적기 위한 함수
+    def to_json(self):
+        return {
+            "name": self.name,
+            "description": self.description,
+            "icon": self.icon,
+            "achieved": self.achieved,
+            "achieved_time": self.achieved_time
+        }
+
+    # 저장 된 업적 현황을 json 파일에 적을 때, 호출하는 함수
+    def save_achievements_to_file(self, file_path):
+        with open(file_path, "w") as file:
+            json.dump(self.achieve_list, file, default=lambda o: o.to_json(), indent = 4)
 
 Achieve_system = AchievementSystem()
-Achieve_system.add_achievement(achieve_single)
-Achieve_system.add_achievement(achieve_story_1)
-Achieve_system.add_achievement(achieve_story_2)
-Achieve_system.add_achievement(achieve_story_3)
-Achieve_system.add_achievement(achieve_story_4)
-Achieve_system.add_achievement(achieve_fast)
-Achieve_system.add_achievement(achieve_handicap)
-Achieve_system.add_achievement(achieve_after_UNO)
-Achieve_system.add_achievement(achieve_color)
-Achieve_system.add_achievement(achieve_open_setting)
-Achieve_system.add_achievement(achieve_open_story)
+Achieve_system.load_achievements_from_file(Achieve_system.file_path)
+
+# achieve_single = Achievement('Singleplay_Win', 'Win at the Singleplay', './images/single.png') # 0
+# achieve_story_1 = Achievement('Storymod_1_Win', 'Win at the story 1', './images/storymod.png') # 1
+# achieve_story_2 = Achievement('Storymod_2_Win', 'Win at the story 2', './images/storymod.png') # 2
+# achieve_story_3 = Achievement('Storymod_3_Win', 'win at the story 3', './images/storymod.png') # 3
+# achieve_story_4 = Achievement('Storymod_4_Win', 'Win at the story 4', './images/storymod.png') # 4
+# achieve_fast = Achievement('Fast_Win', 'Win in 10 turns', './images/fast.png') # 5
+# achieve_handicap = Achievement('Handicap', 'Win without a skill card', './images/handicap.png') # 6 
+# achieve_after_UNO = Achievement('Win_After_UNO', 'Win after the opponent shouts UNO', './images/uno.png') # 7
+# achieve_color = Achievement('Apply_Color_Weakness', 'Apply color weakness mode', './images/color.png') # 8
+# achieve_open_setting = Achievement('Open_Setting', 'Open setting menu', './images/setting.png') # 9
+# achieve_open_story = Achievement('Open_Storymode', 'Open storymode menu', './images/story.png') # 10
+
+# Achieve_system.add_achievement(achieve_single)
+# Achieve_system.add_achievement(achieve_story_1)
+# Achieve_system.add_achievement(achieve_story_2)
+# Achieve_system.add_achievement(achieve_story_3)
+# Achieve_system.add_achievement(achieve_story_4)
+# Achieve_system.add_achievement(achieve_fast)
+# Achieve_system.add_achievement(achieve_handicap)
+# Achieve_system.add_achievement(achieve_after_UNO)
+# Achieve_system.add_achievement(achieve_color)
+# Achieve_system.add_achievement(achieve_open_setting)
+# Achieve_system.add_achievement(achieve_open_story)

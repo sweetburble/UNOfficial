@@ -1,6 +1,7 @@
 import pygame
 import sys
 from pygame.locals import *
+from functions import draw_achievement_success, tk_root
 
 """ keyconfigure 에서 쓰는 키보드 설정을 바꾸는 update 함수 """
 def update_key(saves, something):
@@ -43,7 +44,7 @@ def return_default_setting():
     return default_setting
 
 """ 일반 설정 화면 """
-def load_setting(ess, uno, sound, PM, saves):
+def load_setting(ess, uno, sound, PM, saves, Achieve_system):
     width, height = uno.screen_width, uno.screen_height
     uno.background = pygame.image.load("./images/background.png")
     uno.background = pygame.transform.scale_by(uno.background, (width/1000, height/600))
@@ -87,6 +88,7 @@ def load_setting(ess, uno, sound, PM, saves):
                 elif altcol_rect.collidepoint(mouse_pos):
                     selected_item = 2.1
                     saves["color_change"] = 'alternative'
+                    draw_achievement_success(tk_root, Achieve_system, 8) # 색약 모드를 적용하면 업적 달성
                 elif reset_rect.collidepoint(mouse_pos): # 리셋 버튼
                     selected_item = 3
                     saves = return_default_setting()

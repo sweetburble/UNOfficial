@@ -38,17 +38,17 @@ class AchievementSystem:
     def add_achievement(self, achievement):
         self.achievements.append(achievement)
 
-achievement_1 = Achievement('Singleplay_win', 'win at the Singleplay', 'img/single.png')
-achievement_2 = Achievement('storymod_1_win', 'win at the story mod stage 1', 'img/storymod.png')
-achievement_3 = Achievement('storymod_2_win', 'win at the story mod stage 2', 'img/storymod.png')
-achievement_4 = Achievement('storymod_3_win', 'win at the story mod stage 3', 'img/storymod.png')
-achievement_5 = Achievement('storymod_4_win', 'win at the story mod stage 4', 'img/storymod.png')
-achievement_6 = Achievement('fast_win', 'win in 10 turns', 'img/fast.png')
-achievement_7 = Achievement('handicap', 'win without a skill card', 'img/handicap.png')
-achievement_8 = Achievement('win_afterUNO', 'winning after the opponent shouts UNO', 'img/uno.png')
-achievement_9 = Achievement('apply_color_weakness', 'apply color weakness mode', 'img/color.png')
-achievement_10 = Achievement('open_setting', 'open setting', 'img/setting.png')
-achievement_11 = Achievement('open_storymod', 'open storymod', 'img/story.png')
+achievement_1 = Achievement('Singleplay_win', 'win at the Singleplay', '../img/single.png')
+achievement_2 = Achievement('storymod_1_win', 'win at the story mod stage 1', '../img/storymod.png')
+achievement_3 = Achievement('storymod_2_win', 'win at the story mod stage 2', '../img/storymod.png')
+achievement_4 = Achievement('storymod_3_win', 'win at the story mod stage 3', '../img/storymod.png')
+achievement_5 = Achievement('storymod_4_win', 'win at the story mod stage 4', '../img/storymod.png')
+achievement_6 = Achievement('fast_win', 'win in 10 turns', '../img/fast.png')
+achievement_7 = Achievement('handicap', 'win without a skill card', '../img/handicap.png')
+achievement_8 = Achievement('win_afterUNO', 'winning after the opponent shouts UNO', '../img/uno.png')
+achievement_9 = Achievement('apply_color_weakness', 'apply color weakness mode', '../img/color.png')
+achievement_10 = Achievement('open_setting', 'open setting', '../img/setting.png')
+achievement_11 = Achievement('open_storymod', 'open storymod', '../img/story.png')
 
 achievement_system = AchievementSystem()
 achievement_system.add_achievement(achievement_1)
@@ -63,12 +63,13 @@ achievement_system.add_achievement(achievement_9)
 achievement_system.add_achievement(achievement_10)
 achievement_system.add_achievement(achievement_11)
 
+achievement_1.set_achieved()
 # 업적 창 배경 이미지 로드
-achievement_window_bg_image = pygame.image.load("img/background.jpg")
+achievement_window_bg_image = pygame.image.load("../img/background.jpg")
 achievement_window_bg_image = pygame.transform.scale(achievement_window_bg_image, (achievement_window_width, achievement_window_height))
 
 # 뒤로 가기 버튼 이미지 로드
-back_button_image = pygame.image.load("img/return-button.png")
+back_button_image = pygame.image.load("../img/return-button.png")
 
 # 게임 루프
 running = True
